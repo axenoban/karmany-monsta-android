@@ -1,5 +1,7 @@
 extends Node
 
+const EffectAudio = preload("res://scripts/effect_audio.gd")
+var ui_audio: Node
 signal combat_updated
 const RESPONSE_DELAY := 0.7
 var response_timer: Timer
@@ -30,7 +32,19 @@ func _ready() -> void:
 	response_timer.one_shot = true
 	response_timer.timeout.connect(_resolve_enemy_response)
 	add_child(response_timer)
+	var bus := AudioServer.get_bus_index("SFX")
+	if bus < 0:
+		AudioServer.add_bus()
+		bus = AudioServer.bus_count - 1
+		AudioServer.set_bus_name(bus, "SFX")
+		var limiter := AudioEffectLimiter.new()
+		limiter.ceiling_db = -1.0
+		limiter.threshold_db = -3.0
+		AudioServer.add_bus_effect(bus, limiter)
+	ui_audio = EffectAudio.new()
+	add_child(ui_audio)
 	profile = storage.load_profile()
+	apply_audio_preferences()
 	load_failed = not storage.last_error.is_empty()
 	if load_failed:
 		notice = storage.last_error
@@ -50,6 +64,7 @@ func commit_profile(next_profile: Dictionary) -> bool:
 		log_event(notice)
 		return false
 	profile = next_profile.duplicate(true)
+	apply_audio_preferences()
 	load_failed = false
 	_schedule_enemy_response()
 	return true
@@ -99,9 +114,29 @@ func change_tree(operation: String, node_id: String = "", expected_rank: int = -
 		return false
 	var next_profile := profile.duplicate(true)
 	next_profile.skill_tree = tree.snapshot()
-	return commit_profile(next_profile)
+	if not commit_profile(next_profile): return false
+	play_sfx("item")
+	return true
+
+func apply_audio_preferences() -> void:
+	var bus := AudioServer.get_bus_index("SFX")
+	if bus < 0: return
+	var settings: Dictionary = profile.get("settings", {})
+	var level: float = float(settings.get("effects_volume", 0.65))
+	AudioServer.set_bus_volume_db(bus, linear_to_db(maxf(level, 0.001)) - 6.0)
+	AudioServer.set_bus_mute(bus, not settings.get("sound", true) or level <= 0.0)
+
+func set_effect_volume(level: float) -> bool:
+	if load_failed or not is_finite(level) or level < 0 or level > 1: return false
+	var next := profile.duplicate(true)
+	next.settings.effects_volume = level
+	return commit_profile(next)
+
+func play_sfx(id: String) -> void:
+	if ui_audio != null: ui_audio.play_cue(id)
 
 func tap() -> void:
+	play_sfx("tap")
 	if profile.settings.haptics and OS.get_name() == "Android":
 		Input.vibrate_handheld(18)
 
@@ -173,7 +208,9 @@ func _start_encounter(enemy_species: String, point_id: String = "") -> bool:
 		next_profile.campaign.exploration.drop = {"encounter_id": encounter.state.id, "roll": randi_range(0, 9999), "resolved": false, "received": false}
 	next_profile.journey.started = true
 	next_profile.journey.visited_jade = true
-	return commit_profile(next_profile)
+	if not commit_profile(next_profile): return false
+	play_sfx("enter")
+	return true
 
 func mark_intro_seen() -> bool:
 	if load_failed:
@@ -228,7 +265,11 @@ func trial_action(operation: String, action_id: String = "", expected_revision: 
 		if not tree.state.captured_species.has(captured_species):
 			tree.record_capture(captured_species)
 	next_profile.skill_tree = tree.snapshot()
-	return commit_profile(next_profile)
+	if not commit_profile(next_profile): return false
+	if previous_phase == "battle" and encounter.state.phase == "capture": play_sfx("victory")
+	elif encounter.state.phase == "defeat" and previous_phase != "defeat": play_sfx("defeat")
+	elif operation == "retreat": play_sfx("switch")
+	return true
 
 func change_team(operation: String, instance_id: String) -> bool:
 	if load_failed:
@@ -240,7 +281,9 @@ func change_team(operation: String, instance_id: String) -> bool:
 		return false
 	var next_profile := profile.duplicate(true)
 	next_profile.campaign.team = next_team
-	return commit_profile(next_profile)
+	if not commit_profile(next_profile): return false
+	play_sfx("switch")
+	return true
 
 func _schedule_enemy_response() -> void:
 	if response_timer == null:
@@ -309,10 +352,14 @@ func use_recovery_item(expected_revision: int) -> bool:
 		return false
 	var next_profile := profile.duplicate(true)
 	next_profile.campaign.exploration = next_energy
-	return commit_profile(next_profile)
+	if not commit_profile(next_profile): return false
+	play_sfx("item")
+	return true
 
 func discover_location(expected_id: String) -> bool:
 	if load_failed or not profile.campaign.get("exploration", Energy.defaults()).scouting or profile.campaign.encounter.get("id") != expected_id: return false
 	var next_profile := profile.duplicate(true)
 	next_profile.campaign.exploration.scouting = false
-	return commit_profile(next_profile)
+	if not commit_profile(next_profile): return false
+	play_sfx("enter")
+	return true

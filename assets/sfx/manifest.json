@@ -1,0 +1,139 @@
+{
+  "origin": "Original deterministic procedural synthesis",
+  "generator": "ci/generate_sfx.py",
+  "sample_rate": 22050,
+  "clips": [
+    {
+      "id": "tap",
+      "duration": 0.07,
+      "kind": "tick",
+      "peak": 0.5
+    },
+    {
+      "id": "error",
+      "duration": 0.2,
+      "kind": "down",
+      "peak": 0.5
+    },
+    {
+      "id": "swing",
+      "duration": 0.22,
+      "kind": "air",
+      "peak": 0.5
+    },
+    {
+      "id": "hit",
+      "duration": 0.2,
+      "kind": "hit",
+      "peak": 0.5
+    },
+    {
+      "id": "zephyr",
+      "duration": 0.48,
+      "kind": "air",
+      "peak": 0.5
+    },
+    {
+      "id": "ushigane",
+      "duration": 0.48,
+      "kind": "hit",
+      "peak": 0.5
+    },
+    {
+      "id": "kitsunibi",
+      "duration": 0.48,
+      "kind": "up",
+      "peak": 0.5
+    },
+    {
+      "id": "sakuromushi",
+      "duration": 0.48,
+      "kind": "pulse",
+      "peak": 0.5
+    },
+    {
+      "id": "heal",
+      "duration": 0.58,
+      "kind": "chord",
+      "peak": 0.5
+    },
+    {
+      "id": "shield",
+      "duration": 0.4,
+      "kind": "bell",
+      "peak": 0.5
+    },
+    {
+      "id": "boost",
+      "duration": 0.42,
+      "kind": "up",
+      "peak": 0.5
+    },
+    {
+      "id": "control",
+      "duration": 0.42,
+      "kind": "down",
+      "peak": 0.5
+    },
+    {
+      "id": "switch",
+      "duration": 0.25,
+      "kind": "air",
+      "peak": 0.5
+    },
+    {
+      "id": "book_open",
+      "duration": 0.48,
+      "kind": "page",
+      "peak": 0.5
+    },
+    {
+      "id": "book_pull",
+      "duration": 1.1,
+      "kind": "up",
+      "peak": 0.5
+    },
+    {
+      "id": "bind_success",
+      "duration": 0.86,
+      "kind": "chord",
+      "peak": 0.5
+    },
+    {
+      "id": "bind_bounce",
+      "duration": 0.42,
+      "kind": "bounce",
+      "peak": 0.5
+    },
+    {
+      "id": "escape",
+      "duration": 0.45,
+      "kind": "down",
+      "peak": 0.5
+    },
+    {
+      "id": "victory",
+      "duration": 0.85,
+      "kind": "chord",
+      "peak": 0.5
+    },
+    {
+      "id": "defeat",
+      "duration": 0.65,
+      "kind": "down",
+      "peak": 0.5
+    },
+    {
+      "id": "enter",
+      "duration": 0.4,
+      "kind": "bell",
+      "peak": 0.5
+    },
+    {
+      "id": "item",
+      "duration": 0.38,
+      "kind": "bell",
+      "peak": 0.5
+    }
+  ]
+}

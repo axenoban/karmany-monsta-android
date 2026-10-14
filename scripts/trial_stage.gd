@@ -1,4 +1,6 @@
 extends Control
+const EffectAudio = preload("res://scripts/effect_audio.gd")
+var effect_audio: Node
 
 var mode := "battle"
 var ally_species := "zephyr"
@@ -24,6 +26,8 @@ static func texture(id: String) -> Texture2D:
 	return _textures[id]
 
 func _ready() -> void:
+	effect_audio = EffectAudio.new()
+	add_child(effect_audio)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	resized.connect(queue_redraw)
 	set_process(false)
@@ -31,11 +35,13 @@ func _ready() -> void:
 func play(action_event: Dictionary) -> void:
 	event = action_event.duplicate(true)
 	elapsed = 0.0
+	if effect_audio != null: effect_audio.begin(EffectAudio.combat_cues(event.get("species", ""), event.get("action", "")))
 	set_process(true)
 	queue_redraw()
 
 func _process(delta: float) -> void:
 	elapsed = minf(DURATION, elapsed + delta)
+	if effect_audio != null: effect_audio.advance(elapsed)
 	queue_redraw()
 	if elapsed >= DURATION: set_process(false)
 

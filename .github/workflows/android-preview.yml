@@ -129,6 +129,11 @@ jobs:
           set -o pipefail
           godot --headless --path . --script tests/binding_animation_tests.gd 2>&1 | tee build/binding-animation.log
           python3 ci/check_log.py build/binding-animation.log
+      - name: Validate sound cues, audio settings and save migration
+        run: |
+          set -o pipefail
+          godot --headless --path . --script tests/sound_effect_tests.gd 2>&1 | tee build/sound-effects.log
+          python3 ci/check_log.py build/sound-effects.log
       - name: Export playable encounter APK
         run: |
           set -o pipefail
@@ -181,5 +186,5 @@ jobs:
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" "${ASSETS[@]}" --clobber
           else
-            gh release create "$TAG" "${ASSETS[@]}" --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Preview 0.13.0: Libro central ilustrado, vínculo animado con absorción completa o rebote según resultado persistido. Partículas, estelas y desenlace; omisión segura. Conserva reglas, progreso y firma de pruebas."
+            gh release create "$TAG" "${ASSETS[@]}" --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Preview 0.14.0: 22 efectos de sonido originales para combate, habilidades, Libro, interfaz y exploración. Volumen y silencio persistentes, pausa y omisión seguras. Conserva reglas, progreso y firma de pruebas."
           fi

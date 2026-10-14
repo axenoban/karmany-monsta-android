@@ -242,6 +242,7 @@ func _battle() -> void:
 			column.add_child(_button("Continuar recorrido", func(): _continue_route(state.id, revision)))
 
 func _notice() -> void:
+	App.play_sfx("error")
 	message.text = App.notice
 	message.show()
 

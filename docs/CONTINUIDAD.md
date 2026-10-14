@@ -19,8 +19,14 @@ Preview25, versión0.13.0/versionCode1025, código dd1fc0b530f4907f94dce1e017ace
 
 Historial: docs/BASELINE_VALIDADO.md. Vínculo: scripts/binding_stage.gd y docs/PRUEBA_ANDROID_16.md; secuencia3.6s, resultado persistido antes de animación, omitir/cerrar sin nuevo intento. Combate: scripts/trial_stage.gd, duración0.66s antes de respuesta0.7s.
 
-## Próximo bloque autorizado17: efectos de sonido
-Solicitud del creador: sonidos de golpes, capturas y demás efectos necesarios. Implementar en feature/game-sound-effects, pendientes de validación. Respetar las reglas aprobadas; no añadir mecánicas ni música/historia por esta solicitud.
+## Bloque actual17: efectos de sonido
+Rama feature/game-sound-effects, basada en cierre aprobado9db69ac. Versión0.14.0.
+
+22 clips originales sintetizados con semilla fija: assets/sfx/*.wav y manifest.json; reproducibles por ci/generate_sfx.py. Sin grabaciones externas ni música. Cubren toque/error, preparación/impacto, cuatro Insignias ofensivas y curación/protección de Tanugami, guardia, curación, potenciación, control, cambio, apertura/atracción/éxito/rebote/escape del Libro, victoria/derrota, entrada/exploración y recuperador. Cada efecto usa monoPCM22050Hz y pico máximo0.5 antes de mezcla.
+
+Arquitectura: effect_audio.gd, voces limitadas por ámbito y propiedad de su escena; busSFX con limitador y margen de volumen; ajustes opcionales sound/effects_volume, valor inicial65%, migración compatible sin nuevo esquema ni pérdida de progreso. App aplica preferencias tras guardar. Golpe impacta a0.34s; Libro abre0s, atrae1s y resuelve2.05s; escape2.85s. No reproducir sonidos al consultar/reabrir acciones ya consumidas. Omitir/cerrar/suspender cancela la secuencia de sonido. Los sonidos de resultado se emiten tras guardado correcto.
+
+Pruebas:1084 comprobaciones Godot (43 nuevas) y3 Python correctas. Prueba separada del mezclador real:44 comprobaciones, salida capturada no silenciosa y pico0.5845<1. Las pruebas headless de reglas verifican programación sin iniciar voces porque su controlador sin salida no mezcla; el humo de audio activa --verify-audio-mixer bajo renderizador de escritorio y Movie Maker. No se ignoran errores en logs. Se usa reproducción diferida propiedad del nodo y se liberan streams al parar. Validación pendiente: volumen percibido, timbres y latencia en Android. CI/APK se registrarán al entregar. Prueba física: docs/PRUEBA_ANDROID_17.md.
 
 ## Si las pruebas son correctas
 Cerrar bloque17 e integrar por fast-forward solo tras aprobación. Siguiente propuesta: movimiento reducido en combate y vínculo, aún pendiente de autorización; o siguiente prioridad del creador. Acordar reglas antes de progreso del Libro.

@@ -12,7 +12,7 @@ func _init(path: String = "user://profile.json") -> void:
 	base_path = path
 
 static func defaults() -> Dictionary:
-	return {"schema": SCHEMA_VERSION, "settings": {"large_text": false, "haptics": true}, "journey": {"started": false, "visited_jade": false}, "skill_tree": TreeModel.defaults(), "campaign": Campaign.defaults()}
+	return {"schema": SCHEMA_VERSION, "settings": {"large_text": false, "haptics": true, "sound": true, "effects_volume": 0.65}, "journey": {"started": false, "visited_jade": false}, "skill_tree": TreeModel.defaults(), "campaign": Campaign.defaults()}
 
 static func valid(data: Variant) -> bool:
 	if not data is Dictionary or (data.get("schema") != 1 and data.get("schema") != 2 and data.get("schema") != SCHEMA_VERSION):
@@ -22,6 +22,10 @@ static func valid(data: Variant) -> bool:
 	for key in ["large_text", "haptics"]:
 		if not data.settings.get(key) is bool:
 			return false
+	if data.settings.has("sound") and not data.settings.sound is bool: return false
+	if data.settings.has("effects_volume"):
+		var level: Variant = data.settings.effects_volume
+		if not (level is float or level is int) or not is_finite(float(level)) or level < 0 or level > 1: return false
 	for key in ["started", "visited_jade"]:
 		if not data.journey.get(key) is bool:
 			return false
@@ -48,6 +52,8 @@ func _read(path: String) -> Variant:
 		parsed.skill_tree = TreeModel.defaults()
 	if parsed.schema < 3:
 		parsed.campaign = Campaign.defaults()
+	if not parsed.settings.has("sound"): parsed.settings.sound = true
+	if not parsed.settings.has("effects_volume"): parsed.settings.effects_volume = 0.65
 	parsed.schema = SCHEMA_VERSION
 	parsed.skill_tree = TreeModel.normalized(parsed.skill_tree)
 	parsed.campaign = Campaign.normalized(parsed.campaign)

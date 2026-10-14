@@ -1,0 +1,108 @@
+extends SceneTree
+const Effects = preload("res://scripts/effect_audio.gd")
+const Store = preload("res://scripts/save_store.gd")
+const Binding = preload("res://scripts/binding_stage.gd")
+const PATH := "user://sfx-tests.json"
+var checks := 0
+var failures := 0
+func _initialize() -> void: call_deferred("run")
+func check(value: bool, label: String) -> void:
+	checks += 1
+	if not value:
+		failures += 1
+		push_error("FAIL: " + label)
+func run() -> void:
+	var app := root.get_node("App")
+	app.storage = Store.new(PATH)
+	app.profile = Store.defaults()
+	app.load_failed = false
+	app.apply_audio_preferences()
+	var audio := Effects.new()
+	root.add_child(audio)
+	for id in Effects.IDS:
+		var clip := load("res://assets/sfx/%s.wav" % id) as AudioStreamWAV
+		check(clip != null and clip.get_length() > 0.03 and clip.get_length() <= 1.2 and not clip.data.is_empty(), "valid finite original clip " + id)
+	check(Effects.combat_cues("tanugami", "insignia")[0][1] == "heal", "healing signature sounds like support")
+	check(Effects.combat_cues("zephyr", "insignia")[0][1] != Effects.combat_cues("kitsunibi", "insignia")[0][1], "species have distinct signatures")
+	audio.begin(Effects.combat_cues("zephyr", "golpe"))
+	check(audio.emitted == ["swing"], "only preparation at action start")
+	audio.advance(0.20)
+	check(audio.emitted.size() == 1, "no impact before contact")
+	audio.advance(0.35)
+	check(audio.emitted == ["swing", "hit"], "impact synchronized to motion")
+	audio.advance(0.40)
+	check(audio.emitted.size() == 2, "no duplicated crossing")
+	audio.stop()
+	audio.emitted.clear()
+	audio.begin(Effects.binding_cues("captured"))
+	for i in range(1, 23): audio.advance(i * 0.1)
+	check(audio.emitted == ["book_open", "book_pull", "bind_success"], "capture stages use persisted success")
+	audio.stop()
+	audio.emitted.clear()
+	audio.begin(Effects.binding_cues("escaped"))
+	for i in range(1, 31): audio.advance(i * 0.1)
+	check(audio.emitted == ["book_open", "book_pull", "bind_bounce", "escape"], "third failure rebounds then escapes")
+	audio.stop()
+	audio.emitted.clear()
+	audio.begin([[0.1, "hit"], [0.2, "shield"]])
+	audio.advance(2.0)
+	check(audio.emitted.is_empty() and audio.cues.is_empty(), "long frame discards stale sound burst")
+	check(app.set_preference("sound", false) and AudioServer.is_bus_mute(AudioServer.get_bus_index("SFX")), "mute is persisted and applied")
+	check(not audio.play_cue("hit") and not app.storage.load_profile().settings.sound, "muted playback suppressed after save")
+	app.set_preference("sound", true)
+	check(app.set_effect_volume(0.0) and not audio.play_cue("hit"), "zero volume silent")
+	check(not app.set_effect_volume(NAN) and not app.set_effect_volume(1.5), "invalid volume rejected")
+	app.set_effect_volume(0.5)
+	check(is_equal_approx(float(app.storage.load_profile().settings.effects_volume), 0.5), "volume survives reload")
+	audio.stop()
+	app.application_paused = true
+	check(not audio.play_cue("hit"), "background playback suppressed")
+	app.application_paused = false
+	audio.begin([[0.1, "hit"]])
+	audio._notification(Node.NOTIFICATION_APPLICATION_PAUSED)
+	check(audio.cues.is_empty(), "suspend cancels queued cues")
+	for i in range(20): audio.play_cue("hit")
+	check(audio.get_child_count() == Effects.MAX_VOICES, "voice pool remains bounded")
+	audio.stop()
+	var legacy := Store.defaults()
+	legacy.settings.erase("sound")
+	legacy.settings.erase("effects_volume")
+	check(Store.valid(legacy) and app.storage.save_profile(legacy), "previous preview save accepted")
+	var upgraded: Dictionary = app.storage.load_profile()
+	check(upgraded.settings.sound and upgraded.settings.effects_volume == 0.65 and upgraded.campaign == legacy.campaign, "audio defaults added without progress changes")
+	var before: Dictionary = app.profile.duplicate(true)
+	app.storage = Store.new("user://missing-sfx-directory/profile.json")
+	check(not app.set_effect_volume(0.9) and app.profile == before, "failed settings write preserves profile")
+	var binding := Binding.new()
+	binding.cinematic = true
+	root.add_child(binding)
+	binding.play("captured")
+	binding.finish()
+	check(binding.effect_audio.cues.is_empty(), "skip stops binding sound sequence")
+	binding.free()
+	audio.free()
+	for suffix in ["", ".bak", ".tmp"]:
+		if FileAccess.file_exists(PATH + suffix): DirAccess.remove_absolute(PATH + suffix)
+	app.ui_audio.stop()
+	if "--verify-audio-mixer" in OS.get_cmdline_user_args():
+		app.storage = Store.new(PATH)
+		app.profile = Store.defaults()
+		app.apply_audio_preferences()
+		var capture := AudioEffectCapture.new()
+		var bus := AudioServer.get_bus_index("SFX")
+		AudioServer.add_bus_effect(bus, capture)
+		var mixer := Effects.new()
+		root.add_child(mixer)
+		mixer.play_cue("heal")
+		await create_timer(0.16).timeout
+		var buffer := capture.get_buffer(capture.get_frames_available())
+		var peak := 0.0
+		for frame in buffer: peak = maxf(peak, maxf(absf(frame.x), absf(frame.y)))
+		print("MIXER frames=", buffer.size(), " peak=", peak, " playing=", mixer.voices[0].playing, " mute=", AudioServer.is_bus_mute(bus))
+		check(not buffer.is_empty() and peak > 0.001 and peak < 1.0, "real mixer emits non-silent bounded audio")
+		mixer.stop()
+		mixer.queue_free()
+		AudioServer.remove_bus_effect(bus, AudioServer.get_bus_effect_count(bus) - 1)
+		await create_timer(0.2).timeout
+	print("SOUND EFFECTS: %d checks, %d failures" % [checks, failures])
+	quit(1 if failures else 0)

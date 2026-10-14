@@ -361,14 +361,37 @@ func _species() -> void:
 
 func _settings() -> void:
 	_heading("Ajustes")
-	for key in ["large_text", "haptics"]:
+	for key in ["large_text", "haptics", "sound"]:
 		var current_key: String = key
-		var title := "Texto grande" if key == "large_text" else "Vibración al tocar"
+		var title: String = {"large_text": "Texto grande", "haptics": "Vibración al tocar", "sound": "Efectos de sonido"}[key]
 		var enabled: bool = App.profile.settings[key]
 		var button := _button(title + (" · Activado" if enabled else " · Desactivado"), func(): _toggle(current_key))
 		button.disabled = App.load_failed
 		body.add_child(button)
+	var volume := HSlider.new()
+	volume.name = "EffectsVolume"
+	volume.min_value = 0
+	volume.max_value = 100
+	volume.step = 5
+	volume.value = App.profile.settings.get("effects_volume", 0.65) * 100
+	volume.custom_minimum_size = Vector2(0, 58)
+	volume.editable = not App.load_failed
+	var caption := _label("Volumen de efectos: %d%%" % volume.value, theme.default_font_size)
+	body.add_child(caption)
+	body.add_child(volume)
+	volume.value_changed.connect(func(value: float):
+		caption.text = "Volumen de efectos: %d%%" % value)
+	volume.drag_ended.connect(func(changed: bool):
+		if changed: _save_volume(volume))
+	volume.gui_input.connect(func(event: InputEvent):
+		if event is InputEventKey and event.pressed: _save_volume.call_deferred(volume))
 	_copy("Los ajustes se guardan al cambiarlos.")
+
+func _save_volume(slider: HSlider) -> void:
+	if not is_instance_valid(slider): return
+	if App.set_effect_volume(slider.value / 100.0):
+		App.play_sfx("item")
+	else: toast.text = App.notice
 
 func _toggle(key: String) -> void:
 	if App.set_preference(key, not App.profile.settings[key]):

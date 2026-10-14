@@ -1,4 +1,6 @@
 extends Control
+const EffectAudio = preload("res://scripts/effect_audio.gd")
+var effect_audio: Node
 # The outcome is already persisted. This node never changes capture or inventory.
 signal finished
 const Stage = preload("res://scripts/trial_stage.gd")
@@ -43,6 +45,8 @@ static func sample(seconds: float, success: bool) -> Dictionary:
 	return {"position": point, "scale": maxf(0.0, shrink), "alpha": alpha, "rotation": angle}
 
 func _ready() -> void:
+	effect_audio = EffectAudio.new()
+	add_child(effect_audio)
 	mouse_filter = Control.MOUSE_FILTER_STOP if cinematic else Control.MOUSE_FILTER_IGNORE
 	clip_contents = true
 	resized.connect(_layout)
@@ -78,6 +82,7 @@ func play(result: String) -> void:
 	elapsed = 0.0
 	completed = false
 	running = true
+	if cinematic and effect_audio != null: effect_audio.begin(EffectAudio.binding_cues(outcome))
 	set_process(true)
 	_update_text()
 	queue_redraw()
@@ -89,6 +94,7 @@ func _update_text() -> void:
 func _process(delta: float) -> void:
 	if not running: return
 	elapsed = minf(DURATION, elapsed + maxf(delta, 0.0))
+	if effect_audio != null: effect_audio.advance(elapsed)
 	_update_text()
 	queue_redraw()
 	if elapsed >= DURATION: finish()
@@ -96,6 +102,7 @@ func _process(delta: float) -> void:
 func finish() -> void:
 	if completed: return
 	completed = true
+	if effect_audio != null: effect_audio.stop()
 	running = false
 	set_process(false)
 	finished.emit()
