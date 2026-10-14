@@ -86,3 +86,11 @@ No cambiar motor, paquete, firma de preview ni esquema de guardado sin justifica
 - Incluye: cuatro puntos secuenciales, avance persistente por victoria, captura opcional confirmada, repeticiones y entrenamiento separado, migración sin avance retroactivo.
 - Integrado por fast-forward desde eded1d0; main conserva su estado.
 - Próximo bloque autorizado: mapa cenital con localizaciones sin revelar criaturas, PS visibles y acciones secundarias en menús; stamina 100, entradas 10/10/10/30, recuperación 1/minuto y objeto +30 con 20% por victoria en localizaciones, excluido Entrenamiento.
+
+## Bloque 13 · Exploración, stamina y menús de combate
+
+- Aprobación: «las pruebas estan correctas», 14 de octubre de 2026.
+- APK: Preview 19, versión 0.10.0, código dd4c8b66f1b414b58de3c9fab1b2fa6613bdbabb.
+- CI: 744 comprobaciones Godot y 3 pruebas Python; exportación, firma v2/v3 y auditoría correctas.
+- Integrado en dev/karmany-core por fast-forward desde f830174; main conserva su estado.
+- Siguiente bloque autorizado: información y coste al seleccionar localización, fondos por lugar y renovación visual de criaturas, personajes y UX usando las referencias como inspiración.
