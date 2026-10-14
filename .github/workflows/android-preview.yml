@@ -81,6 +81,7 @@ jobs:
           if ! command -v xvfb-run >/dev/null; then sudo apt-get update -qq && sudo apt-get install -y xvfb; fi
           xvfb-run -a godot --audio-driver Dummy --path . --script tests/render_smoke.gd 2>&1 | tee build/ui.log
           python3 ci/check_log.py build/ui.log
+          python3 -m zipfile -c build/ui-review.zip build/screenshots
       - name: Upload APK and diagnostic logs
         if: always()
         uses: actions/upload-artifact@v4
@@ -110,7 +111,7 @@ jobs:
         run: |
           TAG="android-preview-${BUILD_NUMBER}"
           if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" build/karmany-monsta-preview.apk build/apk.sha256 --clobber
+            gh release upload "$TAG" build/karmany-monsta-preview.apk build/apk.sha256 build/ui-review.zip --clobber
           else
-            gh release create "$TAG" build/karmany-monsta-preview.apk build/apk.sha256 --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Preview 0.4.0: árbol funcional de resonancias, aprendizaje y mejora de rangos, cuatro espacios de equipamiento y guardado migrado. Diagnóstico incluye progreso simulado para pruebas. Resonancia propia provisional; combate y efectos concretos todavía pendientes. Firma pública solo de pruebas."
+            gh release create "$TAG" build/karmany-monsta-preview.apk build/apk.sha256 build/ui-review.zip --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Preview 0.4.0: árbol funcional de resonancias, aprendizaje y mejora de rangos, cuatro espacios de equipamiento y guardado migrado. Diagnóstico incluye progreso simulado para pruebas. Resonancia propia provisional; combate y efectos concretos todavía pendientes. Firma pública solo de pruebas."
           fi
