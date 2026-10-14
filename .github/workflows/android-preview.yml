@@ -29,6 +29,7 @@ jobs:
       - name: Prepare Android SDK
         run: |
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platform-tools" "build-tools;35.0.1" "platforms;android-35"
+          "$ANDROID_HOME/platform-tools/adb" start-server
       - name: Prepare preview metadata and test signing
         env:
           BUILD_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -37,24 +38,26 @@ jobs:
         run: |
           set -o pipefail
           godot --headless --editor --path . --import --quit 2>&1 | tee build/import.log
-          if rg 'SCRIPT ERROR:|Parse Error:|Failed to load script' build/import.log; then exit 1; fi
+          python3 ci/check_log.py build/import.log
       - name: Run regression tests
         run: |
           set -o pipefail
           godot --headless --path . --script tests/run_tests.gd 2>&1 | tee build/tests.log
-          if rg 'SCRIPT ERROR:|ERROR:' build/tests.log; then exit 1; fi
+          python3 ci/check_log.py build/tests.log
       - name: Export Android APK
         run: |
           set -o pipefail
           godot --headless --path . --export-debug "Android Preview" build/karmany-monsta-preview.apk 2>&1 | tee build/export.log
+          python3 ci/check_log.py build/export.log
           test -s build/karmany-monsta-preview.apk
           "$ANDROID_HOME/build-tools/35.0.1/apksigner" verify --verbose build/karmany-monsta-preview.apk
           sha256sum build/karmany-monsta-preview.apk > build/apk.sha256
       - name: Render UI for review
         run: |
           set -o pipefail
+          if ! command -v xvfb-run >/dev/null; then sudo apt-get update -qq && sudo apt-get install -y xvfb; fi
           xvfb-run -a godot --path . --script tests/render_smoke.gd 2>&1 | tee build/ui.log
-          if rg 'SCRIPT ERROR:|ERROR:' build/ui.log; then exit 1; fi
+          python3 ci/check_log.py build/ui.log
       - name: Upload APK and diagnostic logs
         if: always()
         uses: actions/upload-artifact@v4

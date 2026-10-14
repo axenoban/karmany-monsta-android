@@ -83,7 +83,7 @@ func save_profile(data: Dictionary) -> bool:
 		last_error = "No se pudo finalizar el guardado: %s" % error_string(replace_error)
 		return false
 	# The very first save also gets a backup.
-	if not FileAccess.file_exists(base_path + ".bak"):
+	if _read(base_path + ".bak") == null:
 		var backup_error := DirAccess.copy_absolute(base_path, base_path + ".bak")
 		if backup_error != OK:
 			last_error = "Partida guardada, pero no se pudo crear su respaldo."

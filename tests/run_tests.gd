@@ -51,6 +51,9 @@ func _run() -> void:
 	_check(store.load_profile() == Store.defaults(), "both corrupt files give safe defaults")
 	_check(not store.last_error.is_empty(), "both corrupt files produce explicit error")
 	_check(FileAccess.get_file_as_string(TEST_PATH) == "corrupted again", "corruption is not silently overwritten")
+	_check(store.save_profile(second), "explicit new save after both files corrupt")
+	_write(TEST_PATH, "corrupt replacement")
+	_check(store.load_profile() == second and store.recovered_backup, "new save replaces invalid backup with a valid one")
 	var invalid := second.duplicate(true)
 	invalid.schema = 99
 	_check(not store.save_profile(invalid), "unknown save schema refused")
