@@ -4,16 +4,19 @@ var mode := "battle"
 var ally_species := "zephyr"
 var enemy_species := "tanugami"
 var collection_species := ""
+var background_id := "jade"
 var event: Dictionary = {}
 var elapsed := 1.0
 const DURATION := 0.62
 var player_defeated := false
 var enemy_defeated := false
 static var _textures: Dictionary = {}
+const RESTYLED := ["zephyr", "tanugami", "ushigane", "kitsunibi", "sakuromushi", "ezel", "axe"]
 
 static func texture(id: String) -> Texture2D:
 	if not _textures.has(id):
-		_textures[id] = load("res://assets/trial/%s.png" % id)
+		var asset_id := id + "_v2" if id in RESTYLED else ("jade_overhead_v2" if id == "jade_overhead" else id)
+		_textures[id] = load("res://assets/trial/%s.png" % asset_id)
 	return _textures[id]
 
 func _ready() -> void:
@@ -69,8 +72,10 @@ func _actor(id: String, center: float, height: float, opacity: float = 1.0, mirr
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 func _draw() -> void:
-	var background := texture("jade")
-	draw_texture_rect(background, Rect2(Vector2.ZERO, size), false)
+	var background := texture(background_id)
+	var tex_size := Vector2(background.get_width(), background.get_height())
+	var source_size := size / maxf(maxf(size.x / tex_size.x, size.y / tex_size.y), 0.001)
+	draw_texture_rect_region(background, Rect2(Vector2.ZERO, size), Rect2((tex_size - source_size) * 0.5, source_size))
 	if mode == "intro" or mode == "map":
 		_actor("ezel", 0.20, 0.88)
 		_actor("zephyr", 0.42, 0.62)
@@ -83,7 +88,7 @@ func _draw() -> void:
 		_actor("ezel", 0.12, 0.80, 0.7)
 		_actor("axe", 0.88, 0.75, 0.7)
 		_actor(ally_species, 0.34, 0.86, 0.45 if player_defeated else 1.0, ally_species != "zephyr")
-		_actor(enemy_species, 0.66, 0.82, 0.50 if enemy_defeated else 1.0, enemy_species != "tanugami")
+		_actor(enemy_species, 0.66, 0.82, 0.50 if enemy_defeated else 1.0, enemy_species == "zephyr")
 		if elapsed < DURATION and event.get("action") == "insignia":
 			var progress := elapsed / DURATION
 			var color: Color = {"zephyr": Color("9deaff"), "tanugami": Color("87eca1"), "ushigane": Color("e8b763"), "kitsunibi": Color("9eeef0"), "sakuromushi": Color("f3a8ca")}.get(event.get("species"), Color.WHITE)

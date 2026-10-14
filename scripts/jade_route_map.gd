@@ -29,7 +29,7 @@ func setup(route: Dictionary, active_encounter: bool, locked: bool) -> void:
 		card.add_child(button)
 		buttons.append(button)
 		var label := Label.new()
-		label.text = "Lugar %d · %d stamina\n%s" % [i + 1, Route.entry_cost(point.id), "Completado" if Route.completed(progress, point.id) else ("Explorar" if Route.unlocked(progress, point.id) else "Bloqueado")]
+		label.text = "✓" if Route.completed(progress, point.id) else ("" if Route.unlocked(progress, point.id) else "◆")
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		label.add_theme_font_size_override("font_size", 20)
 		label.add_theme_color_override("font_shadow_color", Color.BLACK)
@@ -41,20 +41,27 @@ func update_stamina(value: int) -> void:
 	stamina = value
 	for i in range(buttons.size()):
 		var id: String = Route.points()[i].id
-		buttons[i].disabled = not Route.unlocked(progress, id) or encounter_active or controls_locked or stamina < Route.entry_cost(id)
-		buttons[i].tooltip_text = "Retoma el encuentro actual." if encounter_active else ("Stamina insuficiente." if stamina < Route.entry_cost(id) else "Entrar a la localización.")
+		# Selection is read-only, including locked points and insufficient stamina.
+		buttons[i].disabled = controls_locked
+		buttons[i].tooltip_text = "Ver localización."
+		buttons[i].modulate = Color.WHITE if Route.unlocked(progress, id) else Color("a1b6bf")
 func _ready() -> void:
 	resized.connect(_layout)
 	_layout()
 func _layout() -> void:
+	var map_rect := _map_rect()
 	for i in range(cards.size()):
-		cards[i].size = Vector2(190, 110)
-		cards[i].position = size * POSITIONS[i] - Vector2(95, 50)
+		cards[i].size = Vector2(90, 90)
+		cards[i].position = map_rect.position + map_rect.size * POSITIONS[i] - Vector2(45, 29)
 	queue_redraw()
-func _draw() -> void:
+func _map_rect() -> Rect2:
 	var art := Stage.texture("jade_overhead")
 	var tex_size := Vector2(art.get_width(), art.get_height())
-	var scale_factor := maxf(size.x / tex_size.x, size.y / tex_size.y)
-	var source_size := size / maxf(scale_factor, 0.001)
-	draw_texture_rect_region(art, Rect2(Vector2.ZERO, size), Rect2((tex_size - source_size) * 0.5, source_size))
-	for i in range(cards.size() - 1): draw_line(size * POSITIONS[i], size * POSITIONS[i + 1], Color(1, 0.92, 0.55, 0.6), 3, true)
+	var scale_factor := minf(size.x / tex_size.x, size.y / tex_size.y)
+	var extent := tex_size * scale_factor
+	return Rect2((size - extent) * 0.5, extent)
+func _draw() -> void:
+	# Map coordinates and texture use the same transform: markers stay on their terrain.
+	var map_rect := _map_rect()
+	draw_texture_rect(Stage.texture("jade_overhead"), map_rect, false)
+	for i in range(cards.size() - 1): draw_dashed_line(map_rect.position + map_rect.size * POSITIONS[i], map_rect.position + map_rect.size * POSITIONS[i + 1], Color(1, 0.94, 0.69, 0.8), 3, 10, true)

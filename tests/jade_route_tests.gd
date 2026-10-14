@@ -191,10 +191,12 @@ func _run() -> void:
 		for node in maps:
 			if node.get_script() == load("res://scripts/jade_route_map.gd"): map_node = node
 		check(map_node != null and map_node.buttons.size() == 4, "four real map points")
-		check(not map_node.buttons[0].disabled and map_node.buttons[1].disabled, "UI mirrors ordered access")
+		check(not map_node.buttons[0].disabled and not map_node.buttons[1].disabled, "all points allow read-only inspection; entry guards ordered access")
 		for button in map_node.buttons:
 			check(button.get_global_rect().end.x <= 1280 and button.get_global_rect().end.y < 600 and button.size.y >= 58, "map point fits viewport")
 	find_button(main.get_node("Page"), "● 1").pressed.emit()
+	await process_frame
+	find_button(main.get_node("Page"), "Entrar · 10 stamina").pressed.emit()
 	await process_frame
 	check(app.profile.campaign.route.current.point_id == "jade_point_1", "real map button starts correct route")
 	win(app)

@@ -1,16 +1,17 @@
 # Karmany Monsta Android
 
-Videojuego Android del universo Karmany Monsta. Baseline validado: Preview 18 (0.9.0), con recorrido guiado y avance por victoria. La nueva Preview 0.10.0, pendiente de validación, añade mapa cenital de localizaciones, búsqueda de encuentros, stamina, recuperadores y combate con barras de PS y menús compactos. Conserva partida, cinco especies, Libro, árbol, equipo y animaciones. Las imágenes de revisión continúan desactivadas por defecto.
+Videojuego Android del universo Karmany Monsta. Baseline validado: Preview 19 (0.10.0), con exploración, stamina y combate. La nueva Preview 0.11.0 añade fichas de localización antes de gastar, cuatro fondos de combate y dirección artística renovada de mapa, cinco Karmany, dos personajes e interfaz. Conserva partida, Libro, árbol, equipo, balance y animaciones. Pendiente de validación física.
 
 Ramas previstas: main (publicable), dev/karmany-core (baseline validado), feature/* (trabajo pendiente de validación).
 
 ## Probar desde Android
 
-Descargar el APK de la preview más reciente en [Releases](https://github.com/axenoban/karmany-monsta-android/releases). Para la nueva entrega, seguir [Prueba Android 13](docs/PRUEBA_ANDROID_13.md). Cada entrega permite instalación y actualización sobre la preview anterior.
+Descargar el APK de la preview más reciente en [Releases](https://github.com/axenoban/karmany-monsta-android/releases). Para la nueva entrega, seguir [Prueba Android 14](docs/PRUEBA_ANDROID_14.md). Cada entrega permite instalación y actualización sobre la preview anterior.
 
 ## Documentación
 
-- [Exploración, stamina e interfaz](docs/EXPLORACION_STAMINA_UI_13.md), pendiente de validación.
+- [Localizaciones y dirección artística](docs/LOCALIZACIONES_ARTE_14.md), pendiente de validación.
+- [Exploración, stamina e interfaz](docs/EXPLORACION_STAMINA_UI_13.md), validada en Preview 19.
 
 - [Recorrido guiado de Valle Jade](docs/RECORRIDO_JADE_12.md), validado en Preview 18 (0.9.0).
 

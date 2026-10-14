@@ -157,6 +157,9 @@ func _run() -> void:
 		check(find_button(main.get_node("Page"), "Usar recuperador").disabled, "empty inventory button disabled")
 	find_button(main.get_node("Page"), "● 1").pressed.emit()
 	await process_frame
+	check(main.page == "jade_play" and app.profile.campaign.exploration.value == 100, "marker opens details without payment")
+	find_button(main.get_node("Page"), "Entrar · 10 stamina").pressed.emit()
+	await process_frame
 	check(main.page == "exploration" and app.profile.campaign.exploration.value == 90, "marker enters exploration scene after payment")
 	check(not text_content(main.get_node("Page")).contains("Tanugami"), "scouting does not reveal encounter species")
 	find_button(main.get_node("Page"), "Buscar encuentro").pressed.emit()

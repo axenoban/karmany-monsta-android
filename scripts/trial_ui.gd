@@ -10,12 +10,16 @@ const Router = preload("res://scripts/encounter_router.gd")
 const Catalog = preload("res://scripts/combat_catalog.gd")
 const Tactical = preload("res://scripts/tactical_encounter.gd")
 const Stage = preload("res://scripts/trial_stage.gd")
+const Locations = preload("res://scripts/location_visuals.gd")
 var mode := "battle"
 var column: VBoxContainer
 var message: Label
 var stamina_label: Label
 var stamina_item_button: Button
 var route_map_node: Control
+var selected_location := ""
+var location_energy_label: Label
+var location_enter_button: Button
 
 func _ready() -> void:
 	_build()
@@ -70,6 +74,7 @@ func _stage(stage_mode: String, dead_player: bool = false, dead_enemy: bool = fa
 	stage.player_defeated = dead_player
 	stage.enemy_defeated = dead_enemy
 	if stage_mode == "battle":
+		stage.background_id = Locations.background_for(App.profile.campaign)
 		stage.ally_species = App.profile.campaign.encounter.get("ally_species", "zephyr")
 		stage.enemy_species = App.profile.campaign.encounter.get("enemy_species", "tanugami")
 	stage.custom_minimum_size = Vector2(0, 130 if stage_mode == "battle" and App.profile.campaign.encounter.get("phase") in ["capture", "captured", "escaped", "defeat", "retreated"] else 170)
@@ -91,8 +96,7 @@ func _world() -> void:
 		route_map.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		route_map.point_selected.connect(func(id: String):
 			App.tap()
-			if App.start_route(id): _open_encounter()
-			else: _notice())
+			_location_details(id))
 		column.add_child(route_map)
 	else: _stage(mode)
 	if mode == "intro":
@@ -331,18 +335,18 @@ func _open_encounter() -> void:
 	navigate.emit("exploration" if App.profile.campaign.get("exploration", Energy.defaults()).scouting else "battle")
 
 func _exploration_scene() -> void:
+	var point_id: String = App.profile.campaign.get("route", Route.defaults()).current.get("point_id", "")
 	var view := TextureRect.new()
-	view.texture = Stage.texture("jade_overhead")
+	view.name = "LocationBackdrop"
+	view.texture = Stage.texture(Locations.background_for(App.profile.campaign))
 	view.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	view.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	view.custom_minimum_size.y = 220
 	view.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	column.add_child(view)
-	var point_id: String = App.profile.campaign.get("route", Route.defaults()).current.get("point_id", "")
-	var number := 1
-	for i in range(Route.points().size()):
-		if Route.points()[i].id == point_id: number = i + 1
-	column.add_child(_label("Lugar %d · busca señales para encontrar un Karmany." % number, 24))
+	var info := Locations.details(point_id)
+	column.add_child(_label("%s · %s" % [info.get("title", "Localización"), info.get("environment", "Valle Jade")], 24))
+	column.add_child(_label("Entrada pagada: %d stamina. Buscar y retomar no tienen coste adicional." % Route.entry_cost(point_id), 20))
 	var encounter_id: String = App.profile.campaign.encounter.get("id", "")
 	column.add_child(_button("Buscar encuentro", func():
 		if App.discover_location(encounter_id): navigate.emit("battle")
@@ -362,6 +366,52 @@ func _update_stamina() -> void:
 	stamina_item_button.text = "Usar recuperador +30"
 	stamina_item_button.disabled = energy.items <= 0 or energy.value >= 100 or App.load_failed
 	if route_map_node != null: route_map_node.update_stamina(int(energy.value))
+	_update_location_entry()
+
+func _location_details(point_id: String) -> void:
+	var info := Locations.details(point_id)
+	if info.is_empty(): return
+	var content := _popup("LocationDetails", info.title + " · " + info.environment)
+	if content == null: return
+	selected_location = point_id
+	var image_view := TextureRect.new()
+	image_view.texture = Stage.texture(info.background)
+	image_view.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	image_view.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	image_view.custom_minimum_size = Vector2(0, 150)
+	content.add_child(image_view)
+	content.add_child(_label(info.description, 22))
+	content.add_child(_label("Las criaturas se revelan al buscar un encuentro dentro del lugar.", 20))
+	location_energy_label = _label("", 22)
+	location_energy_label.name = "LocationEnergy"
+	content.add_child(location_energy_label)
+	location_enter_button = _button("", func():
+		# Revalidate and charge only through the existing persistent transaction.
+		if App.start_route(point_id):
+			_dismiss("LocationDetails")
+			_open_encounter()
+		else:
+			_update_location_entry()
+			_notice())
+	location_enter_button.name = "LocationEnter"
+	content.add_child(location_enter_button)
+	_update_location_entry()
+
+func _update_location_entry() -> void:
+	if not is_instance_valid(location_energy_label) or not is_instance_valid(location_enter_button): return
+	var route: Dictionary = App.profile.campaign.get("route", Route.defaults())
+	var active: bool = not App.profile.campaign.encounter.is_empty() and App.profile.campaign.encounter.phase in ["battle", "replacement", "capture"]
+	var same: bool = active and route.current.get("point_id", "") == selected_location
+	var unlocked := Route.unlocked(route, selected_location)
+	var cost := Route.entry_cost(selected_location)
+	var available: int = App.stamina_view().value
+	var status := "Completado · puedes repetir" if Route.completed(route, selected_location) else "Disponible para explorar"
+	if not unlocked: status = "Bloqueado · completa el lugar anterior"
+	elif active: status = "Encuentro en curso aquí" if same else "Termina o retoma el encuentro actual"
+	elif available < cost: status = "Stamina insuficiente"
+	location_energy_label.text = "%s\nEntrada: %d stamina · Disponible: %d/100%s" % [status, cost, available, "\nEntrada ya pagada · retomar no gasta stamina." if same else ""]
+	location_enter_button.text = "Retomar localización" if same else "Entrar · %d stamina" % cost
+	location_enter_button.disabled = App.load_failed or not unlocked or (active and not same) or (not same and available < cost)
 
 func _use_stamina_item() -> void:
 	var revision: int = int(App.profile.campaign.get("exploration", Energy.defaults()).revision)

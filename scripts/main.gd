@@ -10,6 +10,7 @@ const TreeModel = preload("res://scripts/trainer_skill_tree.gd")
 const Roster = preload("res://scripts/trial_roster.gd")
 const TrialUI = preload("res://scripts/trial_ui.gd")
 const Stage = preload("res://scripts/trial_stage.gd")
+const AdventureTheme = preload("res://scripts/adventure_theme.gd")
 var tree_scroll_position := 0
 const TreeMap = preload("res://scripts/skill_tree_map.gd")
 var catalog := Catalog.new()
@@ -32,27 +33,7 @@ func _ready() -> void:
 		App.log_event(books.last_error)
 	if not structure.load_file():
 		App.log_event(structure.last_error)
-	var ui_theme := Theme.new()
-	ui_theme.default_font_size = 24
-	ui_theme.set_color("font_color", "Label", PAPER)
-	ui_theme.set_color("font_color", "Button", PAPER)
-	ui_theme.set_color("font_hover_color", "Button", Color.WHITE)
-	for state in ["normal", "hover", "pressed", "disabled", "focus"]:
-		var box := StyleBoxFlat.new()
-		box.bg_color = Color("1d4643") if state == "normal" else Color("2a6056")
-		if state == "disabled":
-			box.bg_color = Color("173333")
-		box.set_corner_radius_all(14)
-		box.content_margin_left = 24
-		box.content_margin_right = 24
-		box.content_margin_top = 14
-		box.content_margin_bottom = 14
-		if state == "focus":
-			box.bg_color = Color.TRANSPARENT
-			box.set_border_width_all(2)
-			box.border_color = JADE
-		ui_theme.set_stylebox(state, "Button", box)
-	theme = ui_theme
+	theme = AdventureTheme.create()
 	dialog = ConfirmationDialog.new()
 	dialog.title = "Comenzar un nuevo viaje"
 	dialog.dialog_text = "Se reemplazarán el viaje, el árbol, la colección y el encuentro actuales. Tus ajustes se conservarán."
@@ -156,7 +137,7 @@ func _show(next_page: String) -> void:
 	if page in ["intro", "jade_play", "battle", "exploration"]:
 		toast.hide()
 	column.add_child(toast)
-	column.add_child(_label("PREVIEW 0.10 · EXPLORACIÓN", 16, Color("93aaa3")))
+	column.add_child(_label("PREVIEW 0.11 · VALLE JADE", 16, Color("93aaa3")))
 	_safe_margins()
 
 func _label(text: String, font_size: int = 24, color: Color = PAPER) -> Label:
