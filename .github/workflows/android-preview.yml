@@ -4,6 +4,12 @@ on:
   pull_request:
     branches: [main, dev/karmany-core]
   workflow_dispatch:
+    inputs:
+      ui_review:
+        description: "Autorizar imágenes de revisión de interfaz en el servidor"
+        type: boolean
+        default: false
+        required: false
 
 permissions:
   contents: read
@@ -82,6 +88,12 @@ jobs:
           set -o pipefail
           godot --headless --path . --script tests/roster_tests.gd 2>&1 | tee build/roster.log
           python3 ci/check_log.py build/roster.log
+      - name: Validate battle continuation without resonances
+        run: |
+          set -o pipefail
+          godot --headless --path . --script tests/no_resonance_flow_tests.gd 2>&1 | tee build/no-resonance.log
+          python3 ci/check_log.py build/no-resonance.log
+          python3 -m unittest discover -s tests -p test_apk_privacy.py
       - name: Export playable encounter APK
         run: |
           set -o pipefail
@@ -89,12 +101,14 @@ jobs:
           python3 ci/check_log.py build/export.log
           test -s build/karmany-monsta-preview.apk
           "$ANDROID_HOME/build-tools/35.0.1/apksigner" verify --verbose build/karmany-monsta-preview.apk
+          python3 ci/check_apk_privacy.py build/karmany-monsta-preview.apk
           sha256sum build/karmany-monsta-preview.apk > build/apk.sha256
       - name: Render UI for review
+        if: github.event_name == 'workflow_dispatch' && inputs.ui_review == true
         run: |
           set -o pipefail
           if ! command -v xvfb-run >/dev/null; then sudo apt-get update -qq && sudo apt-get install -y xvfb; fi
-          xvfb-run -a godot --audio-driver Dummy --path . --script tests/render_smoke.gd 2>&1 | tee build/ui.log
+          xvfb-run -a godot --audio-driver Dummy --path . --script tests/render_smoke.gd -- --allow-ui-review 2>&1 | tee build/ui.log
           python3 ci/check_log.py build/ui.log
           python3 -m zipfile -c build/ui-review.zip build/screenshots
       - name: Upload APK and diagnostic logs
@@ -125,8 +139,10 @@ jobs:
           BUILD_NUMBER: ${{ github.run_number }}
         run: |
           TAG="android-preview-${BUILD_NUMBER}"
+          ASSETS=(build/karmany-monsta-preview.apk build/apk.sha256)
+          if test -f build/ui-review.zip; then ASSETS+=(build/ui-review.zip); fi
           if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" build/karmany-monsta-preview.apk build/apk.sha256 build/ui-review.zip --clobber
+            gh release upload "$TAG" "${ASSETS[@]}" --clobber
           else
-            gh release create "$TAG" build/karmany-monsta-preview.apk build/apk.sha256 build/ui-review.zip --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Preview 0.6.0: muestra únicamente la última acción con actor, habilidad y resultado. Equipo de hasta tres individuos capturados y selección del activo antes de combatir. Conserva combate, resonancias, Libro y guardado migrado. Balance y arte sujetos a prueba. Firma pública solo de pruebas."
+            gh release create "$TAG" "${ASSETS[@]}" --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Preview 0.6.1: corrige controles ocultos sin resonancias; permite cerrar turno, respuesta del rival y continuación al Libro. Desactiva capturas automáticas de revisión por defecto, bloquea pruebas de imágenes en Android y audita el APK. Conserva el encuentro y guardado. Balance y arte sujetos a prueba. Firma pública solo de pruebas."
           fi

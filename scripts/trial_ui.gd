@@ -119,7 +119,9 @@ func _battle() -> void:
 		var resonances := HBoxContainer.new()
 		column.add_child(resonances)
 		if state.loadout.is_empty():
-			resonances.add_child(_label("Sin resonancias equipadas. Puedes prepararlas en el árbol para el próximo encuentro.", 20))
+			var hint := _label("Sin resonancias equipadas. Usa Cerrar turno para que actúe el rival.", 20)
+			hint.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			resonances.add_child(hint)
 		for id in state.loadout:
 			var chosen: String = id
 			var reason := encounter.reason("trainer", chosen)
