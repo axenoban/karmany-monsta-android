@@ -55,3 +55,14 @@ No cambiar motor, paquete, firma de preview ni esquema de guardado sin justifica
 - Capturas de revisión desactivadas; el paso de render en CI fue omitido.
 - Integrado por fast-forward desde `d078c8b`; main conserva su estado.
 - La siguiente fase se definirá mediante cuestionario solicitado por el creador. No se autorizan aún nuevas reglas, balance, especies o economía.
+
+## Bloque 10 · Cinco especies, combate táctico y animaciones
+
+- Aprobación: «Procede con la siguiente etapa, las pruebas son correctas», 14 de octubre de 2026.
+- APK: Preview 16, versión 0.8.0, versionCode 1016.
+- Código validado: `c3be19409a6a8202febc00ec88ecfcd50cd02124`.
+- Verificación: 443 comprobaciones Godot y tres pruebas Python; CI, exportación, firma y auditoría del APK correctas.
+- Incluye: cinco especies con fichas experimentales aprobadas, cuatro rivales seleccionables, cambio voluntario confirmado, reemplazo tras derrota sin golpe extra, Vida/efectos/recargas por individuo, capturas multiespecie y animaciones 2D de Golpe/Insignia.
+- Partidas anteriores conservadas por EncounterRouter; capturas de revisión desactivadas.
+- `dev/karmany-core` integrado por fast-forward desde `67d006d`; main conserva su estado.
+- La aprobación valida este bloque de ensayo; no autoriza inventar economía, reglas de evolución, iniciativa ni historia nueva.

@@ -1,6 +1,6 @@
 # Combate táctico · Preview 0.8.0
 
-Propuesta del 14 de octubre aprobada por el creador para ensayo. Pendiente de validación física; no integra dev/karmany-core. Baseline: 67d006d; propuesta: d4fc1cd.
+Propuesta del 14 de octubre aprobada por el creador para ensayo. Validado físicamente por el creador el 14 de octubre de 2026 mediante Preview 16 e integrado por fast-forward a dev/karmany-core. Baseline: 67d006d; propuesta: d4fc1cd.
 
 Se recuperó el trabajo local interrumpido: tres PNG con alfa real y sus prompts, catálogo experimental, motor táctico y conexiones de campaña. Se completaron interfaz, animaciones, regresiones y compilación CI. Las fichas numéricas se mantienen según PROPUESTA_COMBATE_TACTICO_10.md y data/tactical_combat.json; no se presentan como canon definitivo.
 

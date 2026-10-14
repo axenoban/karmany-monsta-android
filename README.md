@@ -1,12 +1,12 @@
 # Karmany Monsta Android
 
-Videojuego Android del universo Karmany Monsta. Preview 0.7.0 aplica resonancia opcional primero y habilidad del Karmany después, con respuesta automática del rival y guardado de respuestas pendientes. Preview 15 (0.7.0) fue validada por el creador e integrada a dev/karmany-core. La siguiente fase está pendiente del cuestionario de alcance. Las imágenes de revisión continúan desactivadas por defecto.
+Videojuego Android del universo Karmany Monsta. Preview 16 (0.8.0), validada por el creador e integrada a dev/karmany-core, incorpora cinco especies, cuatro rivales seleccionables, cambios tácticos, reemplazo sin ataque extra y animaciones 2D propias de Golpe/Insignia. Conserva turnos automáticos, Libro, árbol, colección y partidas anteriores. Las imágenes de revisión continúan desactivadas por defecto.
 
 Ramas previstas: main (publicable), dev/karmany-core (baseline validado), feature/* (trabajo pendiente de validación).
 
 ## Probar desde Android
 
-Descargar el APK de la preview más reciente en [Releases](https://github.com/axenoban/karmany-monsta-android/releases). Seguir [Prueba Android 07](docs/PRUEBA_ANDROID_07.md). Cada entrega permite instalación y actualización sobre la preview anterior.
+Descargar el APK de la preview más reciente en [Releases](https://github.com/axenoban/karmany-monsta-android/releases). Seguir [Prueba Android 10](docs/PRUEBA_ANDROID_10.md). Cada entrega permite instalación y actualización sobre la preview anterior.
 
 ## Documentación
 
@@ -28,4 +28,4 @@ Descargar el APK de la preview más reciente en [Releases](https://github.com/ax
 - [Análisis y decisiones del árbol](docs/ARBOL_RESONANCIAS_05.md).
 - [Prueba Android 04](docs/PRUEBA_ANDROID_04.md).
 
-Godot 4.7.2 · GDScript · 2D · mapa por puntos · combate táctico previsto. Inicio: Ezel y Axe en Valle Jade. Libro: mejoras desbloquean rarezas y aumentan probabilidades; tres intentos tras derrota y escape al agotarlos, con posibilidad de reencuentro.
+Godot 4.7.2 · GDScript · 2D · mapa por puntos · combate táctico jugable. Inicio: Ezel y Axe en Valle Jade. Libro: mejoras desbloquean rarezas y aumentan probabilidades; tres intentos tras derrota y escape al agotarlos, con posibilidad de reencuentro.
