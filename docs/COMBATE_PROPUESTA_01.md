@@ -1,6 +1,6 @@
 # Propuesta experimental de combate 01
 
-Estado: pendiente de aprobación del creador. Este documento propone reglas nuevas para el videojuego; no modifica el canon ni contiene reglas ya implementadas.
+Estado: estructura de equipo, estadísticas, tres habilidades por especie y tabla del Libro aprobadas el 14 de octubre de 2026. Turnos, costes, fórmulas, efectos y balance por especie siguen pendientes. Las resonancias pertenecen al entrenador, según la aclaración del creador; ver DECISIONES_ENTRENADORES_03.md.
 
 ## Objetivo
 
@@ -29,7 +29,7 @@ Antes de programar daño, salud, recargas, recuperación o estados, deben aproba
 
 Se proponen seis especies comunes de Tierras Bajas de Jade: Tanugami, Sakuromushi, Ushigane, Sakuraneko, Inubari y Kitsunibi. No se asignan estadísticas ni se supone que sean criaturas iniciales de Ezel.
 
-| Especie | Referencia canónica que puede orientar la insignia | Pendiente |
+| Especie | Referencia ecológica canónica; no asignación de habilidades | Pendiente |
 |---|---|---|
 | Tanugami | Aceite lumínico que purifica agua y alivia quemaduras. | Decidir traducción jugable; no asumir curación universal. |
 | Sakuromushi | Chirrido lumínico que estimula germinación. | Definir utilidad de combate sin convertir arbitrariamente germinación en aumento de ataque. |
@@ -38,11 +38,11 @@ Se proponen seis especies comunes de Tierras Bajas de Jade: Tanugami, Sakuromush
 | Inubari | Espinas lumínicas flexibles y sombrías proyectables. | Decidir qué manifestación puede usar una criatura al comienzo. |
 | Kitsunibi | Flama lumínica que disipa bruma y reconforta; humo sombrío que bloquea visión. | Precisar relación entre resonancia disponible y habilidades. |
 
-La fuente ofrece descripciones ecológicas, no una lista completa de ataques. Las fichas jugables serán propuestas explícitas, no información canónica inventada.
+La fuente ofrece descripciones ecológicas, no una lista completa de ataques. Las fichas jugables serán propuestas explícitas, no información canónica inventada. Las resonancias activas son habilidades del entrenador; esta tabla no concede habilidades de resonancia a las criaturas.
 
-## Tabla de Libro propuesta para pruebas
+## Tabla de Libro aprobada para pruebas
 
-Solo propuesta; no está configurada en código ni exige monedas, consumibles o niveles de entrenador no aprobados.
+Tabla aprobada por el creador y configurada en data/book_levels.json. No establece todavía costes, compra de mejoras o niveles de entrenador.
 
 | Libro | Común, por intento | Raro, por intento | Épico, por intento |
 |---|---:|---:|---:|
@@ -54,10 +54,6 @@ Tres intentos independientes producen una posibilidad acumulada de éxito de `1 
 
 No cubrir rarezas legendarias, únicas ni excepciones de sellado hasta contar con reglas específicas. Costes de mejora, origen del Libro y condiciones de reencuentro siguen pendientes.
 
-## Decisiones prioritarias
+## Decisiones prioritarias actualizadas
 
-1. Aprobar o ajustar equipo de tres con uno activo y las cuatro estadísticas.
-2. Aprobar tres habilidades iniciales por especie y decidir si una criatura usa solo una resonancia o puede acceder a ambas en combate.
-3. Aprobar o ajustar las probabilidades experimentales del Libro.
-
-La decisión de resonancias es necesaria para diseñar habilidades fieles al universo. No implementarla por analogía con luz/oscuridad de otros juegos.
+Equipo, estadísticas, cantidad de habilidades y Libro ya están aprobados. Para continuar, decidir economía de acciones del entrenador, tipo inicial de Ezel y fichas concretas de habilidades/estadísticas. Ver DECISIONES_ENTRENADORES_03.md. No implementar reglas de las otras filas como si la aprobación de la estructura las incluyera.

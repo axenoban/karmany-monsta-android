@@ -1,0 +1,8 @@
+{
+  "schema": 1,
+  "levels": [
+    {"id": "book_initial", "name": "Libro inicial", "chances": {"Común": 0.45}},
+    {"id": "book_upgrade_1", "name": "Mejora 1", "chances": {"Común": 0.60, "Raro": 0.30}},
+    {"id": "book_upgrade_2", "name": "Mejora 2", "chances": {"Común": 0.75, "Raro": 0.45, "Épico": 0.20}}
+  ]
+}

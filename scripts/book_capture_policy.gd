@@ -1,7 +1,7 @@
 class_name BookCapturePolicy
 extends RefCounted
 
-# No production probabilities are supplied until the creator approves the table.
+# Production levels live in book_levels.json; test fixtures stay in tests/.
 var _policy: Dictionary = {}
 var last_error := ""
 

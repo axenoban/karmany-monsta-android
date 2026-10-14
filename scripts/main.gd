@@ -4,7 +4,11 @@ const JADE := Color("8ed6b5")
 const INK := Color("0b2325")
 const PAPER := Color("eee9d9")
 const Catalog = preload("res://scripts/species_catalog.gd")
+const Books = preload("res://scripts/book_progression.gd")
+const Structure = preload("res://scripts/combat_structure.gd")
 var catalog := Catalog.new()
+var books := Books.new()
+var structure := Structure.new()
 var catalog_rarity := ""
 var selected_species := ""
 var page := "home"
@@ -16,6 +20,10 @@ var toast: Label
 func _ready() -> void:
 	if not catalog.load_file():
 		App.log_event(catalog.last_error)
+	if not books.load_file():
+		App.log_event(books.last_error)
+	if not structure.load_file():
+		App.log_event(structure.last_error)
 	var ui_theme := Theme.new()
 	ui_theme.default_font_size = 24
 	ui_theme.set_color("font_color", "Label", PAPER)
@@ -125,10 +133,11 @@ func _show(next_page: String) -> void:
 		"diagnostics": _diagnostics()
 		"bestiary": _bestiary()
 		"species": _species()
+		"trainers": _trainers()
 	toast = _label("", 18, JADE)
 	toast.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	column.add_child(toast)
-	column.add_child(_label("PREVIEW 0.2 · VALLE JADE", 16, Color("93aaa3")))
+	column.add_child(_label("PREVIEW 0.3 · LIBRO Y ENTRENADORES", 16, Color("93aaa3")))
 	_safe_margins()
 
 func _label(text: String, font_size: int = 24, color: Color = PAPER) -> Label:
@@ -188,6 +197,7 @@ func _map() -> void:
 	body.add_child(button)
 	body.add_child(_button("Consultar el Libro", func(): _show("book")))
 	body.add_child(_button("Bestiario de Valle Jade", func(): _show("bestiary")))
+	body.add_child(_button("Entrenadores", func(): _show("trainers")))
 	_copy("Esta entrega conserva tu visita. Los encuentros y las rutas del primer capítulo llegarán con el contenido jugable.")
 
 func _visit() -> void:
@@ -201,7 +211,30 @@ func _book() -> void:
 	_heading("El Libro")
 	_copy("Sus mejoras permitirán capturar rarezas superiores y aumentar las posibilidades de captura.")
 	_copy("Después de derrotar a un Karmany elegible tendrás hasta tres intentos. Si todos fallan, escapará y el encuentro terminará. Podrás encontrarlo de nuevo.")
-	_copy("Las mejoras y la captura todavía no están disponibles en esta entrega.")
+	_copy("Probabilidades por intento")
+	if not books.last_error.is_empty():
+		_copy(books.last_error)
+	else:
+		for level in books.all_levels():
+			var policy := books.policy_for(level.id)
+			var description: String = level.name + "\n"
+			for rarity in ["Común", "Raro", "Épico"]:
+				description += rarity + ": " + ("%d%%" % roundi(policy.chance_for(rarity) * 100) if policy.permits(rarity) else "Bloqueado") + "   "
+			_copy(description)
+	_copy("Esta pantalla consulta las reglas del Libro. Las mejoras y la captura jugable estarán disponibles con el combate.")
+
+func _trainers() -> void:
+	_heading("Entrenadores")
+	_copy("Las resonancias son habilidades del entrenador que apoyan a sus Karmany.")
+	if not structure.last_error.is_empty():
+		_copy(structure.last_error)
+		return
+	var rules := structure.rules()
+	_copy("Equipo: hasta %d Karmany · %d activo" % [rules.team_capacity, rules.active_per_side])
+	_copy("Cada Karmany tendrá tres habilidades, incluida una insignia, y estadísticas de Vida, Ataque, Defensa y Velocidad.")
+	for role in rules.trainer_roles:
+		_copy(role.name + "\n" + role.purpose + ".")
+	_copy("Las habilidades concretas del entrenador y su funcionamiento en el combate están pendientes de definición.")
 
 func _bestiary() -> void:
 	_heading("Bestiario de Valle Jade")
@@ -287,7 +320,7 @@ func _back() -> void:
 		dialog.hide()
 	elif page == "species":
 		_show("bestiary")
-	elif page == "bestiary":
+	elif page == "bestiary" or page == "trainers":
 		_show("map")
 	elif page != "home":
 		_show("home")

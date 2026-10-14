@@ -14,7 +14,7 @@ func _run() -> void:
 	await process_frame
 	DirAccess.make_dir_recursive_absolute("res://build/screenshots")
 	main.selected_species = "tanugami"
-	for page in ["home", "map", "book", "settings", "diagnostics", "bestiary", "species"]:
+	for page in ["home", "map", "book", "settings", "diagnostics", "bestiary", "species", "trainers"]:
 		main._show(page)
 		await process_frame
 		await RenderingServer.frame_post_draw

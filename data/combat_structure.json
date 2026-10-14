@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "team_capacity": 3,
+  "active_per_side": 1,
+  "stats": ["vida", "ataque", "defensa", "velocidad"],
+  "skills_per_species": 3,
+  "signature_skills_per_species": 1,
+  "resonance_owner": "trainer",
+  "trainer_roles": [
+    {"id": "healer", "name": "Curador", "purpose": "Curar a sus Karmany", "skill_definitions": []}
+  ]
+}

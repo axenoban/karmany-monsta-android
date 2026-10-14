@@ -20,7 +20,7 @@ Estado: decisiones iniciales registradas; propuesta técnica y UX; reglas pendie
 | Dirección | El asistente participa en arquitectura, programación, diseño, UX, documentación y pruebas; reglas ambiguas y cambios canónicos los decide el creador. |
 | Repositorio | Nuevo, independiente del proyecto anterior. |
 
-No están aprobados todavía: equipo de tres integrantes, orientación horizontal, rarezas desbloqueadas por nivel concreto, estadísticas, habilidades individuales, economía, costes de captura, evoluciones ni contenido narrativo nuevo.
+Actualización aprobada: equipo de tres con uno activo, Vida/Ataque/Defensa/Velocidad, tres habilidades por especie y tabla del Libro en data/book_levels.json. Las resonancias son habilidades del entrenador. Siguen pendientes valores por especie, efectos concretos, economía, costes, evoluciones y contenido narrativo nuevo. Ver DECISIONES_ENTRENADORES_03.md.
 
 ## 2. Base técnica propuesta
 
