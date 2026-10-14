@@ -33,3 +33,14 @@ No cambiar motor, paquete, firma de preview ni esquema de guardado sin justifica
 - Incluye: tabla del Libro, equipo/turno compartido, árbol aprendible/mejorable y cuatro espacios, laboratorio experimental y migración persistente.
 - No incluye todavía combate ni captura jugable. El usuario autorizó comenzar ese bloque con fichas experimentales y Ezel/Zephyr frente a Tanugami.
 - Integración mediante fast-forward desde `ad618c2`; `main` se conserva.
+
+## Bloques 06–08 · Encuentro, equipo y correcciones
+
+- Aprobación: «Prueba correcta, vínculo, árbol, todo correcto», 14 de octubre de 2026.
+- APK: Preview 14, versión 0.6.1, versionCode 1014.
+- Código validado: `71f5a0d39be6ac2f31a7e2cbabfbdb1aa985d142`.
+- Verificación: 310 comprobaciones Godot y tres pruebas Python, firma y auditoría del APK correctas.
+- Incluye: combate experimental ilustrado, resonancias, vínculo, colección, equipo/activo previo al encuentro, última acción, persistencia y corrección sin resonancias.
+- Capturas de revisión desactivadas por defecto, solo activación manual de escritorio; bloqueadas en Android y excluidas del APK.
+- Integrado por fast-forward desde `b2c411a`, sin reescribir historia ni alterar main.
+- Nueva decisión del creador para la próxima rama: resonancia opcional primero; habilidad del Karmany termina el turno y da respuesta automática del rival. El cierre manual y el orden libre se reemplazarán únicamente en ese bloque.
