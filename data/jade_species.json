@@ -1,0 +1,250 @@
+{
+  "schema": 1,
+  "source": {
+    "filename": "Enciclopedia Oficial de Shisai- Ecosistemas y Best....pdf",
+    "sha256": "039d3d63556c4de0cb2985cd452383b3e36ef7b372ea61e48ef64ae327e0f9ae",
+    "section": "Sección II · Bioma 1 · entradas 1–15"
+  },
+  "species": [
+    {
+      "id": "tanugami",
+      "source_entry": 1,
+      "name": "Tanugami",
+      "epithet": "El Mapache del Elíxir",
+      "biome": "Tierras Bajas de Jade",
+      "rarity": "Común",
+      "biology": "Vivíparo (Mamífero)",
+      "mythology": "El Tanuki (Mapache místico de la fortuna).",
+      "physiology": "De cuerpo esférico cubierto de pelaje áspero marrón. Posee una protuberancia ósea en su espalda que, al madurar, adquiere la consistencia de una calabaza leñosa (hyotan), fusionada de por vida con su estructura ósea.",
+      "behavior": "Manso y sociable. Utiliza sus garras delanteras para remover la tierra y buscar raíces dulces.",
+      "resonance": {
+        "luminous": "La calabaza secreta un aceite templado que purifica el agua contaminada y alivia las quemaduras solares de los labradores.",
+        "shadow": "Su pelaje se torna gris carbón; el contenedor emite un humo denso de olor acre que genera desorientación en los intrusos."
+      }
+    },
+    {
+      "id": "sakuromushi",
+      "source_entry": 2,
+      "name": "Sakuromushi",
+      "epithet": "El Coleóptero de los Cerezos",
+      "biome": "Tierras Bajas de Jade",
+      "rarity": "Común",
+      "biology": "Ovíparo (Insecto)",
+      "mythology": "El Kabutomushi (Escarabajo rinoceronte de la corteza).",
+      "physiology": "Insecto de 50 cm. Su caparazón exterior imita con exactitud la veta y el color de la madera del cerezo centenario de Shisai. Al envejecer, desarrolla un segundo par de alas membranosas rígidas.",
+      "behavior": "Se alimenta de la savia dulce. Atrae a los campos de cultivo a especies menores beneficiosas.",
+      "resonance": {
+        "luminous": "Emite un rítmico chirrido que estimula de forma acelerada la germinación de las semillas de lino del huerto de Ezel.",
+        "shadow": "Su caparazón se eriza con púas leñosas y su canto se vuelve tan estridente que genera cefaleas en un radio de diez metros."
+      }
+    },
+    {
+      "id": "ushigane",
+      "source_entry": 3,
+      "name": "Ushigane",
+      "epithet": "El Buey de Bronce",
+      "biome": "Tierras Bajas de Jade",
+      "rarity": "Común",
+      "biology": "Vivíparo (Ungulado)",
+      "mythology": "El Ushi-oni (Bovino sagrado de arado).",
+      "physiology": "Bovino masivo cubierto de placas epidérmicas compuestas por un mineral natural que asimila el bronce pulido. Al envejecer, sus astas forman un arco plano que le ayuda a empujar carretas.",
+      "behavior": "Obstinado e incansable. Mantiene una lealtad silenciosa hacia los miembros de la granja.",
+      "resonance": {
+        "luminous": "El bronce de su lomo adquiere un brillo dorado translúcido, actuando como escudo protector que disipa la fatiga física de su portador.",
+        "shadow": "El metal de su cuerpo se cubre de óxido de cobre corrosivo; la criatura carga de forma destructiva contra cualquier obstáculo."
+      }
+    },
+    {
+      "id": "sakuraneko",
+      "source_entry": 4,
+      "name": "Sakuraneko",
+      "epithet": "El Felino de los Pétalos",
+      "biome": "Tierras Bajas de Jade",
+      "rarity": "Común",
+      "biology": "Vivíparo (Felino)",
+      "mythology": "El Bakeneko de las flores.",
+      "physiology": "Felino blanco de movimientos ágiles. Los extremos de sus orejas y su cola están formados por pétalos flexibles de queratina rosa.",
+      "behavior": "Se oculta en los tejados de paja de Valle Jade; es extremadamente sensible a las discusiones familiares.",
+      "resonance": {
+        "luminous": "Libera un aroma a cerezos frescos que calma el pulso y reduce los espasmos de los heridos.",
+        "shadow": "Los pétalos se marchitan y se vuelven rígidos como navajas de corteza, arañando a cualquiera que intente acercarse."
+      }
+    },
+    {
+      "id": "inubari",
+      "source_entry": 5,
+      "name": "Inubari",
+      "epithet": "El Erizo de Bambú",
+      "biome": "Tierras Bajas de Jade",
+      "rarity": "Común",
+      "biology": "Vivíparo (Roedor)",
+      "mythology": "El Hari-nezumi (Erizo de las agujas).",
+      "physiology": "Pequeño roedor con espinas de caña de bambú endurecidas en su lomo que crecen verticalmente al envejecer.",
+      "behavior": "Habita en los campos de cultivo; recolecta fibras sueltas para confeccionar su nido bajo las raíces.",
+      "resonance": {
+        "luminous": "Sus espinas de bambú se vuelven flexibles y suaves, facilitando su transporte sin peligro para su dueño.",
+        "shadow": "Expulsa sus agujas de caña ante ruidos fuertes, dejando el suelo sembrado de púas afiladas e infectas."
+      }
+    },
+    {
+      "id": "kitsunibi",
+      "source_entry": 6,
+      "name": "Kitsunibi",
+      "epithet": "El Cachorro del Candil",
+      "biome": "Tierras Bajas de Jade",
+      "rarity": "Común",
+      "biology": "Vivíparo (Cánido)",
+      "mythology": "Las leyendas del Kitsunebi (Fuego de zorro).",
+      "physiology": "Cachorro de zorro de pelaje crema. Su cola termina en una callosidad porosa que acumula fósforo natural.",
+      "behavior": "Acompaña de noche a los niños del valle; se mimetiza con las linternas para guiar sus pasos.",
+      "resonance": {
+        "luminous": "Su cola enciende una flama azul templada que disipa la bruma húmeda y reconforta las articulaciones heladas.",
+        "shadow": "Produce un humo aceitoso y espeso de color purpúreo que irrita los ojos y bloquea la visibilidad."
+      }
+    },
+    {
+      "id": "namazuko",
+      "source_entry": 7,
+      "name": "Namazuko",
+      "epithet": "El Bagre del Arrozal",
+      "biome": "Tierras Bajas de Jade",
+      "rarity": "Común",
+      "biology": "Ovíparo (Pez)",
+      "mythology": "El pequeño Namazu (Bagre telúrico menor).",
+      "physiology": "Pez de fango plano con largos barbillones táctiles y piel recubierta de un mucus protector denso.",
+      "behavior": "Remueve constantemente el cieno profundo del arrozal para oxigenar las raíces tiernas.",
+      "resonance": {
+        "luminous": "Su moco cutáneo actúa como abono orgánico, purificando las impurezas del riego agrícola.",
+        "shadow": "Excava galerías profundas en las bases de los canales de riego, provocando filtraciones que inundan los graneros."
+      }
+    },
+    {
+      "id": "tsuru_ori",
+      "source_entry": 8,
+      "name": "Tsuru-Ori",
+      "epithet": "La Grulla Espantapájaros",
+      "biome": "Tierras Bajas de Jade",
+      "rarity": "Común",
+      "biology": "Ovíparo (Ave)",
+      "mythology": "Las grullas de paja de los arrozales.",
+      "physiology": "Ave zancuda cuyo plumaje áspero emula un espantapájaros tradicional. Al madurar, sus patas se alargan.",
+      "behavior": "Permanece inmóvil durante días en los límites del cultivo de lino, vigilando el horizonte con ojos de cuarzo natural.",
+      "resonance": {
+        "luminous": "Sus alas de paja filtran el viento emitiendo un silbido que ahuyenta a las plagas de insectos parásitos.",
+        "shadow": "Genera graznidos sordos y erráticos que estresan al ganado del valle y marchitan los brotes más jóvenes."
+      }
+    },
+    {
+      "id": "sarutachi",
+      "source_entry": 9,
+      "name": "Sarutachi",
+      "epithet": "El Macaco del Té",
+      "biome": "Tierras Bajas de Jade",
+      "rarity": "Raro",
+      "biology": "Vivíparo (Primate)",
+      "mythology": "El Saru (Primate protector del cultivo).",
+      "physiology": "Pequeño simio con extremidades adaptadas a la escalada. Su lomo está cubierto de ramas de té vivas.",
+      "behavior": "Habita en los acantilados más escarpados del valle, cosechando hojas tiernas de té silvestre con precisión quirúrgica.",
+      "resonance": {
+        "luminous": "Las hojas de té de su lomo adquieren propiedades curativas, curando heridas de lino al contacto directo.",
+        "shadow": "Se torna territorial e irritable; roba herramientas de metal a los agricultores y sabotea los graneros."
+      }
+    },
+    {
+      "id": "shishimai",
+      "source_entry": 10,
+      "name": "Shishimai",
+      "epithet": "El Cachorro del León",
+      "biome": "Tierras Bajas de Jade",
+      "rarity": "Raro",
+      "biology": "Vivíparo (Félido)",
+      "mythology": "El león danzante feudal Shishi.",
+      "physiology": "Cachorro de melena compuesta por fibras textiles rojas y un cráneo exterior ensanchado que asimila una máscara de madera lacada.",
+      "behavior": "Protege los accesos a los altares abandonados del valle, ahuyentando a los ladrones de tumbas.",
+      "resonance": {
+        "luminous": "Su rugido disipa las acumulaciones menores de Karma Sombrío y alivia la tensión muscular de los aliados.",
+        "shadow": "Su máscara ósea se ensancha y exhala un aire gélido que adormece temporalmente los músculos de los invasores."
+      }
+    },
+    {
+      "id": "kitsune_kaze",
+      "source_entry": 11,
+      "name": "Kitsune-Kaze",
+      "epithet": "El Zorro Tejedor",
+      "biome": "Tierras Bajas de Jade",
+      "rarity": "Raro",
+      "biology": "Vivíparo (Cánido)",
+      "mythology": "El zorro del viento (Zenko).",
+      "physiology": "Zorro de pelaje largo y plateado que flota con el viento. Su cola se divide en filamentos de fibra textil brillante al madurar.",
+      "behavior": "Se oculta en los talleres de hilado del pueblo; asiste secretamente a las tejedoras más ancianas.",
+      "resonance": {
+        "luminous": "Teje filamentos de viento y lino que forman barreras cinéticas invisibles para proteger del viento helado de la montaña.",
+        "shadow": "Teje redes pegajosas de fibra oscura que se enredan en las articulaciones del rival, limitando su velocidad física."
+      }
+    },
+    {
+      "id": "kirin_chigo",
+      "source_entry": 12,
+      "name": "Kirin-Chigo",
+      "epithet": "La Cría del Jade",
+      "biome": "Tierras Bajas de Jade",
+      "rarity": "Épico",
+      "biology": "Vivíparo (Cérvido)",
+      "mythology": "El vástago del legendario Kirin.",
+      "physiology": "Pequeño ciervo cubierto de escamas de jade verde translúcido. Sus pezuñas flotan sobre el suelo sin pisarlo de manera directa.",
+      "behavior": "Se manifiesta únicamente ante entrenadores dotados de una pureza de espíritu y una resolución de paz absoluta.",
+      "resonance": {
+        "luminous": "Su sola presencia purifica las fuentes de agua de Valle Jade y acelera la floración del cerezo sagrado del altar.",
+        "shadow": "Si es forzado a la violencia, sus escamas se opacan y llora lágrimas de azufre que marchitan toda vegetación a su alrededor."
+      }
+    },
+    {
+      "id": "nezumi_koban",
+      "source_entry": 13,
+      "name": "Nezumi-Koban",
+      "epithet": "El Ratón del Cobre",
+      "biome": "Tierras Bajas de Jade",
+      "rarity": "Común",
+      "biology": "Vivíparo (Roedor)",
+      "mythology": "El Nezumi de la suerte.",
+      "physiology": "Pequeño ratón de pelaje gris metálico. Su abdomen presenta una placa ósea dura con la forma exacta de una moneda Koban de bronce.",
+      "behavior": "Se alimenta de los residuos minerales de las herrerías; es sumamente astuto y silencioso.",
+      "resonance": {
+        "luminous": "Detecta vetas de bronce y jade puro en el subsuelo, alertando a los campesinos mediante pequeños chirridos agudos.",
+        "shadow": "Se vuelve una plaga que roe el metal de las herramientas del arado, debilitándolas hasta romperlas."
+      }
+    },
+    {
+      "id": "bakeneko_chaya",
+      "source_entry": 14,
+      "name": "Bakeneko-Chaya",
+      "epithet": "El Gato de las Tabernas",
+      "biome": "Tierras Bajas de Jade",
+      "rarity": "Raro",
+      "biology": "Vivíparo (Felino)",
+      "mythology": "El Bakeneko de las posadas de Shisai.",
+      "physiology": "Felino de complexión robusta y pelaje bicolor. Al alcanzar la madurez, su cola se bifurca lateralmente de forma limpia.",
+      "behavior": "Habita en los establos y cocinas de Valle Jade; resuena con los murmullos de los forasteros que descansan.",
+      "resonance": {
+        "luminous": "Al frotarse con las piernas del entrenador, absorbe el Karma Sombrío acumulado de sus canales mágicos.",
+        "shadow": "Roba la energía de los candiles de aceite para generar pequeñas combustiones de gas inestable detrás de las puertas."
+      }
+    },
+    {
+      "id": "komainu_ishi",
+      "source_entry": 15,
+      "name": "Komainu-Ishi",
+      "epithet": "El Cachorro de la Puerta",
+      "biome": "Tierras Bajas de Jade",
+      "rarity": "Raro",
+      "biology": "Vivíparo (Cánido Pétreo)",
+      "mythology": "Los perros guardianes de los templos (Komainu).",
+      "physiology": "Cachorro de piel dura y agrietada similar al granito grisáceo de las canteras de la montaña.",
+      "behavior": "Permanece sentado en las entradas de los templos de lino del valle; es impasible ante el clima adverso.",
+      "resonance": {
+        "luminous": "Sus grietas se llenan de musgo verde que absorbe impactos físicos pesados para proteger al entrenador.",
+        "shadow": "Se torna violento y pesado, golpeando sus pezuñas de granito contra el suelo para generar pequeñas grietas en la tierra."
+      }
+    }
+  ]
+}

@@ -3,6 +3,10 @@ extends Control
 const JADE := Color("8ed6b5")
 const INK := Color("0b2325")
 const PAPER := Color("eee9d9")
+const Catalog = preload("res://scripts/species_catalog.gd")
+var catalog := Catalog.new()
+var catalog_rarity := ""
+var selected_species := ""
 var page := "home"
 var body: VBoxContainer
 var dialog: ConfirmationDialog
@@ -10,6 +14,8 @@ var export_dialog: FileDialog
 var toast: Label
 
 func _ready() -> void:
+	if not catalog.load_file():
+		App.log_event(catalog.last_error)
 	var ui_theme := Theme.new()
 	ui_theme.default_font_size = 24
 	ui_theme.set_color("font_color", "Label", PAPER)
@@ -102,7 +108,7 @@ func _show(next_page: String) -> void:
 	brand.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(brand)
 	if page != "home":
-		header.add_child(_button("Volver", func(): _show("home")))
+		header.add_child(_button("Volver", _back))
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -117,10 +123,12 @@ func _show(next_page: String) -> void:
 		"book": _book()
 		"settings": _settings()
 		"diagnostics": _diagnostics()
+		"bestiary": _bestiary()
+		"species": _species()
 	toast = _label("", 18, JADE)
 	toast.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	column.add_child(toast)
-	column.add_child(_label("PREVIEW 0.1 · BASE ANDROID", 16, Color("93aaa3")))
+	column.add_child(_label("PREVIEW 0.2 · VALLE JADE", 16, Color("93aaa3")))
 	_safe_margins()
 
 func _label(text: String, font_size: int = 24, color: Color = PAPER) -> Label:
@@ -159,7 +167,7 @@ func _home() -> void:
 	row.add_child(_button("Comenzar viaje", _new_journey))
 	row.add_child(_button("Ajustes", func(): _show("settings")))
 	body.add_child(_button("Diagnóstico", func(): _show("diagnostics")))
-	_copy("Primera entrega de prueba. Combate, captura e ilustraciones se incorporarán en los siguientes bloques.")
+	_copy("Consulta el bestiario de Valle Jade. Combate, captura e ilustraciones se incorporarán en los siguientes bloques.")
 
 func _new_journey() -> void:
 	if App.profile.journey.started or App.load_failed:
@@ -179,6 +187,7 @@ func _map() -> void:
 	var button := _button("◆  Valle Jade   ·   " + ("Visitado" if App.profile.journey.visited_jade else "Visitar"), _visit)
 	body.add_child(button)
 	body.add_child(_button("Consultar el Libro", func(): _show("book")))
+	body.add_child(_button("Bestiario de Valle Jade", func(): _show("bestiary")))
 	_copy("Esta entrega conserva tu visita. Los encuentros y las rutas del primer capítulo llegarán con el contenido jugable.")
 
 func _visit() -> void:
@@ -193,6 +202,44 @@ func _book() -> void:
 	_copy("Sus mejoras permitirán capturar rarezas superiores y aumentar las posibilidades de captura.")
 	_copy("Después de derrotar a un Karmany elegible tendrás hasta tres intentos. Si todos fallan, escapará y el encuentro terminará. Podrás encontrarlo de nuevo.")
 	_copy("Las mejoras y la captura todavía no están disponibles en esta entrega.")
+
+func _bestiary() -> void:
+	_heading("Bestiario de Valle Jade")
+	_copy("Tierras Bajas de Jade · Registros de la enciclopedia de Shisai")
+	var filters := HBoxContainer.new()
+	filters.add_theme_constant_override("separation", 12)
+	body.add_child(filters)
+	for rarity in ["", "Común", "Raro", "Épico"]:
+		var chosen: String = rarity
+		var caption: String = "Todas" if rarity.is_empty() else rarity
+		if rarity == catalog_rarity:
+			caption = "● " + caption
+		filters.add_child(_button(caption, func():
+			catalog_rarity = chosen
+			_show("bestiary")))
+	if not catalog.last_error.is_empty():
+		_copy(catalog.last_error)
+		return
+	var entries := catalog.all_entries(catalog_rarity)
+	_copy("%d especies" % entries.size())
+	for entry in entries:
+		var species_id: String = entry.id
+		body.add_child(_button(entry.name + "  ·  " + entry.rarity, func():
+			selected_species = species_id
+			_show("species")))
+
+func _species() -> void:
+	var entry := catalog.find_species(selected_species)
+	if entry.is_empty():
+		_copy("La ficha solicitada no está disponible.")
+		return
+	_heading(entry.name)
+	_copy(entry.epithet + " · " + entry.rarity)
+	_copy(entry.biology)
+	_copy("Fisiología\n" + entry.physiology)
+	_copy("Comportamiento\n" + entry.behavior)
+	_copy("Resonancia lumínica\n" + entry.resonance.luminous)
+	_copy("Resonancia sombría\n" + entry.resonance.shadow)
 
 func _settings() -> void:
 	_heading("Ajustes")
@@ -238,6 +285,10 @@ func _back() -> void:
 		export_dialog.hide()
 	elif dialog.visible:
 		dialog.hide()
+	elif page == "species":
+		_show("bestiary")
+	elif page == "bestiary":
+		_show("map")
 	elif page != "home":
 		_show("home")
 	else:

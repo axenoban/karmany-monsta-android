@@ -44,7 +44,15 @@ jobs:
           set -o pipefail
           godot --headless --path . --script tests/run_tests.gd 2>&1 | tee build/tests.log
           python3 ci/check_log.py build/tests.log
-      - name: Export Android APK
+      - name: Validate canonical catalog and capture contracts
+        # Canonical content and approved capture limits have independent regressions.
+        # Gameplay probabilities remain unconfigured.
+        if: success()
+        run: |
+          set -o pipefail
+          godot --headless --path . --script tests/catalog_capture_tests.gd 2>&1 | tee build/catalog-capture.log
+          python3 ci/check_log.py build/catalog-capture.log
+      - name: Export and verify Android APK
         run: |
           set -o pipefail
           godot --headless --path . --export-debug "Android Preview" build/karmany-monsta-preview.apk 2>&1 | tee build/export.log
@@ -89,5 +97,5 @@ jobs:
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" build/karmany-monsta-preview.apk build/apk.sha256 --clobber
           else
-            gh release create "$TAG" build/karmany-monsta-preview.apk build/apk.sha256 --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Base Android 0.1.0 para validación. Incluye menú, visita a Valle Jade, ajustes, guardado y diagnóstico. Combate y captura pendientes. Firma pública de pruebas; no es una versión comercial."
+            gh release create "$TAG" build/karmany-monsta-preview.apk build/apk.sha256 --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Preview 0.2.0 para validación. Bestiario con 15 especies canónicas de Valle Jade y contratos de captura probados. Conserva menú, ajustes y guardado. Combate y captura jugable pendientes de reglas aprobadas. Firma pública solo de pruebas."
           fi

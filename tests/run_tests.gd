@@ -78,10 +78,17 @@ func _run() -> void:
 	var main := scene.instantiate()
 	root.add_child(main)
 	await process_frame
-	for page in ["home", "map", "book", "settings", "diagnostics"]:
+	for page in ["home", "map", "book", "settings", "diagnostics", "bestiary"]:
 		main._show(page)
 		await process_frame
 		_check(main.get_node_or_null("Page") != null, "screen builds: " + page)
+	main.selected_species = "tanugami"
+	main._show("species")
+	await process_frame
+	main._back()
+	_check(main.page == "bestiary", "species back returns to list")
+	main._back()
+	_check(main.page == "map", "bestiary back returns to map")
 	main._back()
 	_check(main.page == "home", "back returns home")
 	main.queue_free()

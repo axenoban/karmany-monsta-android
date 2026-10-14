@@ -7,7 +7,8 @@ from pathlib import Path
 root = Path(__file__).resolve().parents[1]
 build = int(os.environ.get("GITHUB_RUN_NUMBER", "1"))
 commit = os.environ.get("BUILD_COMMIT", "local")
-info = {"version": "0.1.0", "commit": commit, "build": build, "stage": "Base Android"}
+info = json.loads((root / "data/build_info.json").read_text())
+info.update({"commit": commit, "build": build})
 (root / "data/build_info.json").write_text(json.dumps(info))
 preset = root / "export_presets.cfg"
 text = preset.read_text().replace("version/code=1\n", f"version/code={1000 + build}\n")
