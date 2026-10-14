@@ -6,11 +6,14 @@ const PAPER := Color("eee9d9")
 const Catalog = preload("res://scripts/species_catalog.gd")
 const Books = preload("res://scripts/book_progression.gd")
 const Structure = preload("res://scripts/combat_structure.gd")
+const TreeModel = preload("res://scripts/trainer_skill_tree.gd")
+const TreeMap = preload("res://scripts/skill_tree_map.gd")
 var catalog := Catalog.new()
 var books := Books.new()
 var structure := Structure.new()
 var catalog_rarity := ""
 var selected_species := ""
+var selected_tree_node := "curacion"
 var page := "home"
 var body: VBoxContainer
 var dialog: ConfirmationDialog
@@ -47,7 +50,7 @@ func _ready() -> void:
 	theme = ui_theme
 	dialog = ConfirmationDialog.new()
 	dialog.title = "Comenzar un nuevo viaje"
-	dialog.dialog_text = "Se reemplazará el progreso del viaje actual. Tus ajustes se conservarán."
+	dialog.dialog_text = "Se reemplazarán el viaje y el árbol actuales. Tus ajustes se conservarán."
 	dialog.ok_button_text = "Comenzar"
 	dialog.cancel_button_text = "Cancelar"
 	dialog.confirmed.connect(_start)
@@ -134,10 +137,13 @@ func _show(next_page: String) -> void:
 		"bestiary": _bestiary()
 		"species": _species()
 		"trainers": _trainers()
+		"skill_tree": _skill_tree()
+		"loadout": _loadout()
+		"tree_lab": _tree_lab()
 	toast = _label("", 18, JADE)
 	toast.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	column.add_child(toast)
-	column.add_child(_label("PREVIEW 0.3 · LIBRO Y ENTRENADORES", 16, Color("93aaa3")))
+	column.add_child(_label("PREVIEW 0.4 · ÁRBOL DE RESONANCIAS", 16, Color("93aaa3")))
 	_safe_margins()
 
 func _label(text: String, font_size: int = 24, color: Color = PAPER) -> Label:
@@ -176,7 +182,8 @@ func _home() -> void:
 	row.add_child(_button("Comenzar viaje", _new_journey))
 	row.add_child(_button("Ajustes", func(): _show("settings")))
 	body.add_child(_button("Diagnóstico", func(): _show("diagnostics")))
-	_copy("Consulta el bestiario de Valle Jade. Combate, captura e ilustraciones se incorporarán en los siguientes bloques.")
+	body.add_child(_button("Árbol de resonancias", func(): _show("skill_tree")))
+	_copy("Aprende, mejora y equipa resonancias. Los encuentros de combate y captura se incorporarán después.")
 
 func _new_journey() -> void:
 	if App.profile.journey.started or App.load_failed:
@@ -198,6 +205,7 @@ func _map() -> void:
 	body.add_child(_button("Consultar el Libro", func(): _show("book")))
 	body.add_child(_button("Bestiario de Valle Jade", func(): _show("bestiary")))
 	body.add_child(_button("Entrenadores", func(): _show("trainers")))
+	body.add_child(_button("Árbol de resonancias", func(): _show("skill_tree")))
 	_copy("Esta entrega conserva tu visita. Los encuentros y las rutas del primer capítulo llegarán con el contenido jugable.")
 
 func _visit() -> void:
@@ -235,6 +243,90 @@ func _trainers() -> void:
 	for role in rules.trainer_roles:
 		_copy(role.name + "\n" + role.purpose + ".")
 	_copy("Las habilidades concretas del entrenador y su funcionamiento en el combate están pendientes de definición.")
+	body.add_child(_button("Abrir árbol de resonancias", func(): _show("skill_tree")))
+
+func _tree_model() -> TrainerSkillTree:
+	var tree := TreeModel.new()
+	tree.restore(App.profile.skill_tree)
+	return tree
+
+func _skill_tree() -> void:
+	var tree := _tree_model()
+	var slots := int(TreeModel.specification().equip_slots)
+	_heading("Árbol de resonancias")
+	_copy("Nivel %d · %d puntos disponibles · %d/%d equipadas" % [tree.state.level, tree.points_available(), tree.state.equipped.size(), slots])
+	_copy("Perfil experimental. El árbol funciona; sus efectos se conectarán al combate con las fichas aprobadas.")
+	var map := TreeMap.new()
+	map.setup(TreeModel.specification(), tree.snapshot(), selected_tree_node, App.profile.settings.large_text)
+	map.node_selected.connect(func(node_id: String):
+		App.tap()
+		selected_tree_node = node_id
+		_show("skill_tree"))
+	body.add_child(map)
+	var node := TreeModel.node_definition(selected_tree_node)
+	var chosen_node: String = selected_tree_node
+	var rank_value := int(tree.state.ranks.get(selected_tree_node, 0))
+	_copy(node.name + " · " + ("Exclusiva provisional" if node.branch == "personal" else "General"))
+	_copy(node.description)
+	if rank_value > 0:
+		var next_rank := "Rango máximo" if rank_value >= node.max_rank else "Siguiente rango: %d%%" % roundi((1.0 + rank_value * float(TreeModel.specification().rank_power_step)) * 100)
+		_copy("Potencia de rango: %d%% · %s" % [roundi(tree.power_multiplier(selected_tree_node) * 100), next_rank])
+	var reason := tree.purchase_reason(selected_tree_node)
+	_copy("Aprender o mejorar cuesta 1 punto." if reason.is_empty() else reason)
+	var actions := HBoxContainer.new()
+	actions.add_theme_constant_override("separation", 12)
+	# Keep the selected-node actions visible while the tree/details scroll.
+	get_node("Page").get_child(0).add_child(actions)
+	var purchase := _button(("Aprender " if rank_value == 0 else "Mejorar ") + node.name + " · 1 punto", func(): _tree_action("purchase", chosen_node, "skill_tree", rank_value))
+	purchase.disabled = not reason.is_empty() or App.load_failed
+	actions.add_child(purchase)
+	var equipped: bool = tree.state.equipped.has(selected_tree_node)
+	if not equipped and rank_value > 0 and tree.state.equipped.size() >= slots:
+		_copy("Los %d espacios están ocupados. Retira una resonancia para cambiarla." % slots)
+	var equip := _button("Retirar" if equipped else "Equipar", func(): _tree_action("unequip" if equipped else "equip", chosen_node, "skill_tree"))
+	equip.disabled = rank_value == 0 or (not equipped and tree.state.equipped.size() >= slots) or App.load_failed
+	actions.add_child(equip)
+	actions.add_child(_button("Ver equipadas", func(): _show("loadout")))
+	_copy("Para probar niveles y bonificaciones: Diagnóstico → Laboratorio del árbol.")
+
+func _loadout() -> void:
+	_heading("Resonancias equipadas")
+	var tree := _tree_model()
+	var slots := int(TreeModel.specification().equip_slots)
+	_copy("%d espacios en total. Aprender una resonancia no la equipa automáticamente." % slots)
+	for i in range(slots):
+		if i < tree.state.equipped.size():
+			var node_id: String = tree.state.equipped[i]
+			var definition := TreeModel.node_definition(node_id)
+			_copy("%d · %s · Rango %d" % [i + 1, definition.name, int(tree.state.ranks[node_id])])
+			body.add_child(_button("Retirar " + definition.name, func(): _tree_action("unequip", node_id, "loadout")))
+		else:
+			_copy("%d · Espacio libre" % (i + 1))
+
+func _tree_action(operation: String, node_id: String, return_page: String, expected_rank: int = -1) -> void:
+	if App.change_tree(operation, node_id, expected_rank):
+		_show(return_page)
+		toast.text = "Árbol guardado."
+	else:
+		toast.text = App.notice
+
+func _tree_lab() -> void:
+	_heading("Laboratorio del árbol")
+	var tree := _tree_model()
+	_copy("Controles de prueba: simulan progreso del entrenador, sin añadir criaturas a una colección.")
+	_copy("Nivel %d/10 · %d especies simuladas · %d puntos disponibles" % [tree.state.level, tree.state.captured_species.size(), tree.points_available()])
+	_copy("Un punto por nivel. Bonificación de un punto a las 5, 10 y 15 especies distintas; repetir una especie no da puntos.")
+	body.add_child(_button("Simular subida de nivel", func(): _tree_action("level", "", "tree_lab")))
+	body.add_child(_button("Simular captura de otra especie", _simulate_tree_capture))
+	body.add_child(_button("Redistribuir puntos de prueba", func(): _tree_action("reset", "", "tree_lab")))
+	body.add_child(_button("Ir al árbol", func(): _show("skill_tree")))
+
+func _simulate_tree_capture() -> void:
+	for entry in catalog.all_entries():
+		if not App.profile.skill_tree.captured_species.has(entry.id):
+			_tree_action("capture", entry.id, "tree_lab")
+			return
+	toast.text = "Ya simulaste las 15 especies del catálogo."
 
 func _bestiary() -> void:
 	_heading("Bestiario de Valle Jade")
@@ -296,6 +388,7 @@ func _diagnostics() -> void:
 	_heading("Diagnóstico")
 	_copy(App.diagnostic_report())
 	body.add_child(_button("Exportar informe", _export_report))
+	body.add_child(_button("Laboratorio del árbol", func(): _show("tree_lab")))
 	body.add_child(_button("Copiar informe", func():
 		DisplayServer.clipboard_set(App.diagnostic_report())
 		toast.text = "Informe copiado."))
@@ -318,6 +411,12 @@ func _back() -> void:
 		export_dialog.hide()
 	elif dialog.visible:
 		dialog.hide()
+	elif page == "loadout":
+		_show("skill_tree")
+	elif page == "tree_lab":
+		_show("diagnostics")
+	elif page == "skill_tree":
+		_show("home")
 	elif page == "species":
 		_show("bestiary")
 	elif page == "bestiary" or page == "trainers":

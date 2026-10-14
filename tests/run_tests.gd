@@ -78,7 +78,7 @@ func _run() -> void:
 	var main := scene.instantiate()
 	root.add_child(main)
 	await process_frame
-	for page in ["home", "map", "book", "settings", "diagnostics", "bestiary", "trainers"]:
+	for page in ["skill_tree", "loadout", "tree_lab", "home", "map", "book", "settings", "diagnostics", "bestiary", "trainers"]:
 		main._show(page)
 		await process_frame
 		_check(main.get_node_or_null("Page") != null, "screen builds: " + page)

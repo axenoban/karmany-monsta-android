@@ -14,7 +14,7 @@ func _run() -> void:
 	await process_frame
 	DirAccess.make_dir_recursive_absolute("res://build/screenshots")
 	main.selected_species = "tanugami"
-	for page in ["home", "map", "book", "settings", "diagnostics", "bestiary", "species", "trainers"]:
+	for page in ["home", "map", "book", "settings", "diagnostics", "bestiary", "species", "trainers", "skill_tree", "loadout", "tree_lab"]:
 		main._show(page)
 		await process_frame
 		await RenderingServer.frame_post_draw
@@ -28,6 +28,15 @@ func _run() -> void:
 	await process_frame
 	await RenderingServer.frame_post_draw
 	root.get_texture().get_image().save_png("res://build/screenshots/settings-large.png")
+	app.profile.skill_tree.level = 5
+	app.profile.skill_tree.ranks = {"curacion": 1, "proteccion": 1, "propia": 1, "potenciacion": 1, "control": 1}
+	app.profile.skill_tree.equipped = ["curacion", "proteccion", "propia", "potenciacion"]
+	main.selected_tree_node = "control"
+	for page in ["skill_tree", "loadout"]:
+		main._show(page)
+		await process_frame
+		await RenderingServer.frame_post_draw
+		root.get_texture().get_image().save_png("res://build/screenshots/%s-full-large.png" % page)
 	main.queue_free()
 	await process_frame
 	print("Rendered UI screens")

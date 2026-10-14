@@ -1,4 +1,6 @@
-# Turno compartido y biblioteca de resonancias
+# Turno compartido y aprendizaje de resonancias
+
+> El proveedor biblioteca/escuela se reemplazó por el árbol a petición del usuario. Las decisiones actuales de aprendizaje, mejoras y equipamiento están en [Árbol de resonancias](ARBOL_RESONANCIAS_05.md). Este documento conserva el alcance del contrato de turno del avance anterior.
 
 ## Reglas aprobadas
 
@@ -15,13 +17,13 @@ Se conserva el turno únicamente entre acciones resueltas. No se serializa una a
 
 `ResonanceLearning` separa resonancias generales de especiales/explosivas. Una general configurada puede aprenderse sin tipo o personalidad definidos. Las propias exigen los requisitos configurados de ambos. Conserva la identidad del entrenador y los aprendizajes con snapshot/restore, rechaza duplicados y restauraciones para otra identidad. No concede poderes automáticamente ni define valores o nombres.
 
-Los registros de aprendizaje no están integrados todavía al guardado del jugador. Tampoco hay costes de escuela, compra, equipamiento, árbol de aprendizaje o transformación de personalidad. Los ejemplos de las pruebas son fixtures explícitos, no contenido del juego.
+En este contrato anterior, los registros de aprendizaje eran independientes del guardado del jugador. Ahora TrainerSkillTree gestiona los rangos aprendidos y el equipamiento persistente, con costes y requisitos descritos en ARBOL_RESONANCIAS_05.md. Las definiciones de efectos del contrato continúan como fixtures de pruebas.
 
 ## Canon y ubicación
 
 La enciclopedia aportada describe ostracismo por magia o por mostrar un Libro en Tierras Bajas de Jade. Axe se encuentra aislado en las afueras. Una escuela pública dentro de Valle Jade necesitaría una explicación narrativa aprobada.
 
-Se implementa el proveedor de aprendizaje como sistema, sin añadir un edificio o punto de mapa. Opciones pendientes de decisión: aprendizaje privado con Axe; acceso clandestino; biblioteca/escuela en otra región. No asumir ninguna como canon.
+El usuario reemplazó el edificio por un árbol de habilidades. No se añade ninguna escuela ni biblioteca al mapa.
 
 ## Contenido necesario para el primer encuentro
 

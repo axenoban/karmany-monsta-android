@@ -62,7 +62,12 @@ jobs:
           set -o pipefail
           godot --headless --path . --script tests/shared_turn_learning_tests.gd 2>&1 | tee build/turn-learning.log
           python3 ci/check_log.py build/turn-learning.log
-      - name: Export and verify signed APK
+      - name: Validate functional skill tree and save migration
+        run: |
+          set -o pipefail
+          godot --headless --path . --script tests/skill_tree_tests.gd 2>&1 | tee build/skill-tree.log
+          python3 ci/check_log.py build/skill-tree.log
+      - name: Export functional skill-tree APK
         run: |
           set -o pipefail
           godot --headless --path . --export-debug "Android Preview" build/karmany-monsta-preview.apk 2>&1 | tee build/export.log
@@ -107,5 +112,5 @@ jobs:
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" build/karmany-monsta-preview.apk build/apk.sha256 --clobber
           else
-            gh release create "$TAG" build/karmany-monsta-preview.apk build/apk.sha256 --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Preview 0.3.0: tabla aprobada del Libro y estructura de equipo/entrenadores. Conserva bestiario, ajustes y guardado. Las resonancias pertenecen al entrenador. Combate, habilidades concretas y compra de mejoras pendientes de diseño. Firma pública solo de pruebas."
+            gh release create "$TAG" build/karmany-monsta-preview.apk build/apk.sha256 --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Preview 0.4.0: árbol funcional de resonancias, aprendizaje y mejora de rangos, cuatro espacios de equipamiento y guardado migrado. Diagnóstico incluye progreso simulado para pruebas. Resonancia propia provisional; combate y efectos concretos todavía pendientes. Firma pública solo de pruebas."
           fi

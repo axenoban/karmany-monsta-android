@@ -1,7 +1,8 @@
 class_name SaveStore
 extends RefCounted
 
-const SCHEMA_VERSION := 1
+const TreeModel = preload("res://scripts/trainer_skill_tree.gd")
+const SCHEMA_VERSION := 2
 var base_path: String
 var last_error := ""
 var recovered_backup := false
@@ -10,10 +11,10 @@ func _init(path: String = "user://profile.json") -> void:
 	base_path = path
 
 static func defaults() -> Dictionary:
-	return {"schema": SCHEMA_VERSION, "settings": {"large_text": false, "haptics": true}, "journey": {"started": false, "visited_jade": false}}
+	return {"schema": SCHEMA_VERSION, "settings": {"large_text": false, "haptics": true}, "journey": {"started": false, "visited_jade": false}, "skill_tree": TreeModel.defaults()}
 
 static func valid(data: Variant) -> bool:
-	if not data is Dictionary or data.get("schema") != SCHEMA_VERSION:
+	if not data is Dictionary or (data.get("schema") != 1 and data.get("schema") != SCHEMA_VERSION):
 		return false
 	if not data.get("settings") is Dictionary or not data.get("journey") is Dictionary:
 		return false
@@ -23,7 +24,11 @@ static func valid(data: Variant) -> bool:
 	for key in ["started", "visited_jade"]:
 		if not data.journey.get(key) is bool:
 			return false
-	return not data.journey.visited_jade or data.journey.started
+	if data.journey.visited_jade and not data.journey.started:
+		return false
+	if data.schema == 1:
+		return not data.has("skill_tree")
+	return TreeModel.valid(data.get("skill_tree"))
 
 func _read(path: String) -> Variant:
 	if not FileAccess.file_exists(path):
@@ -37,8 +42,11 @@ func _read(path: String) -> Variant:
 	var parsed: Variant = parser.data
 	if not valid(parsed):
 		return null
-	# JSON represents numbers as floats. Keep the in-memory schema canonical.
+	# Upgrade old APK saves in memory; preserve the original bytes until a real save.
+	if parsed.schema == 1:
+		parsed.skill_tree = TreeModel.defaults()
 	parsed.schema = SCHEMA_VERSION
+	parsed.skill_tree = TreeModel.normalized(parsed.skill_tree)
 	return parsed
 
 func load_profile() -> Dictionary:
@@ -57,7 +65,7 @@ func load_profile() -> Dictionary:
 
 func save_profile(data: Dictionary) -> bool:
 	last_error = ""
-	if not valid(data):
+	if not valid(data) or data.schema != SCHEMA_VERSION:
 		last_error = "El guardado contiene datos inválidos."
 		return false
 	var temp_path := base_path + ".tmp"

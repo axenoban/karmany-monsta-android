@@ -41,11 +41,11 @@ func configure(identity: Variant, definitions: Variant) -> bool:
 func _eligible(definition: Dictionary) -> bool:
 	return definition.access == "general" or (_identity.type_id in definition.trainer_types and _identity.personality_id in definition.personalities)
 
-func learn_at_school(resonance_id: String) -> bool:
+func learn_general(resonance_id: String) -> bool:
 	last_error = ""
 	var definition: Dictionary = _definitions.get(resonance_id, {})
 	if definition.is_empty() or definition.access != "general":
-		last_error = "La biblioteca enseña resonancias generales configuradas."
+		last_error = "El árbol permite aprender resonancias generales configuradas."
 		return false
 	return _learn(resonance_id)
 
