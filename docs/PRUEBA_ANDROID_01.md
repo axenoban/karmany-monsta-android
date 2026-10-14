@@ -1,6 +1,8 @@
 # Bloque 01 — Base Android
 
-Estado: pendiente de validación física en POCO X6.
+Estado: aprobado por el creador el 14 de octubre de 2026 mediante «Prueba correcta, continúa».
+
+Versión validada: Preview 3, commit `5de6f6e26292d6e2c508cbbd1d296e477553425d`. La captura de diagnóstico confirma Android API 36, modelo 23122PCD1G y 60 FPS en esa pantalla; esto no constituye una medición de rendimiento del combate ni de carga futura. Instalación y uso de la base aceptados por el creador. La prueba de actualización entre builds se realizará con el siguiente APK.
 
 ## Descarga e instalación
 

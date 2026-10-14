@@ -1,6 +1,6 @@
 # Karmany Monsta Android
 
-Videojuego Android del universo Karmany Monsta. Bloque 01: base Android pendiente de validación física; combate y captura todavía no implementados.
+Videojuego Android del universo Karmany Monsta. Bloque 01: base Android validada por el creador en Preview 3; combate y captura todavía no implementados.
 
 Ramas previstas: main (publicable), dev/karmany-core (baseline validado), feature/* (trabajo pendiente de validación).
 
