@@ -76,3 +76,13 @@ No cambiar motor, paquete, firma de preview ni esquema de guardado sin justifica
 - Incluye: panel táctil Activos/Equipo/Técnicas/Resonancias con cifras reales, efectos por individuo, recargas y motivos de bloqueo; texto grande y consulta sin consumo de acciones.
 - `dev/karmany-core` avanza por fast-forward desde `2d90c5e`; main conserva su estado.
 - Siguiente objetivo recomendado: un recorrido jugable de Valle Jade con progreso persistente, usando las especies y reglas aprobadas. Orden de recorrido y condición de avance requieren decisión del creador; no se inventan localizaciones, historia, economía o recompensas.
+
+## Bloque 12 · Recorrido guiado de Valle Jade
+
+- Aprobación del creador: «Prueba correcta», 14 de octubre de 2026, seguida de solicitudes nuevas de mapa, stamina e interfaz.
+- APK validado: Preview 18, versión 0.9.0, versionCode 1018.
+- Código validado: `0b8d083664fb945dc962d6452498b09f4203f769`.
+- Verificación: 665 comprobaciones Godot y tres pruebas Python; CI, exportación, firma y auditoría del APK correctas.
+- Incluye: cuatro puntos secuenciales, avance persistente por victoria, captura opcional confirmada, repeticiones y entrenamiento separado, migración sin avance retroactivo.
+- Integrado por fast-forward desde eded1d0; main conserva su estado.
+- Próximo bloque autorizado: mapa cenital con localizaciones sin revelar criaturas, PS visibles y acciones secundarias en menús; stamina 100, entradas 10/10/10/30, recuperación 1/minuto y objeto +30 con 20% por victoria en localizaciones, excluido Entrenamiento.

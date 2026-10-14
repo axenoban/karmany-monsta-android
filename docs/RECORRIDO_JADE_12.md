@@ -1,6 +1,6 @@
 # Recorrido de Valle Jade · Preview 0.9.0
 
-Baseline: Preview 17, cierre eded1d0. Decisiones aprobadas el 14 de octubre de 2026: desbloquear los encuentros en orden y completar cada punto por victoria; capturar es opcional. Pendiente de validación física en feature/jade-guided-route.
+Baseline: Preview 17, cierre eded1d0. Decisiones aprobadas el 14 de octubre de 2026: desbloquear los encuentros en orden y completar cada punto por victoria; capturar es opcional. Validado físicamente por el creador mediante Preview 18 el 14 de octubre de 2026 e integrado por fast-forward a dev/karmany-core.
 
 ## Recorrido jugable
 
