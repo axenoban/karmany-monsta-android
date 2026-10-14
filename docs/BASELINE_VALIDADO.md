@@ -66,3 +66,13 @@ No cambiar motor, paquete, firma de preview ni esquema de guardado sin justifica
 - Partidas anteriores conservadas por EncounterRouter; capturas de revisión desactivadas.
 - `dev/karmany-core` integrado por fast-forward desde `67d006d`; main conserva su estado.
 - La aprobación valida este bloque de ensayo; no autoriza inventar economía, reglas de evolución, iniciativa ni historia nueva.
+
+## Bloque 11 · Estado y técnicas desde móvil
+
+- Aprobación: «Prueba correcta, avanza con el juego en las siguientes etapas», 14 de octubre de 2026.
+- APK: Preview 17, versión 0.8.1, versionCode 1017.
+- Código validado: `1f6deae03c5f8747e7826bd98c5aae9cf8fb8662`.
+- Verificación: 480 comprobaciones Godot y tres pruebas Python; CI, exportación, firma y auditoría del APK correctas.
+- Incluye: panel táctil Activos/Equipo/Técnicas/Resonancias con cifras reales, efectos por individuo, recargas y motivos de bloqueo; texto grande y consulta sin consumo de acciones.
+- `dev/karmany-core` avanza por fast-forward desde `2d90c5e`; main conserva su estado.
+- Siguiente objetivo recomendado: un recorrido jugable de Valle Jade con progreso persistente, usando las especies y reglas aprobadas. Orden de recorrido y condición de avance requieren decisión del creador; no se inventan localizaciones, historia, economía o recompensas.

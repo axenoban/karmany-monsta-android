@@ -1,12 +1,12 @@
 # Karmany Monsta Android
 
-Videojuego Android del universo Karmany Monsta. Preview 16 (0.8.0), validada por el creador e integrada a dev/karmany-core, incorpora cinco especies, cuatro rivales seleccionables, cambios tácticos, reemplazo sin ataque extra y animaciones 2D propias de Golpe/Insignia. Conserva turnos automáticos, Libro, árbol, colección y partidas anteriores. Las imágenes de revisión continúan desactivadas por defecto.
+Videojuego Android del universo Karmany Monsta. Preview 17 (0.8.1), validada por el creador e integrada a dev/karmany-core, añade la consulta táctil Estado y técnicas: Vida/fichas, efectos por individuo, recargas y motivos de bloqueo. Conserva las cinco especies, cambios tácticos, reemplazo sin ataque extra, animaciones 2D, turnos automáticos, Libro, árbol y colección. Las imágenes de revisión continúan desactivadas por defecto.
 
 Ramas previstas: main (publicable), dev/karmany-core (baseline validado), feature/* (trabajo pendiente de validación).
 
 ## Probar desde Android
 
-Descargar el APK de la preview más reciente en [Releases](https://github.com/axenoban/karmany-monsta-android/releases). Seguir [Prueba Android 10](docs/PRUEBA_ANDROID_10.md). Cada entrega permite instalación y actualización sobre la preview anterior.
+Descargar el APK de la preview más reciente en [Releases](https://github.com/axenoban/karmany-monsta-android/releases). Seguir [Prueba Android 11](docs/PRUEBA_ANDROID_11.md). Cada entrega permite instalación y actualización sobre la preview anterior.
 
 ## Documentación
 

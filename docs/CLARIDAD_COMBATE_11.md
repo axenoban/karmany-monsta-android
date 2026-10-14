@@ -1,6 +1,6 @@
 # Claridad del combate · Preview 0.8.1
 
-Baseline aprobado: Preview 16 (0.8.0), c3be194, cierre 2d90c5e. El creador validó el bloque 10 y autorizó continuar el 14 de octubre de 2026. Este bloque de presentación permanece pendiente de validación física en feature/combat-readability.
+Baseline aprobado: Preview 16 (0.8.0), c3be194, cierre 2d90c5e. El creador validó el bloque 10 y autorizó continuar el 14 de octubre de 2026. El creador validó físicamente este bloque mediante Preview 17 el 14 de octubre de 2026; integrado por fast-forward a dev/karmany-core.
 
 Objetivo: consultar las reglas ya implementadas durante el combate desde Android, sin depender de un tooltip sobre un botón deshabilitado. No modifica fichas, resolución, iniciativa, captura, economía, progresión o datos de guardado.
 
