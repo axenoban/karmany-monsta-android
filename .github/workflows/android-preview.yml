@@ -56,7 +56,7 @@ jobs:
         run: |
           set -o pipefail
           if ! command -v xvfb-run >/dev/null; then sudo apt-get update -qq && sudo apt-get install -y xvfb; fi
-          xvfb-run -a godot --path . --script tests/render_smoke.gd 2>&1 | tee build/ui.log
+          xvfb-run -a godot --audio-driver Dummy --path . --script tests/render_smoke.gd 2>&1 | tee build/ui.log
           python3 ci/check_log.py build/ui.log
       - name: Upload APK and diagnostic logs
         if: always()
