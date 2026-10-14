@@ -57,10 +57,16 @@ static func valid(data: Variant) -> bool:
 			return false
 	if data.has("last_action") and (not data.last_action is String or data.last_action.length() > 300):
 		return false
+	if data.has("enemy_pending") and not data.enemy_pending is bool:
+		return false
 	var turn := Turn.new()
 	if not turn.restore(data.get("turn")) or data.turn.turn_id != "%s:%d" % [data.id, int(data.round)]:
 		return false
+	if data.phase != "battle" and enemy_pending_from(data):
+		return false
 	if data.phase == "battle":
+		if data.has("enemy_pending") and enemy_pending_from(data) == turn.available("karmany"):
+			return false
 		return data.player_hp > 0 and data.enemy_hp > 0 and data.get("capture") == {}
 	if data.phase == "defeat":
 		return data.player_hp == 0 and data.enemy_hp > 0 and data.get("capture") == {}
@@ -77,7 +83,7 @@ func begin(id: String, tree: Dictionary, rolls: Array, ally_species: String = "z
 		loadout[resonance] = int(tree.ranks[resonance])
 	var turn := Turn.new()
 	turn.begin(id + ":1")
-	state = {"schema": 1, "id": id, "ally_species": ally_species, "ally_id": ally_id, "phase": "battle", "round": 1, "revision": 0, "player_hp": int(rules().stats.life), "enemy_hp": int(rules().stats.life), "guard": 0.0, "boost": 0.0, "weaken": 0.0, "ready": {}, "loadout": loadout, "rolls": rolls.duplicate(), "log": [], "last_action": "", "turn": turn.snapshot(), "capture": {}}
+	state = {"schema": 1, "id": id, "ally_species": ally_species, "ally_id": ally_id, "phase": "battle", "enemy_pending": false, "round": 1, "revision": 0, "player_hp": int(rules().stats.life), "enemy_hp": int(rules().stats.life), "guard": 0.0, "boost": 0.0, "weaken": 0.0, "ready": {}, "loadout": loadout, "rolls": rolls.duplicate(), "log": [], "last_action": "", "turn": turn.snapshot(), "capture": {}}
 	if not valid(state):
 		state.clear()
 		return false
@@ -88,6 +94,7 @@ func restore(data: Variant) -> bool:
 		last_error = "Encuentro guardado inválido."
 		return false
 	state = data.duplicate(true)
+	state.enemy_pending = enemy_pending_from(data)
 	state.ally_species = state.get("ally_species", "zephyr")
 	state.ally_id = state.get("ally_id", "zephyr-start")
 	for key in ["round", "revision", "player_hp", "enemy_hp"]:
@@ -105,6 +112,10 @@ func _turn() -> SharedCombatTurn:
 func reason(owner: String, id: String) -> String:
 	if state.get("phase") != "battle":
 		return "El combate terminó."
+	if state.get("enemy_pending", false):
+		return "Espera la respuesta del rival."
+	if owner == "trainer" and not _turn().available("karmany"):
+		return "La resonancia debe usarse antes de la habilidad del Karmany."
 	if not _turn().available(owner):
 		return "Ya usaste esta acción en el turno."
 	if owner == "trainer" and not state.loadout.has(id):
@@ -152,6 +163,8 @@ func act(owner: String, id: String) -> bool:
 	if effect.cooldown > 0:
 		state.ready[id] = state.round + int(effect.cooldown) + 1
 	turn.commit_action(ticket)
+	if owner == "karmany" and turn.state == "open":
+		turn.close_turn()
 	state.turn = turn.snapshot()
 	state.revision += 1
 	if state.enemy_hp == 0:
@@ -159,17 +172,20 @@ func act(owner: String, id: String) -> bool:
 		capture.begin(state.id, true, true, "Común", policy())
 		state.capture = capture.snapshot()
 		state.phase = "capture"
+	elif owner == "karmany":
+		state.enemy_pending = true
 	return true
 
 func end_round() -> bool:
 	last_error = ""
-	if state.get("phase") != "battle" or _turn().available("karmany"):
+	if state.get("phase") != "battle" or not state.get("enemy_pending", false):
 		last_error = "Primero elige una acción de " + ally_name() + "."
 		return false
 	var power := 1.5 if state.round % 3 == 0 else 1.0
 	var base_damage := maxi(1, roundi(float(rules().stats.attack) * power - float(rules().stats.defense)))
 	var damage := maxi(1, roundi(base_damage * (1.0 - state.guard) * (1.0 - state.weaken)))
 	state.player_hp = maxi(0, state.player_hp - damage)
+	state.enemy_pending = false
 	_log("Tanugami · %s · %d de daño." % ["Insignia" if power > 1.0 else "Golpe", damage])
 	state.guard = 0.0
 	state.weaken = 0.0
@@ -198,7 +214,8 @@ func attempt_capture() -> bool:
 	return true
 
 func retreat() -> bool:
-	if state.get("phase") != "battle":
+	if state.get("phase") != "battle" or state.get("enemy_pending", false):
+		last_error = "Espera la respuesta del rival antes de abandonar."
 		return false
 	state.phase = "retreated"
 	state.revision += 1
@@ -218,7 +235,16 @@ static func last_action_from(data: Dictionary) -> String:
 
 func last_action_text() -> String:
 	var action := last_action_from(state)
-	return "Última acción: " + action if not action.is_empty() else "Elige una acción y una resonancia opcional, en orden libre."
+	return "Última acción: " + action if not action.is_empty() else "Usa una resonancia opcional primero; la habilidad del Karmany dará paso al rival."
 
 func ally_name() -> String:
 	return "Tanugami aliado" if state.get("ally_species", "zephyr") == "tanugami" else "Zephyr"
+
+static func enemy_pending_from(data: Dictionary) -> bool:
+	if data.has("enemy_pending"):
+		return data.enemy_pending
+	if data.get("phase") != "battle":
+		return false
+	for action in data.get("turn", {}).get("history", []):
+		if action.owner == "karmany": return true
+	return false

@@ -61,9 +61,9 @@ func _run() -> void:
 		await process_frame
 		await RenderingServer.frame_post_draw
 		root.get_texture().get_image().save_png("res://build/screenshots/battle%s.png" % ("-large" if large else ""))
-	app.trial_action("karmany", "golpe")
 	app.trial_action("trainer", "proteccion")
-	app.trial_action("end")
+	app.trial_action("karmany", "golpe")
+	app.trial_action("enemy")
 	main._show("battle")
 	await process_frame
 	await RenderingServer.frame_post_draw
@@ -73,7 +73,7 @@ func _run() -> void:
 		encounter.restore(app.profile.campaign.encounter)
 		if encounter._turn().available("karmany"):
 			app.trial_action("karmany", "insignia" if encounter.reason("karmany", "insignia").is_empty() else "golpe")
-		else: app.trial_action("end")
+		else: app.trial_action("enemy")
 	main._show("battle")
 	await process_frame
 	await RenderingServer.frame_post_draw
@@ -98,6 +98,7 @@ func _run() -> void:
 	await process_frame
 	await RenderingServer.frame_post_draw
 	root.get_texture().get_image().save_png("res://build/screenshots/tanugami-ally.png")
+	if App.profile.campaign.encounter.enemy_pending: app.trial_action("enemy")
 	app.trial_action("retreat")
 	app.profile.skill_tree.equipped = []
 	app.start_trial()

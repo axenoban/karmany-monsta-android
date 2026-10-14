@@ -94,6 +94,11 @@ jobs:
           godot --headless --path . --script tests/no_resonance_flow_tests.gd 2>&1 | tee build/no-resonance.log
           python3 ci/check_log.py build/no-resonance.log
           python3 -m unittest discover -s tests -p test_apk_privacy.py
+      - name: Validate automatic trainer-first turns
+        run: |
+          set -o pipefail
+          godot --headless --path . --script tests/automatic_turn_tests.gd 2>&1 | tee build/automatic-turn.log
+          python3 ci/check_log.py build/automatic-turn.log
       - name: Export playable encounter APK
         run: |
           set -o pipefail
@@ -144,5 +149,5 @@ jobs:
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" "${ASSETS[@]}" --clobber
           else
-            gh release create "$TAG" "${ASSETS[@]}" --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Preview 0.6.1: corrige controles ocultos sin resonancias; permite cerrar turno, respuesta del rival y continuación al Libro. Desactiva capturas automáticas de revisión por defecto, bloquea pruebas de imágenes en Android y audita el APK. Conserva el encuentro y guardado. Balance y arte sujetos a prueba. Firma pública solo de pruebas."
+            gh release create "$TAG" "${ASSETS[@]}" --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Preview 0.7.0: resonancia opcional antes de la habilidad del Karmany; respuesta automática del rival sin cierre manual. Guarda respuestas pendientes y evita duplicar daño al reanudar. Conserva equipo, árbol y Libro. Revisión mediante imágenes desactivada por defecto. Balance y arte sujetos a prueba. Firma pública solo de pruebas."
           fi

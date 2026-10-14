@@ -39,19 +39,19 @@ func _run() -> void:
 		var trial := _trial(main)
 		var hint: Label = trial.column.get_child(5).get_child(0)
 		_check(hint.size.x > 500 and hint.size.y < 80, "empty-loadout hint wraps horizontally, large=%s" % large)
-		var finish := _button(main, "Cerrar turno")
-		_check(finish.get_global_rect().end.y < 690 and finish.size.y >= 58, "close-turn control stays visible, large=%s" % large)
+		var finish := _button(main, "Abandonar")
+		_check(finish.get_global_rect().end.y < 690 and finish.size.y >= 58, "bottom control stays visible, large=%s" % large)
+		_check(_button(main, "Cerrar turno") == null, "manual close control removed, large=%s" % large)
 	app.profile.settings.large_text = false
 	main._show("battle")
 	await process_frame
 	_button(main, "Golpe").pressed.emit()
 	await process_frame
 	await process_frame
-	var close := _button(main, "Cerrar turno")
-	_check(not close.disabled and close.get_global_rect().end.y < 690, "after first attack, response control is visible and enabled")
-	close.pressed.emit()
+	_check(app.profile.campaign.encounter.enemy_pending and _button(main, "Golpe").disabled, "attack immediately locks further actions while rival responds")
+	await app.response_timer.timeout
 	await process_frame
-	_check(app.profile.campaign.encounter.round == 2 and app.profile.campaign.encounter.player_hp == 68, "real close-turn button executes rival response without trainer resonance")
+	_check(app.profile.campaign.encounter.round == 2 and app.profile.campaign.encounter.player_hp == 68, "automatic timer executes rival response without trainer resonance")
 	_check(not _button(main, "Golpe").disabled, "next round accepts a Karmany action")
 	while app.profile.campaign.encounter.phase == "battle":
 		var encounter := Encounter.new()
@@ -59,7 +59,7 @@ func _run() -> void:
 		if encounter._turn().available("karmany"):
 			_button(main, "Insignia" if encounter.reason("karmany", "insignia").is_empty() else "Golpe").pressed.emit()
 		else:
-			_button(main, "Cerrar turno").pressed.emit()
+			await app.response_timer.timeout
 		await process_frame
 	_check(app.profile.campaign.encounter.phase == "capture", "UI-only battle without resonances reaches book phase")
 	var capture := _button(main, "Intentar vínculo")

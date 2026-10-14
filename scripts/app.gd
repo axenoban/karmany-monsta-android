@@ -1,5 +1,13 @@
 extends Node
 
+signal combat_updated
+const RESPONSE_DELAY := 0.7
+var response_timer: Timer
+var response_error := ""
+var application_paused := false
+var response_encounter_id := ""
+var response_revision := -1
+
 const Store = preload("res://scripts/save_store.gd")
 const TreeModel = preload("res://scripts/trainer_skill_tree.gd")
 const Roster = preload("res://scripts/trial_roster.gd")
@@ -13,6 +21,10 @@ var notice := ""
 var load_failed := false
 
 func _ready() -> void:
+	response_timer = Timer.new()
+	response_timer.one_shot = true
+	response_timer.timeout.connect(_resolve_enemy_response)
+	add_child(response_timer)
 	profile = storage.load_profile()
 	load_failed = not storage.last_error.is_empty()
 	if load_failed:
@@ -23,6 +35,7 @@ func _ready() -> void:
 	if value is Dictionary:
 		build_info = value
 	log_event("Inicio · %s · %s" % [OS.get_name(), build_info.get("commit", "local")])
+	_schedule_enemy_response()
 
 func commit_profile(next_profile: Dictionary) -> bool:
 	if not storage.save_profile(next_profile):
@@ -31,6 +44,7 @@ func commit_profile(next_profile: Dictionary) -> bool:
 		return false
 	profile = next_profile.duplicate(true)
 	load_failed = false
+	_schedule_enemy_response()
 	return true
 
 func start_journey() -> bool:
@@ -97,8 +111,12 @@ func diagnostic_report() -> String:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_PAUSED:
+		application_paused = true
+		if response_timer != null: response_timer.stop()
 		log_event("Aplicación suspendida; los cambios ya están persistidos.")
 	elif what == NOTIFICATION_APPLICATION_RESUMED:
+		application_paused = false
+		_schedule_enemy_response()
 		log_event("Aplicación reanudada.")
 
 func start_trial() -> bool:
@@ -146,7 +164,7 @@ func trial_action(operation: String, action_id: String = "", expected_revision: 
 	var changed := false
 	match operation:
 		"karmany", "trainer": changed = encounter.act(operation, action_id)
-		"end": changed = encounter.end_round()
+		"enemy": changed = encounter.end_round()
 		"capture": changed = encounter.attempt_capture()
 		"retreat": changed = encounter.retreat()
 	if not changed:
@@ -178,3 +196,33 @@ func change_team(operation: String, instance_id: String) -> bool:
 	var next_profile := profile.duplicate(true)
 	next_profile.campaign.team = next_team
 	return commit_profile(next_profile)
+
+func _schedule_enemy_response() -> void:
+	if response_timer == null:
+		return
+	response_timer.stop()
+	response_error = ""
+	response_encounter_id = ""
+	response_revision = -1
+	if application_paused or load_failed or profile.campaign.encounter.is_empty():
+		return
+	var data: Dictionary = profile.campaign.encounter
+	if not Encounter.enemy_pending_from(data):
+		return
+	response_encounter_id = data.id
+	response_revision = int(data.revision)
+	response_timer.start(RESPONSE_DELAY)
+
+func _resolve_enemy_response() -> void:
+	if application_paused or profile.campaign.encounter.is_empty():
+		return
+	var data: Dictionary = profile.campaign.encounter
+	if data.id != response_encounter_id or int(data.revision) != response_revision or not Encounter.enemy_pending_from(data):
+		return
+	if not trial_action("enemy", "", response_revision):
+		response_error = notice
+	combat_updated.emit()
+
+func retry_enemy_response() -> void:
+	_schedule_enemy_response()
+	combat_updated.emit()

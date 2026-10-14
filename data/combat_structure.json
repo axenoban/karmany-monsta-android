@@ -6,7 +6,7 @@
   "skills_per_species": 3,
   "signature_skills_per_species": 1,
   "resonance_owner": "trainer",
-  "shared_turn": {"karmany_actions": 1, "trainer_actions": 1, "order": "free"},
+  "shared_turn": {"karmany_actions": 1, "trainer_actions": 1, "order": "trainer_first"},
   "resonance_learning": {"general_access": "any_trainer_type", "personal_access": "type_and_personality", "provider": "skill_tree"},
   "trainer_roles": [
     {"id": "healer", "name": "Curador", "purpose": "Curar a sus Karmany", "skill_definitions": []}

@@ -42,6 +42,7 @@ static func normalized(data: Dictionary) -> Dictionary:
 	for key in ["schema", "sequence", "victories"]:
 		result[key] = int(result[key])
 	if not result.encounter.is_empty():
+		result.encounter.enemy_pending = Encounter.enemy_pending_from(result.encounter)
 		result.encounter.ally_species = result.encounter.get("ally_species", "zephyr")
 		result.encounter.ally_id = result.encounter.get("ally_id", Roster.STARTER)
 		result.encounter.last_action = Encounter.last_action_from(result.encounter)

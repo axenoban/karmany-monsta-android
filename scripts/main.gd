@@ -25,6 +25,7 @@ var export_dialog: FileDialog
 var toast: Label
 
 func _ready() -> void:
+	App.combat_updated.connect(_refresh_combat)
 	if not catalog.load_file():
 		App.log_event(catalog.last_error)
 	if not books.load_file():
@@ -155,7 +156,7 @@ func _show(next_page: String) -> void:
 	if page in ["intro", "jade_play", "battle"]:
 		toast.hide()
 	column.add_child(toast)
-	column.add_child(_label("PREVIEW 0.6 · EQUIPO Y ÚLTIMA ACCIÓN", 16, Color("93aaa3")))
+	column.add_child(_label("PREVIEW 0.7 · RESPUESTA AUTOMÁTICA", 16, Color("93aaa3")))
 	_safe_margins()
 
 func _label(text: String, font_size: int = 24, color: Color = PAPER) -> Label:
@@ -536,3 +537,7 @@ func _team() -> void:
 	_copy("Retirar del equipo conserva la criatura en la colección. En esta prueba todos usan las fichas experimentales ya definidas.")
 	body.add_child(_button("Añadir desde la colección", func(): _show("collection")))
 	body.add_child(_button("Volver al valle", func(): _show("jade_play")))
+
+func _refresh_combat() -> void:
+	if page in ["battle", "jade_play", "team"]:
+		_show(page)

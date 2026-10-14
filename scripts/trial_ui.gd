@@ -39,7 +39,7 @@ func _build() -> void:
 	margin.add_child(column)
 	var header := HBoxContainer.new()
 	column.add_child(header)
-	var title := _label("VALLE JADE · " + ("Entrenamiento" if mode == "battle" else "Ezel, Axe y Zephyr"), 26)
+	var title := _label("VALLE JADE · " + ((("Error al guardar respuesta" if not App.response_error.is_empty() else "Respuesta rival") if not App.profile.campaign.encounter.is_empty() and Encounter.enemy_pending_from(App.profile.campaign.encounter) else "Resonancia → Karmany") if mode == "battle" else "Ezel, Axe y Zephyr"), 26)
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(title)
 	header.add_child(_button("Mapa", func(): navigate.emit("jade_play")))
@@ -119,7 +119,7 @@ func _battle() -> void:
 		var resonances := HBoxContainer.new()
 		column.add_child(resonances)
 		if state.loadout.is_empty():
-			var hint := _label("Sin resonancias equipadas. Usa Cerrar turno para que actúe el rival.", 20)
+			var hint := _label("Sin resonancias equipadas. La habilidad del Karmany dará paso al rival.", 20)
 			hint.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			resonances.add_child(hint)
 		for id in state.loadout:
@@ -129,8 +129,10 @@ func _battle() -> void:
 			resonances.add_child(_button("Ezel: " + name, func(): _act("trainer", chosen, revision), not reason.is_empty()))
 		var finish := HBoxContainer.new()
 		column.add_child(finish)
-		finish.add_child(_button("Cerrar turno → rival", func(): _act("end", "", revision), encounter._turn().available("karmany")))
-		finish.add_child(_button("Abandonar encuentro", func(): _act("retreat", "", revision)))
+		if state.enemy_pending and not App.response_error.is_empty():
+			finish.add_child(_button("Reintentar respuesta", App.retry_enemy_response))
+		else:
+			finish.add_child(_button("Abandonar encuentro", func(): _act("retreat", "", revision), state.enemy_pending))
 	elif state.phase == "capture":
 		var used: int = state.capture.actions.size()
 		column.add_child(_label("Libro inicial · 45%% por intento · quedan %d de 3" % (3 - used), 25))

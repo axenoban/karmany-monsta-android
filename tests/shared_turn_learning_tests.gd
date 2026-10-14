@@ -114,7 +114,7 @@ func _run() -> void:
 	_check(not Learning.new().configure(identity, invalid_definitions), "general tree resonance cannot become class restricted")
 	var structure := Structure.new()
 	_check(structure.load_file(), "approved shared-turn configuration loads")
-	_check(structure.rules().shared_turn.order == "free", "free order is recorded")
+	_check(structure.rules().shared_turn.order == "trainer_first", "trainer-first game order is recorded")
 	_check(structure.rules().resonance_learning.general_access == "any_trainer_type", "tree access does not depend on type")
 	print("SHARED TURN/LEARNING TESTS: %d checks, %d failures" % [checks, failures])
 	quit(1 if failures else 0)

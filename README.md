@@ -1,12 +1,12 @@
 # Karmany Monsta Android
 
-Videojuego Android del universo Karmany Monsta. Preview 0.6.1 corrige el cierre de turno sin resonancias y desactiva por defecto las imágenes automáticas de revisión. Muestra solo la última acción de combate y conecta la colección con un equipo de hasta tres Karmany: el activo se elige antes del encuentro. Conserva el combate de prueba, ilustraciones, resonancias, Libro y guardado. Preview 8 (0.4.0) sigue siendo el baseline validado; la rama jugable espera validación física.
+Videojuego Android del universo Karmany Monsta. Preview 0.7.0 aplica resonancia opcional primero y habilidad del Karmany después, con respuesta automática del rival y guardado de respuestas pendientes. Preview 14 (0.6.1) fue validada por el creador e integrada a dev/karmany-core; esta fase se prueba en feature/automatic-combat-turns. Las imágenes de revisión continúan desactivadas por defecto.
 
 Ramas previstas: main (publicable), dev/karmany-core (baseline validado), feature/* (trabajo pendiente de validación).
 
 ## Probar desde Android
 
-Descargar el APK de la preview más reciente en [Releases](https://github.com/axenoban/karmany-monsta-android/releases). Seguir [Prueba Android 06](docs/PRUEBA_ANDROID_06.md). Cada entrega permite instalación y actualización sobre la preview anterior.
+Descargar el APK de la preview más reciente en [Releases](https://github.com/axenoban/karmany-monsta-android/releases). Seguir [Prueba Android 07](docs/PRUEBA_ANDROID_07.md). Cada entrega permite instalación y actualización sobre la preview anterior.
 
 ## Documentación
 
@@ -17,6 +17,8 @@ Descargar el APK de la preview más reciente en [Releases](https://github.com/ax
 - [Propuesta de combate para aprobación](docs/COMBATE_PROPUESTA_01.md).
 - [Decisiones de entrenadores](docs/DECISIONES_ENTRENADORES_03.md).
 - [Prueba Android 03](docs/PRUEBA_ANDROID_03.md).
+- [Turno automático](docs/TURNO_AUTOMATICO_09.md).
+- [Prueba Android 07](docs/PRUEBA_ANDROID_07.md).
 - [Corrección sin resonancias y revisión de imágenes](docs/CORRECCION_SIN_RESONANCIAS_08.md).
 - [Última acción](docs/CORRECCION_ULTIMA_ACCION.md).
 - [Equipo jugable](docs/EQUIPO_JUGABLE_07.md).
