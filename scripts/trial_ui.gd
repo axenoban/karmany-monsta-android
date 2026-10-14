@@ -56,6 +56,7 @@ func _build() -> void:
 	var header := HBoxContainer.new()
 	column.add_child(header)
 	var title := _label("COMBATE · Turno %d" % int(App.profile.campaign.encounter.get("round", 1)) if mode == "battle" else "VALLE JADE · Exploración", 26)
+	if mode == "battle" and App.profile.campaign.encounter.get("phase") in ["capture", "captured", "escaped"]: title.text = "VÍNCULO · EL LIBRO"
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(title)
 	if mode == "battle":

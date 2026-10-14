@@ -14,6 +14,9 @@ var completed := false
 var status_label: Label
 var skip_button: Button
 
+static func art_scale(area: Vector2, full_screen: bool) -> float:
+	return minf(area.x / 1280.0, area.y / 720.0) if full_screen else minf(area.x / 1000.0, area.y / 400.0)
+
 static func smooth_phase(value: float) -> float:
 	var t := clampf(value, 0.0, 1.0)
 	return t * t * (3.0 - 2.0 * t)
@@ -115,7 +118,7 @@ func _draw() -> void:
 	var success := outcome == "captured"
 	var book_center := Vector2(size.x * 0.5, size.y * 0.62)
 	var portal := Vector2(size.x * 0.5, size.y * 0.55)
-	var unit := minf(size.x / 1280.0, size.y / 720.0) if cinematic else minf(size.x / 700.0, size.y / 270.0)
+	var unit := art_scale(size, cinematic)
 	var reveal := smooth_phase(t / 0.55) if cinematic else 1.0
 	var charge := sin(clampf(t / 3.0, 0, 1) * PI)
 	var result_pulse := sin(clampf((t - 2.05) / 0.85, 0, 1) * PI)

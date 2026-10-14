@@ -32,7 +32,7 @@ Autorizado: libro en el centro; criatura entra completamente al vincularse o reb
 
 Arquitectura: binding_stage.gd solo presenta el resultado que App.trial_action ya guardó. trial_ui.gd impide doble toque y crea un CanvasLayer que desaparece con su página. Sin coroutines/timers globales, tiradas nuevas, cambios de probabilidad (45%), límite (3), colecciones o esquema de guardado. Volver/cerrar/omitir no vuelve a gastar ni reproduce la secuencia. Si el guardado falla no se anima y se muestra el error. main muestra versión desde build_info en vez de etiqueta antigua.
 
-Pruebas: 1038 comprobaciones Godot (168 nuevas de vínculo) y3 Python correctas. Revisión gráfica de secuencias de éxito y fallo en renderizador de escritorio completada; CI/APK se registrarán al entregar. Prueba física en docs/PRUEBA_ANDROID_16.md. Riesgo pendiente: fluidez y legibilidad en dispositivo Android real.
+Pruebas: 1041 comprobaciones Godot (171 nuevas de vínculo) y3 Python correctas. Revisión gráfica de éxito/fallo y pantalla previa con texto normal/grande completada; corregido el recorte superior del Karmany en vista compacta; CI/APK se registrarán al entregar. Prueba física en docs/PRUEBA_ANDROID_16.md. Riesgo pendiente: fluidez y legibilidad en dispositivo Android real.
 
 ## Si las pruebas son correctas
 1. Verificar commit/APK/CI entregados y registrar la aprobación del bloque16. Confirmar que la validación cubre las animaciones de combate de bloque15 incluidas en esta versión.

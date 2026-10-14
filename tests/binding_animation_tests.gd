@@ -41,6 +41,10 @@ func run() -> void:
 	var restored := Binding.sample(3.0, false)
 	check(bounce.scale > 0 and bounce.scale < 0.3 and restored.scale == 1, "failure recoils and regains full size")
 	check(restored.position.is_equal_approx(Vector2(0.79, 0.39)), "failure returns to origin")
+	for area in [Vector2(1176, 410), Vector2(1176, 210), Vector2(800, 240)]:
+		var unit := Binding.art_scale(area, false)
+		var creature_bounds := Rect2(Vector2(0.79, 0.39) * area - Vector2(140, 150) * unit, Vector2(280, 300) * unit)
+		check(Rect2(Vector2.ZERO, area).encloses(creature_bounds), "entire creature fits compact capture preview")
 	var app := root.get_node("App")
 	fixture(app, [0.1, 0.9, 0.9])
 	var ui := ui_node()
