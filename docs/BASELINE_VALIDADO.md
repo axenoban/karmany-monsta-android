@@ -101,3 +101,11 @@ No cambiar motor, paquete, firma de preview ni esquema de guardado sin justifica
 - 796 comprobaciones Godot y 3 Python; CI, firma y auditoría correctas.
 - Integrado por fast-forward en dev/karmany-core. PR10 cerrada.
 - Próximo bloque autorizado: animaciones de golpes/habilidades y documento permanente de continuidad.
+
+## Bloques15 y16 · Combate y vínculo animados
+
+- Aprobación: «prueba correcta», 14/10/2026, sobre Preview25, que incluye ambos bloques.
+- APK0.13.0/versionCode1025, código dd1fc0b530f4907f94dce1e017ace807dfba6d5e; documentación5c63dff.
+- 1041 comprobaciones Godot y3 Python; CI38652857621, exportación, firma y auditoría correctas.
+- Integración por fast-forward desde39ef4b6 a5c63dff en dev/karmany-core; PRs11/12 cerradas.
+- Siguiente bloque autorizado: efectos de sonido para golpes, habilidades, vínculo y avisos necesarios.
