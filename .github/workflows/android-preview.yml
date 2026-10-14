@@ -72,6 +72,11 @@ jobs:
           set -o pipefail
           godot --headless --path . --script tests/playable_tests.gd 2>&1 | tee build/playable.log
           python3 ci/check_log.py build/playable.log
+      - name: Validate latest action display
+        run: |
+          set -o pipefail
+          godot --headless --path . --script tests/last_action_tests.gd 2>&1 | tee build/last-action.log
+          python3 ci/check_log.py build/last-action.log
       - name: Export playable encounter APK
         run: |
           set -o pipefail

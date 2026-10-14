@@ -29,6 +29,8 @@ static func normalized(data: Dictionary) -> Dictionary:
 	for key in ["schema", "sequence", "victories"]:
 		result[key] = int(result[key])
 	if not result.encounter.is_empty():
+		result.encounter.last_action = Encounter.last_action_from(result.encounter)
+		result.encounter.log = [] if result.encounter.last_action.is_empty() else [result.encounter.last_action]
 		for key in ["schema", "round", "revision", "player_hp", "enemy_hp"]:
 			result.encounter[key] = int(result.encounter[key])
 		for key in ["schema", "sequence"]:

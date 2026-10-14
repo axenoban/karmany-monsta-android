@@ -101,7 +101,9 @@ func _battle() -> void:
 	var revision: int = state.revision
 	column.add_child(_label("Zephyr  %d / 80                 Tanugami  %d / 80                 Turno %d" % [state.player_hp, state.enemy_hp, state.round], 26))
 	_stage("battle", state.player_hp == 0, state.enemy_hp == 0)
-	column.add_child(_label(str(state.log.back()), 22))
+	var action_label := _label(encounter.last_action_text(), 22)
+	action_label.name = "LastAction"
+	column.add_child(action_label)
 	if state.phase == "battle":
 		var actions := HBoxContainer.new()
 		column.add_child(actions)

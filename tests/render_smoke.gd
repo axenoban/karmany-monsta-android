@@ -53,6 +53,13 @@ func _run() -> void:
 		await process_frame
 		await RenderingServer.frame_post_draw
 		root.get_texture().get_image().save_png("res://build/screenshots/battle%s.png" % ("-large" if large else ""))
+	app.trial_action("karmany", "golpe")
+	app.trial_action("trainer", "proteccion")
+	app.trial_action("end")
+	main._show("battle")
+	await process_frame
+	await RenderingServer.frame_post_draw
+	root.get_texture().get_image().save_png("res://build/screenshots/battle-last-action.png")
 	while app.profile.campaign.encounter.phase == "battle":
 		var encounter := TrialEncounter.new()
 		encounter.restore(app.profile.campaign.encounter)

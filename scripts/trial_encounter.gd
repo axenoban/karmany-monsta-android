@@ -53,6 +53,8 @@ static func valid(data: Variant) -> bool:
 	for line in data.log:
 		if not line is String or line.length() > 300:
 			return false
+	if data.has("last_action") and (not data.last_action is String or data.last_action.length() > 300):
+		return false
 	var turn := Turn.new()
 	if not turn.restore(data.get("turn")) or data.turn.turn_id != "%s:%d" % [data.id, int(data.round)]:
 		return false
@@ -73,7 +75,7 @@ func begin(id: String, tree: Dictionary, rolls: Array) -> bool:
 		loadout[resonance] = int(tree.ranks[resonance])
 	var turn := Turn.new()
 	turn.begin(id + ":1")
-	state = {"schema": 1, "id": id, "phase": "battle", "round": 1, "revision": 0, "player_hp": int(rules().stats.life), "enemy_hp": int(rules().stats.life), "guard": 0.0, "boost": 0.0, "weaken": 0.0, "ready": {}, "loadout": loadout, "rolls": rolls.duplicate(), "log": ["Elige una acción de Zephyr y una resonancia opcional, en orden libre."], "turn": turn.snapshot(), "capture": {}}
+	state = {"schema": 1, "id": id, "phase": "battle", "round": 1, "revision": 0, "player_hp": int(rules().stats.life), "enemy_hp": int(rules().stats.life), "guard": 0.0, "boost": 0.0, "weaken": 0.0, "ready": {}, "loadout": loadout, "rolls": rolls.duplicate(), "log": [], "last_action": "", "turn": turn.snapshot(), "capture": {}}
 	if not valid(state):
 		state.clear()
 		return false
@@ -113,9 +115,8 @@ func reason(owner: String, id: String) -> String:
 	return ""
 
 func _log(line: String) -> void:
-	state.log.append(line)
-	if state.log.size() > 6:
-		state.log.pop_front()
+	state.last_action = line
+	state.log = [line]
 
 func act(owner: String, id: String) -> bool:
 	last_error = reason(owner, id)
@@ -130,20 +131,20 @@ func act(owner: String, id: String) -> bool:
 		var damage := maxi(1, roundi(float(rules().stats.attack) * float(effect.power) * (1.0 + float(state.boost)) - float(rules().stats.defense)))
 		state.enemy_hp = maxi(0, state.enemy_hp - damage)
 		state.boost = 0.0
-		_log("Zephyr: %s · %d de daño." % [effect.name, damage])
+		_log("Zephyr · %s · %d de daño." % [effect.name, damage])
 	elif effect.has("heal"):
 		var healing := mini(int(rules().stats.life) - state.player_hp, roundi(effect.heal * scale))
 		state.player_hp += healing
-		_log("Ezel: recupera %d de vida con Curación." % healing)
+		_log("Ezel · %s · +%d de Vida." % [effect.name, healing])
 	elif effect.has("guard"):
 		state.guard = maxf(state.guard, minf(0.8, effect.guard * scale))
-		_log("%s prepara protección para el próximo ataque rival." % ("Zephyr" if owner == "karmany" else "Ezel"))
+		_log("%s · %s · %d%% de protección ante el próximo ataque." % ["Zephyr" if owner == "karmany" else "Ezel", effect.name, roundi(state.guard * 100)])
 	elif effect.has("boost"):
 		state.boost = effect.boost * scale
-		_log("Ezel potencia el próximo golpe de Zephyr.")
+		_log("Ezel · %s · +%d%% al próximo golpe." % [effect.name, roundi(state.boost * 100)])
 	elif effect.has("weaken"):
 		state.weaken = effect.weaken * scale
-		_log("Ezel reduce la fuerza del próximo ataque rival.")
+		_log("Ezel · %s · -%d%% de daño del próximo ataque rival." % [effect.name, roundi(state.weaken * 100)])
 	if effect.cooldown > 0:
 		state.ready[id] = state.round + int(effect.cooldown) + 1
 	turn.commit_action(ticket)
@@ -154,7 +155,6 @@ func act(owner: String, id: String) -> bool:
 		capture.begin(state.id, true, true, "Común", policy())
 		state.capture = capture.snapshot()
 		state.phase = "capture"
-		_log("Tanugami está fuera de combate. El Libro permite hasta tres intentos.")
 	return true
 
 func end_round() -> bool:
@@ -166,7 +166,7 @@ func end_round() -> bool:
 	var base_damage := maxi(1, roundi(float(rules().stats.attack) * power - float(rules().stats.defense)))
 	var damage := maxi(1, roundi(base_damage * (1.0 - state.guard) * (1.0 - state.weaken)))
 	state.player_hp = maxi(0, state.player_hp - damage)
-	_log("Tanugami: %d de daño%s." % [damage, " · insignia" if power > 1.0 else ""])
+	_log("Tanugami · %s · %d de daño." % ["Insignia" if power > 1.0 else "Golpe", damage])
 	state.guard = 0.0
 	state.weaken = 0.0
 	state.revision += 1
@@ -190,7 +190,7 @@ func attempt_capture() -> bool:
 	state.capture = capture.snapshot()
 	state.phase = "capture" if capture.state == "offered" else capture.state
 	state.revision += 1
-	_log("El Libro logró el vínculo." if capture.state == "captured" else ("Tanugami escapó. Podrás encontrarlo de nuevo." if capture.state == "escaped" else "El intento falló. Quedan %d." % capture.remaining_attempts()))
+	_log("Ezel · Libro · " + ("vínculo logrado." if capture.state == "captured" else ("tercer fallo; Tanugami escapó." if capture.state == "escaped" else "intento fallido; quedan %d." % capture.remaining_attempts())))
 	return true
 
 func retreat() -> bool:
@@ -198,5 +198,20 @@ func retreat() -> bool:
 		return false
 	state.phase = "retreated"
 	state.revision += 1
-	_log("Encuentro abandonado. No hay recompensa.")
+	_log("Ezel · Retirada · encuentro abandonado sin recompensa.")
 	return true
+
+static func last_action_from(data: Dictionary) -> String:
+	if data.has("last_action"):
+		return data.last_action
+	# Recover the actual action from older saves, ignoring the phase announcement.
+	var lines: Array = data.get("log", [])
+	for index in range(lines.size() - 1, -1, -1):
+		var line: String = lines[index]
+		if line.begins_with("Zephyr") or line.begins_with("Ezel") or line.begins_with("Tanugami:"):
+			return line
+	return ""
+
+func last_action_text() -> String:
+	var action := last_action_from(state)
+	return "Última acción: " + action if not action.is_empty() else "Elige una acción y una resonancia opcional, en orden libre."
