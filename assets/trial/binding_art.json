@@ -1,0 +1,6 @@
+{
+  "tool": "builtin image_gen",
+  "asset": "assets/trial/binding_book.png",
+  "use": "Decorative initial binding book; no new lore or mechanics",
+  "prompt": "Use case: stylized-concept. Single transparent game sprite for Karmany Monsta. Open fantasy book, alone, symmetrical frontal three-quarter slightly overhead view showing both pages, dark teal leather, brass corner fittings, warm ivory pages with delicate non-linguistic ornamental filigree near edges, center mostly blank for animated light. Polished hand-painted 2D creature-collection RPG aesthetic, precise contours, rich controlled cel shading, teal and gold. Full object, transparent margins. No words, readable runes, emblems, characters, creatures, environment, baked-in particles or rays. Genuine transparent alpha."
+}

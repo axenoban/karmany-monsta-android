@@ -9,6 +9,8 @@ const Encounter = preload("res://scripts/trial_encounter.gd")
 const Router = preload("res://scripts/encounter_router.gd")
 const Catalog = preload("res://scripts/combat_catalog.gd")
 const Tactical = preload("res://scripts/tactical_encounter.gd")
+const BindingStage = preload("res://scripts/binding_stage.gd")
+var binding_busy := false
 const Stage = preload("res://scripts/trial_stage.gd")
 const Locations = preload("res://scripts/location_visuals.gd")
 var mode := "battle"
@@ -129,10 +131,39 @@ func _world() -> void:
 			else: _rivals()))
 
 func _act(operation: String, id: String, revision: int, target_id: String = "") -> void:
+	if binding_busy: return
+	if operation == "capture":
+		_attempt_binding(revision)
+		return
 	if App.trial_action(operation, id, revision, target_id):
 		navigate.emit("battle")
 	else:
 		_notice()
+
+func _attempt_binding(revision: int) -> void:
+	if binding_busy: return
+	binding_busy = true
+	if not App.trial_action("capture", "", revision):
+		binding_busy = false
+		_notice()
+		return
+	# Persist first; the overlay only presents this committed outcome.
+	var state: Dictionary = App.profile.campaign.encounter
+	var layer := CanvasLayer.new()
+	layer.layer = 20
+	add_child(layer)
+	var animation := BindingStage.new()
+	animation.name = "BindingAnimation"
+	animation.cinematic = true
+	animation.species = state.get("enemy_species", "tanugami")
+	animation.background_id = Locations.background_for(App.profile.campaign)
+	layer.add_child(animation)
+	animation.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var focus := get_viewport().gui_get_focus_owner()
+	if focus != null: focus.release_focus()
+	animation.finished.connect(func():
+		navigate.emit("battle"), CONNECT_ONE_SHOT)
+	animation.play(state.phase)
 
 func _battle() -> void:
 	var encounter = Router.create(App.profile.campaign.encounter)
@@ -151,7 +182,17 @@ func _battle() -> void:
 	column.add_child(health)
 	_health_bar(health, "AllyHP", encounter.ally_name(), int(state.player_hp), player_max)
 	_health_bar(health, "EnemyHP", enemy_name, int(state.enemy_hp), enemy_max)
-	_stage("battle", state.player_hp == 0, state.enemy_hp == 0)
+	if state.phase in ["capture", "captured", "escaped"]:
+		health.hide()
+		var binding := BindingStage.new()
+		binding.species = enemy_species
+		binding.outcome = state.phase
+		binding.background_id = Locations.background_for(App.profile.campaign)
+		binding.custom_minimum_size = Vector2(0, 210)
+		binding.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		column.add_child(binding)
+	else:
+		_stage("battle", state.player_hp == 0, state.enemy_hp == 0)
 	var action_label := _label(encounter.last_action_text(), 22)
 	action_label.name = "LastAction"
 	column.add_child(action_label)
