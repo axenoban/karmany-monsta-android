@@ -1,4 +1,5 @@
 extends SceneTree
+const LegacyFixture = preload("res://tests/legacy_fixture.gd")
 const Encounter = preload("res://scripts/trial_encounter.gd")
 const TreeModel = preload("res://scripts/trainer_skill_tree.gd")
 const Store = preload("res://scripts/save_store.gd")
@@ -93,9 +94,9 @@ func _run() -> void:
 	app.storage = Store.new(PATH)
 	app.profile = Store.defaults()
 	app.load_failed = false
-	_check(app.start_trial(), "app starts and saves new encounter")
+	_check(LegacyFixture.start(app), "app starts and saves new encounter")
 	var starting: Dictionary = app.profile.campaign.encounter.duplicate(true)
-	_check(app.start_trial() and app.profile.campaign.encounter == starting, "map resume does not replace active encounter")
+	_check(LegacyFixture.start(app) and app.profile.campaign.encounter == starting, "map resume does not replace active encounter")
 	_check(app.trial_action("karmany", "insignia", 0), "app saves action transaction")
 	_check(not app.trial_action("karmany", "insignia", 0), "stale double tap rejected")
 	_check(app.storage.load_profile().campaign.encounter.player_hp == 80, "saved app action reopens")
@@ -121,7 +122,7 @@ func _run() -> void:
 	_check(app.profile.skill_tree.captured_species == ["tanugami"], "real capture advances unique species tally")
 	var previous: Dictionary = app.profile.duplicate(true)
 	app.storage = Store.new("user://missing-playable-directory/profile.json")
-	_check(not app.start_trial() and app.profile == previous, "failed new encounter save does not replace result")
+	_check(not LegacyFixture.start(app) and app.profile == previous, "failed new encounter save does not replace result")
 	app.storage = Store.new(PATH)
 	var v2 := Store.defaults()
 	v2.erase("campaign")
@@ -149,7 +150,7 @@ func _run() -> void:
 		main._show(page)
 		await process_frame
 		_check(main.get_node_or_null("Page") != null, "playable screen builds: " + page)
-	app.start_trial()
+	LegacyFixture.start(app)
 	main._show("battle")
 	await process_frame
 	_check(main.get_node_or_null("Page") != null, "battle UI builds from persisted encounter")

@@ -12,6 +12,9 @@ const Store = preload("res://scripts/save_store.gd")
 const TreeModel = preload("res://scripts/trainer_skill_tree.gd")
 const Roster = preload("res://scripts/trial_roster.gd")
 const Encounter = preload("res://scripts/trial_encounter.gd")
+const Router = preload("res://scripts/encounter_router.gd")
+const Tactical = preload("res://scripts/tactical_encounter.gd")
+var animation_key := ""
 const Campaign = preload("res://scripts/trial_campaign.gd")
 const LOG_PATH := "user://diagnostic.log"
 var storage := Store.new()
@@ -35,6 +38,8 @@ func _ready() -> void:
 	if value is Dictionary:
 		build_info = value
 	log_event("Inicio · %s · %s" % [OS.get_name(), build_info.get("commit", "local")])
+	if not profile.campaign.encounter.is_empty():
+		animation_key = "%s:%d" % [profile.campaign.encounter.id, int(profile.campaign.encounter.revision)]
 	_schedule_enemy_response()
 
 func commit_profile(next_profile: Dictionary) -> bool:
@@ -119,23 +124,19 @@ func _notification(what: int) -> void:
 		_schedule_enemy_response()
 		log_event("Aplicación reanudada.")
 
-func start_trial() -> bool:
+func start_trial(enemy_species: String = "tanugami") -> bool:
 	if load_failed:
 		return false
 	var next_profile := profile.duplicate(true)
-	if not next_profile.campaign.encounter.is_empty() and next_profile.campaign.encounter.phase in ["battle", "capture"]:
+	if not next_profile.campaign.encounter.is_empty() and next_profile.campaign.encounter.phase in ["battle", "replacement", "capture"]:
 		return true
 	if not Roster.valid(next_profile.campaign.team, next_profile.campaign):
 		notice = "Elige un equipo válido antes de comenzar."
 		return false
-	var encounter := Encounter.new()
+	var encounter := Tactical.new()
 	next_profile.campaign.sequence += 1
 	var rolls := [randf(), randf(), randf()]
-	var active_member := {}
-	for member in next_profile.campaign.team.members:
-		if member.instance_id == next_profile.campaign.team.active_id:
-			active_member = member
-	if not encounter.begin("jade-%d" % int(next_profile.campaign.sequence), profile.skill_tree, rolls, active_member.species_id, active_member.instance_id):
+	if not encounter.begin("jade-%d" % int(next_profile.campaign.sequence), profile.skill_tree, rolls, next_profile.campaign.team, enemy_species):
 		notice = "No se pudo iniciar el encuentro."
 		return false
 	next_profile.campaign.encounter = encounter.snapshot()
@@ -150,10 +151,10 @@ func mark_intro_seen() -> bool:
 	next_profile.campaign.intro_seen = true
 	return commit_profile(next_profile)
 
-func trial_action(operation: String, action_id: String = "", expected_revision: int = -1) -> bool:
+func trial_action(operation: String, action_id: String = "", expected_revision: int = -1, target_id: String = "") -> bool:
 	if load_failed:
 		return false
-	var encounter := Encounter.new()
+	var encounter = Router.create(profile.campaign.encounter)
 	if not encounter.restore(profile.campaign.encounter):
 		notice = encounter.last_error
 		return false
@@ -163,7 +164,10 @@ func trial_action(operation: String, action_id: String = "", expected_revision: 
 	var previous_phase: String = encounter.state.phase
 	var changed := false
 	match operation:
-		"karmany", "trainer": changed = encounter.act(operation, action_id)
+		"karmany", "trainer":
+			changed = encounter.act(operation, action_id, target_id) if encounter is Tactical else encounter.act(operation, action_id)
+		"switch": changed = encounter.switch_to(action_id) if encounter is Tactical else false
+		"replace": changed = encounter.replace_with(action_id) if encounter is Tactical else false
 		"enemy": changed = encounter.end_round()
 		"capture": changed = encounter.attempt_capture()
 		"retreat": changed = encounter.retreat()
@@ -172,6 +176,8 @@ func trial_action(operation: String, action_id: String = "", expected_revision: 
 		return false
 	var next_profile := profile.duplicate(true)
 	next_profile.campaign.encounter = encounter.snapshot()
+	if encounter is Tactical:
+		next_profile.campaign.team.active_id = encounter.state.ally_id
 	var tree := TreeModel.new()
 	tree.restore(next_profile.skill_tree)
 	if previous_phase == "battle" and encounter.state.phase == "capture":
@@ -179,9 +185,10 @@ func trial_action(operation: String, action_id: String = "", expected_revision: 
 		if tree.state.level < TreeModel.specification().level_cap:
 			tree.gain_level()
 	if previous_phase == "capture" and encounter.state.phase == "captured":
-		next_profile.campaign.collection.append({"id": encounter.state.id, "species": "tanugami"})
-		if not tree.state.captured_species.has("tanugami"):
-			tree.record_capture("tanugami")
+		var captured_species: String = encounter.state.get("enemy_species", "tanugami")
+		next_profile.campaign.collection.append({"id": encounter.state.id, "species": captured_species})
+		if not tree.state.captured_species.has(captured_species):
+			tree.record_capture(captured_species)
 	next_profile.skill_tree = tree.snapshot()
 	return commit_profile(next_profile)
 
@@ -207,7 +214,7 @@ func _schedule_enemy_response() -> void:
 	if application_paused or load_failed or profile.campaign.encounter.is_empty():
 		return
 	var data: Dictionary = profile.campaign.encounter
-	if not Encounter.enemy_pending_from(data):
+	if not Router.pending(data):
 		return
 	response_encounter_id = data.id
 	response_revision = int(data.revision)
@@ -217,7 +224,7 @@ func _resolve_enemy_response() -> void:
 	if application_paused or profile.campaign.encounter.is_empty():
 		return
 	var data: Dictionary = profile.campaign.encounter
-	if data.id != response_encounter_id or int(data.revision) != response_revision or not Encounter.enemy_pending_from(data):
+	if data.id != response_encounter_id or int(data.revision) != response_revision or not Router.pending(data):
 		return
 	if not trial_action("enemy", "", response_revision):
 		response_error = notice
@@ -226,3 +233,9 @@ func _resolve_enemy_response() -> void:
 func retry_enemy_response() -> void:
 	_schedule_enemy_response()
 	combat_updated.emit()
+
+func consume_animation(data: Dictionary) -> bool:
+	var key := "%s:%d" % [data.id, int(data.revision)]
+	if key == animation_key: return false
+	animation_key = key
+	return not data.get("event", {}).is_empty()

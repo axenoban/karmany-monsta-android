@@ -99,6 +99,11 @@ jobs:
           set -o pipefail
           godot --headless --path . --script tests/automatic_turn_tests.gd 2>&1 | tee build/automatic-turn.log
           python3 ci/check_log.py build/automatic-turn.log
+      - name: Validate tactical combat, replacement and legacy migration
+        run: |
+          set -o pipefail
+          godot --headless --path . --script tests/tactical_tests.gd 2>&1 | tee build/tactical.log
+          python3 ci/check_log.py build/tactical.log
       - name: Export playable encounter APK
         run: |
           set -o pipefail
@@ -149,5 +154,5 @@ jobs:
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" "${ASSETS[@]}" --clobber
           else
-            gh release create "$TAG" "${ASSETS[@]}" --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Preview 0.7.0: resonancia opcional antes de la habilidad del Karmany; respuesta automática del rival sin cierre manual. Guarda respuestas pendientes y evita duplicar daño al reanudar. Conserva equipo, árbol y Libro. Revisión mediante imágenes desactivada por defecto. Balance y arte sujetos a prueba. Firma pública solo de pruebas."
+            gh release create "$TAG" "${ASSETS[@]}" --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Preview 0.8.0: cinco especies, cambio táctico, reemplazo sin ataque extra y animaciones 2D propias para golpes e insignias. Conserva encuentros anteriores, equipo, árbol y Libro. Revisión mediante imágenes desactivada por defecto. Balance y arte sujetos a prueba. Firma pública solo de pruebas."
           fi

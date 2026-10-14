@@ -1,6 +1,8 @@
 class_name TrialCampaign
 extends RefCounted
 const Roster = preload("res://scripts/trial_roster.gd")
+const Router = preload("res://scripts/encounter_router.gd")
+const Catalog = preload("res://scripts/combat_catalog.gd")
 const Encounter = preload("res://scripts/trial_encounter.gd")
 
 static func defaults() -> Dictionary:
@@ -15,21 +17,27 @@ static func valid(data: Variant) -> bool:
 		return false
 	var ids := {}
 	for entry in data.collection:
-		if not entry is Dictionary or entry.get("species") != "tanugami" or not entry.get("id") is String or entry.id.is_empty() or ids.has(entry.id):
+		if not entry is Dictionary or entry.get("species") not in ["tanugami", "ushigane", "kitsunibi", "sakuromushi"] or not entry.get("id") is String or entry.id.is_empty() or ids.has(entry.id):
 			return false
 		ids[entry.id] = true
 	if data.has("team") and not Roster.valid(data.team, data):
 		return false
 	if not data.encounter.is_empty():
-		if not Encounter.valid(data.encounter) or data.encounter.id != "jade-%d" % int(data.sequence):
+		if not Router.valid(data.encounter) or data.encounter.id != "jade-%d" % int(data.sequence):
 			return false
 		var ownership := {}
 		for member in Roster.owned(data): ownership[member.instance_id] = member.species_id
 		var ally_id: String = data.encounter.get("ally_id", Roster.STARTER)
 		if ownership.get(ally_id) != data.encounter.get("ally_species", "zephyr"):
 			return false
-		if data.encounter.phase in ["battle", "capture"] and data.get("team", Roster.defaults()).active_id != ally_id:
+		if data.encounter.phase in ["battle", "replacement", "capture"] and data.get("team", Roster.defaults()).active_id != ally_id:
 			return false
+		if data.encounter.get("schema") == 2 and data.encounter.phase in ["battle", "replacement", "capture"]:
+			if data.encounter.members.size() != data.get("team", Roster.defaults()).members.size(): return false
+			var team_ids := {}
+			for member in data.get("team", Roster.defaults()).members: team_ids[member.instance_id] = member.species_id
+			for member in data.encounter.members:
+				if ownership.get(member.instance_id) != member.species_id or team_ids.get(member.instance_id) != member.species_id: return false
 		if data.encounter.phase == "captured" and not ids.has(data.encounter.id):
 			return false
 	return true
@@ -41,7 +49,11 @@ static func normalized(data: Dictionary) -> Dictionary:
 	result.team.schema = 1
 	for key in ["schema", "sequence", "victories"]:
 		result[key] = int(result[key])
-	if not result.encounter.is_empty():
+	if not result.encounter.is_empty() and result.encounter.get("schema") == 2:
+		var tactical = Router.create(result.encounter)
+		tactical.restore(result.encounter)
+		result.encounter = tactical.snapshot()
+	elif not result.encounter.is_empty():
 		result.encounter.enemy_pending = Encounter.enemy_pending_from(result.encounter)
 		result.encounter.ally_species = result.encounter.get("ally_species", "zephyr")
 		result.encounter.ally_id = result.encounter.get("ally_id", Roster.STARTER)

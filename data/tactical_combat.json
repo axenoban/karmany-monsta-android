@@ -1,0 +1,61 @@
+{
+  "status": "experimental_approved_2026_10_14",
+  "baseline": "67d006dd268f95dc6351b9bc39a9ba42b54a3c2b",
+  "species": {
+    "zephyr": {
+      "life": 80,
+      "attack": 20,
+      "defense": 8,
+      "speed": 10,
+      "signature": {
+        "power": 1.5,
+        "cooldown": 2
+      }
+    },
+    "tanugami": {
+      "life": 80,
+      "attack": 20,
+      "defense": 8,
+      "speed": 10,
+      "signature": {
+        "heal": 12,
+        "guard": 0.25,
+        "cooldown": 3
+      }
+    },
+    "ushigane": {
+      "life": 96,
+      "attack": 18,
+      "defense": 10,
+      "speed": 10,
+      "signature": {
+        "power": 1.25,
+        "guard": 0.25,
+        "cooldown": 2
+      }
+    },
+    "kitsunibi": {
+      "life": 68,
+      "attack": 22,
+      "defense": 6,
+      "speed": 10,
+      "signature": {
+        "power": 1.2,
+        "weaken": 0.3,
+        "cooldown": 2
+      }
+    },
+    "sakuromushi": {
+      "life": 76,
+      "attack": 19,
+      "defense": 9,
+      "speed": 10,
+      "signature": {
+        "power": 1.0,
+        "grant_boost": 0.25,
+        "cooldown": 2
+      }
+    }
+  },
+  "schema": 1
+}

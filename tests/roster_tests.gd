@@ -1,4 +1,5 @@
 extends SceneTree
+const LegacyFixture = preload("res://tests/legacy_fixture.gd")
 const Roster = preload("res://scripts/trial_roster.gd")
 const Campaign = preload("res://scripts/trial_campaign.gd")
 const Encounter = preload("res://scripts/trial_encounter.gd")
@@ -49,7 +50,7 @@ func _run() -> void:
 	app.load_failed = false
 	_check(app.change_team("add", "jade-1") and app.change_team("active", "jade-1"), "app commits selection")
 	_check(app.storage.load_profile().campaign.team == app.profile.campaign.team, "team persists across reopening")
-	_check(app.start_trial() and app.profile.campaign.encounter.ally_species == "tanugami" and app.profile.campaign.encounter.ally_id == "jade-1", "new battle uses selected captured individual")
+	_check(LegacyFixture.start(app) and app.profile.campaign.encounter.ally_species == "tanugami" and app.profile.campaign.encounter.ally_id == "jade-1", "new battle uses selected captured individual")
 	var e := Encounter.new()
 	e.restore(app.profile.campaign.encounter)
 	e.act("karmany", "golpe")

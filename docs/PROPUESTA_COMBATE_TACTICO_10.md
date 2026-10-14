@@ -1,6 +1,6 @@
 # Propuesta 10 · Combate táctico y cinco especies
 
-Estado: diseño experimental pendiente de aprobación. Fecha: 14 de octubre de 2026. Baseline remoto verificado: dev/karmany-core, 67d006dd268f95dc6351b9bc39a9ba42b54a3c2b. Este documento no modifica el juego ni constituye nuevo canon.
+Estado: propuesta aprobada por el creador para ensayo; implementada en Preview 0.8.0, pendiente de validación física. Fecha: 14 de octubre de 2026. Baseline remoto verificado: dev/karmany-core, 67d006dd268f95dc6351b9bc39a9ba42b54a3c2b. Este documento registra la propuesta original; la implementación está descrita en COMBATE_TACTICO_10.md y no constituye canon definitivo.
 
 ## Alcance ya decidido por el creador
 
@@ -99,6 +99,6 @@ Un bloque con 13 componentes relacionados: catálogo jugable versionado; resoluc
 
 Regresiones anteriores, migración de encuentros antiguos y capturas, dos ejemplares de una especie con estados independientes, efectos sin acumulación, apoyo con destinatario, recargas al rotar, cambios dobles, respuesta contra nuevo activo, derrota/reemplazo sin golpe extra, derrota total, captura correcta de cada especie, hitos distintos del árbol, guardado fallido, suspensión en respuesta/reemplazo y render desactivado. APK actualizable sobre Preview 15. No integrar a dev hasta validación física.
 
-## Aprobación pendiente
+## Solicitud original de aprobación (resuelta)
 
-Aprobar o ajustar estas fichas, sustitución de insignia de Tanugami, efectos no acumulables asociados al individuo, recargas, ausencia de iniciativa por Velocidad, recuperación al iniciar ensayo, selector de cuatro rivales y política inicial de IA. La selección de especies y el coste del cambio/reemplazo ya fueron decididos; no se solicitan nuevamente.
+El creador aprobó probar estas fichas el 14 de octubre de 2026. La solicitud original incluía: sustitución de insignia de Tanugami, efectos no acumulables asociados al individuo, recargas, ausencia de iniciativa por Velocidad, recuperación al iniciar ensayo, selector de cuatro rivales y política inicial de IA. La selección de especies y el coste del cambio/reemplazo ya fueron decididos; no se solicitan nuevamente.

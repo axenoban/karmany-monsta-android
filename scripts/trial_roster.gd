@@ -1,5 +1,6 @@
 class_name TrialRoster
 extends RefCounted
+const Catalog = preload("res://scripts/combat_catalog.gd")
 const TeamModel = preload("res://scripts/karmany_team.gd")
 const STARTER := "zephyr-start"
 var last_error := ""
@@ -14,7 +15,7 @@ static func owned(campaign: Dictionary) -> Array:
 	return result
 
 static func member_name(member: Dictionary) -> String:
-	return "Zephyr" if member.species_id == "zephyr" else "Tanugami · " + member.instance_id
+	return Catalog.species_name(member.species_id) + ("" if member.instance_id == STARTER else " · " + member.instance_id)
 
 static func valid(team_data: Variant, campaign: Dictionary) -> bool:
 	var team := TeamModel.new()
@@ -29,7 +30,7 @@ static func valid(team_data: Variant, campaign: Dictionary) -> bool:
 
 func change(campaign: Dictionary, operation: String, instance_id: String) -> Dictionary:
 	last_error = ""
-	if not campaign.encounter.is_empty() and campaign.encounter.phase in ["battle", "capture"]:
+	if not campaign.encounter.is_empty() and campaign.encounter.phase in ["battle", "replacement", "capture"]:
 		last_error = "Termina o abandona el encuentro antes de cambiar el equipo."
 		return {}
 	var team := TeamModel.new()

@@ -156,7 +156,7 @@ func _show(next_page: String) -> void:
 	if page in ["intro", "jade_play", "battle"]:
 		toast.hide()
 	column.add_child(toast)
-	column.add_child(_label("PREVIEW 0.7 · RESPUESTA AUTOMÁTICA", 16, Color("93aaa3")))
+	column.add_child(_label("PREVIEW 0.8 · COMBATE TÁCTICO", 16, Color("93aaa3")))
 	_safe_margins()
 
 func _label(text: String, font_size: int = 24, color: Color = PAPER) -> Label:
@@ -478,12 +478,21 @@ func _collection() -> void:
 	_copy("Zephyr está vinculado a Ezel desde su nacimiento; no es una captura del Libro.")
 	var stage := Stage.new()
 	stage.mode = "collection"
+	if not App.profile.campaign.collection.is_empty(): stage.collection_species = App.profile.campaign.collection.back().species
 	stage.custom_minimum_size = Vector2(0, 260)
 	body.add_child(stage)
 	var in_progress := _encounter_in_progress()
 	for member in Roster.owned(App.profile.campaign):
 		var chosen_id: String = member.instance_id
+		var portrait := TextureRect.new()
+		portrait.texture = Stage.texture(member.species_id)
+		portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		portrait.custom_minimum_size = Vector2(120, 120)
+		body.add_child(portrait)
 		_copy(Roster.member_name(member))
+		var stats := CombatCatalog.stats(member.species_id)
+		_copy("Ensayo · Vida %d · Ataque %d · Defensa %d\nInsignia: %s" % [stats.life, stats.attack, stats.defense, CombatCatalog.action(member.species_id, "insignia").description])
 		var equipped := false
 		for current in App.profile.campaign.team.members:
 			if current.instance_id == chosen_id: equipped = true
@@ -495,7 +504,7 @@ func _collection() -> void:
 	body.add_child(_button("Volver al valle", func(): _show("jade_play")))
 
 func _encounter_in_progress() -> bool:
-	return not App.profile.campaign.encounter.is_empty() and App.profile.campaign.encounter.phase in ["battle", "capture"]
+	return not App.profile.campaign.encounter.is_empty() and App.profile.campaign.encounter.phase in ["battle", "replacement", "capture"]
 
 func _team_action(operation: String, member_id: String, return_page: String = "team") -> void:
 	if App.change_team(operation, member_id):

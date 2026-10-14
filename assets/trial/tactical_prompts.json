@@ -1,0 +1,21 @@
+{
+  "tool": "built-in image_gen",
+  "source": "data/jade_species.json",
+  "assets": [
+    {
+      "id": "ushigane",
+      "path": "assets/trial/ushigane.png",
+      "prompt": "Use case: stylized-concept. Asset type: single transparent 2D game creature cutout for Karmany Monsta Android. New creature ushigane. Subject: Massive living ox/bovine, four legs, natural epidermal plates resembling polished aged bronze, ordinary bovine horn pair forming a flattened curved arch, stout heavy silhouette. These plates are biological, not manufactured armor; no straps, saddle, clothing, jewels, weapons or machinery. Calm stubborn farm guardian. NOT mechanical, not a metal statue. Style: premium hand-painted fantasy illustration with crisp readable silhouette, gentle natural lighting, restrained detail, tactile natural materials, consistent with Shisai rural Japanese fantasy. Full body, three-quarter side view facing LEFT (enemy facing player), all feet and horns/tail fully inside canvas with generous 8% margin. Transparent real alpha background, no floor or baked shadow, no landscape, no text, no frame, no watermark. One creature only. No zodiac symbols, no invented equipment or new anatomy. Output square about 1024x1024."
+    },
+    {
+      "id": "kitsunibi",
+      "path": "assets/trial/kitsunibi.png",
+      "prompt": "Use case: stylized-concept. Asset type: single transparent 2D game creature cutout for Karmany Monsta Android. New creature kitsunibi. Subject: Small young fox with cream-colored fur, four legs, single bushy tail ending in a visibly porous natural callosity that stores phosphorus. Friendly alert youthful fox. No active fire, smoke, magical glow or extra tails, no clothing or accessories. Show the porous tail tip clearly, as anatomy, not an attached lantern. Style: premium hand-painted fantasy illustration with crisp readable silhouette, gentle natural lighting, restrained detail, tactile natural materials, consistent with Shisai rural Japanese fantasy. Full body, three-quarter side view facing LEFT (enemy facing player), all feet and horns/tail fully inside canvas with generous 8% margin. Transparent real alpha background, no floor or baked shadow, no landscape, no text, no frame, no watermark. One creature only. No zodiac symbols, no invented equipment or new anatomy. Output square about 1024x1024."
+    },
+    {
+      "id": "sakuromushi",
+      "path": "assets/trial/sakuromushi.png",
+      "prompt": "Use case: stylized-concept. Asset type: single transparent 2D game creature cutout for Karmany Monsta Android. New creature sakuromushi. Subject: A 50-centimeter rhinoceros beetle, exactly six articulated insect legs, natural beetle horn, closed rounded elytra showing convincing century-old cherry wood grain and warm cherry-bark colors. This is a living insect, NOT a wooden toy. No literal blossoms, branches, clothing or accessories. Closed wings, clear robust beetle silhouette. Style: premium hand-painted fantasy illustration with crisp readable silhouette, gentle natural lighting, restrained detail, tactile natural materials, consistent with Shisai rural Japanese fantasy. Full body, three-quarter side view facing LEFT (enemy facing player), all feet and horns/tail fully inside canvas with generous 8% margin. Transparent real alpha background, no floor or baked shadow, no landscape, no text, no frame, no watermark. One creature only. No zodiac symbols, no invented equipment or new anatomy. Output square about 1024x1024."
+    }
+  ]
+}

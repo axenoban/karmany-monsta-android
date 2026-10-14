@@ -1,4 +1,5 @@
 extends SceneTree
+const LegacyFixture = preload("res://tests/legacy_fixture.gd")
 const Encounter = preload("res://scripts/trial_encounter.gd")
 const Store = preload("res://scripts/save_store.gd")
 const TreeModel = preload("res://scripts/trainer_skill_tree.gd")
@@ -53,7 +54,7 @@ func _run() -> void:
 	app.profile = Store.defaults()
 	app.profile.skill_tree = tree.snapshot()
 	app.load_failed = false
-	app.start_trial()
+	LegacyFixture.start(app)
 	var packed: PackedScene = load("res://scenes/main.tscn")
 	var main := packed.instantiate()
 	root.add_child(main)

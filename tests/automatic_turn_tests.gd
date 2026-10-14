@@ -1,4 +1,5 @@
 extends SceneTree
+const LegacyFixture = preload("res://tests/legacy_fixture.gd")
 const Store = preload("res://scripts/save_store.gd")
 const Encounter = preload("res://scripts/trial_encounter.gd")
 const TreeModel = preload("res://scripts/trainer_skill_tree.gd")
@@ -47,7 +48,7 @@ func _run() -> void:
 	app.profile.skill_tree = _tree()
 	app.load_failed = false
 	app.application_paused = false
-	app.start_trial()
+	LegacyFixture.start(app)
 	var packed: PackedScene = load("res://scenes/main.tscn")
 	var main := packed.instantiate()
 	root.add_child(main)
@@ -108,7 +109,7 @@ func _run() -> void:
 	app.profile.campaign.encounter.rolls = [0.1, 0.2, 0.3]
 	_check(app.trial_action("capture") and app.profile.campaign.collection.size() == 1, "book still grants one captured individual")
 	_check(app.profile.campaign.victories == 1, "automatic flow grants victory once")
-	app.start_trial()
+	LegacyFixture.start(app)
 	app.trial_action("karmany", "golpe")
 	app.response_timer.stop()
 	var legacy: Dictionary = app.profile.duplicate(true)

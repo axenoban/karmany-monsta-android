@@ -1,4 +1,5 @@
 extends SceneTree
+const LegacyFixture = preload("res://tests/legacy_fixture.gd")
 const Store = preload("res://scripts/save_store.gd")
 const Encounter = preload("res://scripts/trial_encounter.gd")
 const PATH := "user://no_resonance_ui_test.json"
@@ -26,7 +27,7 @@ func _run() -> void:
 	app.storage = Store.new(PATH)
 	app.profile = Store.defaults()
 	app.load_failed = false
-	app.start_trial()
+	LegacyFixture.start(app)
 	app.profile.campaign.encounter.rolls = [0.1, 0.2, 0.3]
 	var packed: PackedScene = load("res://scenes/main.tscn")
 	var main := packed.instantiate()
