@@ -1,3 +1,5 @@
+> Antes de desarrollar: leer [Continuidad](docs/CONTINUIDAD.md) y [AGENTS.md](AGENTS.md).
+
 # Karmany Monsta Android
 
 Videojuego Android del universo Karmany Monsta. Baseline validado: Preview 19 (0.10.0), con exploración, stamina y combate. La nueva Preview 0.11.0 añade fichas de localización antes de gastar, cuatro fondos de combate y dirección artística renovada de mapa, cinco Karmany, dos personajes e interfaz. Conserva partida, Libro, árbol, equipo, balance y animaciones. Pendiente de validación física.

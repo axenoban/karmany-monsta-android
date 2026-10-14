@@ -119,6 +119,11 @@ jobs:
           set -o pipefail
           godot --headless --path . --script tests/exploration_energy_tests.gd 2>&1 | tee build/exploration-energy.log
           python3 ci/check_log.py build/exploration-energy.log
+      - name: Validate combat animation boundaries
+        run: |
+          set -o pipefail
+          godot --headless --path . --script tests/combat_animation_tests.gd 2>&1 | tee build/combat-animation.log
+          python3 ci/check_log.py build/combat-animation.log
       - name: Export playable encounter APK
         run: |
           set -o pipefail
@@ -171,5 +176,5 @@ jobs:
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" "${ASSETS[@]}" --clobber
           else
-            gh release create "$TAG" "${ASSETS[@]}" --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Preview 0.11.0: fichas de localización y coste antes de entrar, cuatro fondos de combate por terreno, arte original renovado para cinco Karmany, Ezel, Axe y mapa. Interfaz azul jade/dorada. Conserva reglas, progreso y firma de pruebas."
+            gh release create "$TAG" "${ASSETS[@]}" --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Preview 0.12.0: anticipación, impactos, reacción y habilidades diferenciadas. Documento permanente de continuidad y lectura inicial mediante AGENTS.md. Conserva reglas, progreso y firma de pruebas."
           fi

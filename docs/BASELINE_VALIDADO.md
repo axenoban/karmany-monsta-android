@@ -94,3 +94,10 @@ No cambiar motor, paquete, firma de preview ni esquema de guardado sin justifica
 - CI: 744 comprobaciones Godot y 3 pruebas Python; exportación, firma v2/v3 y auditoría correctas.
 - Integrado en dev/karmany-core por fast-forward desde f830174; main conserva su estado.
 - Siguiente bloque autorizado: información y coste al seleccionar localización, fondos por lugar y renovación visual de criaturas, personajes y UX usando las referencias como inspiración.
+
+## Bloque 14 · Localizaciones y arte
+
+- Aprobación: «prueba correcta», 14/10/2026. Preview22, 0.11.0, commit39ef4b6dbdee1e82abca90ca1f5f9c3cf9b52393.
+- 796 comprobaciones Godot y 3 Python; CI, firma y auditoría correctas.
+- Integrado por fast-forward en dev/karmany-core. PR10 cerrada.
+- Próximo bloque autorizado: animaciones de golpes/habilidades y documento permanente de continuidad.

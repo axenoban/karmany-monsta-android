@@ -6,8 +6,8 @@ var enemy_species := "tanugami"
 var collection_species := ""
 var background_id := "jade"
 var event: Dictionary = {}
-var elapsed := 1.0
-const DURATION := 0.62
+var elapsed := 2.0
+const DURATION := 0.66
 var player_defeated := false
 var enemy_defeated := false
 static var _textures: Dictionary = {}
@@ -39,19 +39,23 @@ func _process(delta: float) -> void:
 	queue_redraw()
 	if elapsed >= DURATION: set_process(false)
 
-# Pure pose sampling keeps every motion bounded, reproducible and independent of combat.
+# Presentation only: no random rolls, timers or writes to the encounter.
+static func offensive(species: String, action: String) -> bool:
+	return action == "golpe" or (action == "insignia" and species != "tanugami")
+
+static func impact(progress: float) -> float:
+	return sin(clampf((progress - 0.42) / 0.30, 0.0, 1.0) * PI)
+
 static func pose(species: String, action: String, progress: float) -> Vector3:
-	var wave := sin(clampf(progress, 0.0, 1.0) * PI)
-	var strike := sin(clampf((progress - 0.18) / 0.65, 0.0, 1.0) * PI)
-	if action in ["guardia", "switch"]: return Vector3(0, -wave * 8, wave * 0.03)
-	var strength := 1.4 if action == "insignia" else 1.0
-	match species:
-		"ushigane": return Vector3(strike * 52 * strength - wave * 8, wave * 3, -wave * 0.08)
-		"kitsunibi": return Vector3(strike * 48 * strength, -wave * 34 * strength, wave * 0.12)
-		"sakuromushi": return Vector3(strike * 38 * strength, -wave * 9, -wave * 0.05)
-		"zephyr": return Vector3(strike * 44 * strength, -wave * 22, -wave * 0.14)
-		"tanugami": return Vector3(strike * 26 if action != "insignia" else 0, -wave * 13, wave * 0.1)
-	return Vector3.ZERO
+	var p := clampf(progress, 0.0, 1.0)
+	var wave := sin(p * PI)
+	if not offensive(species, action): return Vector3(0, -wave * 12, wave * 0.035)
+	var anticipation := sin(clampf(p / 0.26, 0.0, 1.0) * PI)
+	var strike := sin(clampf((p - 0.26) / 0.74, 0.0, 1.0) * PI)
+	var strength := 1.35 if action == "insignia" else 1.0
+	var reach: float = {"ushigane": 76.0, "kitsunibi": 68.0, "sakuromushi": 58.0, "zephyr": 72.0, "tanugami": 48.0}.get(species, 48.0)
+	var lift: float = {"ushigane": -4.0, "kitsunibi": 38.0, "sakuromushi": 12.0, "zephyr": 28.0, "tanugami": 16.0}.get(species, 12.0)
+	return Vector3((strike * reach - anticipation * 15) * strength, -strike * lift * strength, (anticipation * 0.06 - strike * 0.10) * strength)
 
 func _actor(id: String, center: float, height: float, opacity: float = 1.0, mirrored: bool = false) -> void:
 	var art := texture(id)
@@ -60,9 +64,12 @@ func _actor(id: String, center: float, height: float, opacity: float = 1.0, mirr
 	var rect := Rect2(size.x * center - w / 2, size.y * 0.96 - h, w, h)
 	var side := "ally" if center < 0.5 else "enemy"
 	var motion := Vector3.ZERO
-	if elapsed < DURATION and event.get("side") == side:
+	if elapsed < DURATION and id not in ["ezel", "axe"] and event.get("side") == side:
 		motion = pose(id, event.get("action", "golpe"), elapsed / DURATION)
 		if side == "enemy": motion.x = -motion.x
+	elif elapsed < DURATION and id not in ["ezel", "axe"] and offensive(event.get("species", ""), event.get("action", "")):
+		var hit := impact(elapsed / DURATION)
+		motion = Vector3(hit * (18 if side == "enemy" else -18), -hit * 5, hit * (0.06 if side == "enemy" else -0.06))
 	var pivot := rect.position + rect.size * 0.5
 	draw_set_transform(pivot + Vector2(motion.x, motion.y), motion.z)
 	rect.position = -rect.size * 0.5
@@ -93,17 +100,48 @@ func _draw() -> void:
 		_actor("axe", 0.88, 0.75)
 		_actor(ally_species, 0.34, 0.86, 0.45 if player_defeated else 1.0, mirror_for(ally_species, true))
 		_actor(enemy_species, 0.66, 0.82, 0.50 if enemy_defeated else 1.0, mirror_for(enemy_species, false))
-		if elapsed < DURATION and event.get("action") == "insignia":
-			var progress := elapsed / DURATION
-			var color: Color = {"zephyr": Color("9deaff"), "tanugami": Color("87eca1"), "ushigane": Color("e8b763"), "kitsunibi": Color("9eeef0"), "sakuromushi": Color("f3a8ca")}.get(event.get("species"), Color.WHITE)
-			color.a = sin(progress * PI) * 0.85
-			var center := Vector2(size.x * (0.34 if event.get("side") == "ally" else 0.66), size.y * 0.56)
-			var species: String = event.get("species", "")
-			if species == "zephyr":
-				for i in range(3): draw_arc(center, 25 + progress * 65 + i * 14, -1.0, 1.0, 24, color, 4, true)
-			elif species == "kitsunibi":
-				for i in range(4): draw_circle(center + Vector2(cos(progress * TAU + i * PI / 2), sin(progress * TAU + i * PI / 2)) * 48, 8, color)
-			elif species == "sakuromushi":
-				for i in range(6): draw_circle(center + Vector2(cos(i * TAU / 6), sin(i * TAU / 6)) * progress * 90, 6, color)
-			else:
-				draw_arc(center, 20 + progress * 65, 0, TAU, 48, color, 5 if species == "ushigane" else 3, true)
+		if elapsed < DURATION: _effects()
+
+func _effects() -> void:
+	var p := elapsed / DURATION
+	var species: String = event.get("species", "")
+	var action: String = event.get("action", "")
+	var ally: bool = event.get("side", "ally") == "ally"
+	var origin := Vector2(size.x * (0.34 if ally else 0.66), size.y * 0.55)
+	var target := Vector2(size.x * (0.66 if ally else 0.34), size.y * 0.55)
+	var color: Color = {"zephyr": Color("9deaff"), "tanugami": Color("87eca1"), "ushigane": Color("e8b763"), "kitsunibi": Color("9eeef0"), "sakuromushi": Color("f3a8ca")}.get(species, Color.WHITE)
+	color.a = sin(p * PI) * 0.8
+	var radius := minf(size.y * 0.22, 68.0)
+	if offensive(species, action):
+		var travel := clampf((p - 0.25) / 0.28, 0.0, 1.0)
+		var tip := origin.lerp(target, travel)
+		if p > 0.25 and p < 0.58:
+			for i in range(3):
+				var offset := Vector2(0, (i - 1) * 12)
+				draw_line(origin.lerp(tip, 0.45) + offset, tip + offset, color, 4 - i, true)
+		var hit := impact(p)
+		if hit > 0.0:
+			draw_arc(target, radius * (0.35 + hit), 0, TAU, 32, color, 3, true)
+			for i in range(8):
+				var ray := Vector2.from_angle(i * TAU / 8 + 0.2)
+				draw_line(target + ray * radius * 0.4, target + ray * radius * (0.5 + hit), color, 3, true)
+	if action == "insignia":
+		if species == "zephyr":
+			for i in range(3): draw_arc(origin, radius * (0.4 + p) + i * 10, -1.2, 1.2, 24, color, 3, true)
+		elif species == "kitsunibi":
+			for i in range(4): draw_circle(origin + Vector2.from_angle(p * TAU + i * PI / 2) * radius, 5, color)
+		elif species == "sakuromushi":
+			for i in range(6): draw_circle(origin + Vector2.from_angle(i * TAU / 6) * p * radius * 1.6, 4, color)
+	if action in ["guardia", "proteccion"] or (action == "insignia" and species in ["tanugami", "ushigane"]):
+		draw_arc(origin, radius * (0.8 + p * 0.2), 0, TAU, 40, color, 5, true)
+		draw_arc(origin, radius * 0.7, 0, TAU, 40, color, 2, true)
+	if action == "curacion" or (action == "insignia" and species == "tanugami"):
+		for i in range(3):
+			var point := origin + Vector2((i - 1) * 26, -p * radius - i * 10)
+			draw_line(point - Vector2(6, 0), point + Vector2(6, 0), color, 3, true)
+			draw_line(point - Vector2(0, 6), point + Vector2(0, 6), color, 3, true)
+	if action in ["switch", "potenciacion"]:
+		draw_arc(origin, radius * (0.3 + p), 0, TAU, 40, color, 3, true)
+	if action in ["control", "propia"]:
+		for i in range(3):
+			draw_arc(target + Vector2(0, (i - 1) * 15), radius * (0.6 + p * 0.2), 0, TAU, 32, color, 2, true)
