@@ -1,6 +1,8 @@
 extends Control
 
 signal navigate(page: String)
+const Route = preload("res://scripts/jade_route.gd")
+const RouteMap = preload("res://scripts/jade_route_map.gd")
 const Details = preload("res://scripts/combat_details.gd")
 const Encounter = preload("res://scripts/trial_encounter.gd")
 const Router = preload("res://scripts/encounter_router.gd")
@@ -72,7 +74,18 @@ func _stage(stage_mode: String, dead_player: bool = false, dead_enemy: bool = fa
 		stage.play(App.profile.campaign.encounter.get("event", {}))
 
 func _world() -> void:
-	_stage(mode)
+	if mode == "map":
+		var route_map := RouteMap.new()
+		var route: Dictionary = App.profile.campaign.get("route", Route.defaults())
+		var active: bool = not App.profile.campaign.encounter.is_empty() and App.profile.campaign.encounter.phase in ["battle", "replacement", "capture"]
+		route_map.setup(route, active, App.load_failed)
+		route_map.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		route_map.point_selected.connect(func(id: String):
+			App.tap()
+			if App.start_route(id): navigate.emit("battle")
+			else: _notice())
+		column.add_child(route_map)
+	else: _stage(mode)
 	if mode == "intro":
 		column.add_child(_label("Ezel · pensamiento", 23))
 		column.add_child(_label("«Si mis manos pueden hacer crecer una flor en la piedra, ¿por qué no pueden sostener el mundo?»"))
@@ -81,13 +94,15 @@ func _world() -> void:
 			if App.mark_intro_seen(): navigate.emit("jade_play")
 			else: _notice()))
 	else:
-		column.add_child(_label("Elige un punto del mapa. El árbol se aplica al comenzar cada encuentro.", 21))
+		var route: Dictionary = App.profile.campaign.get("route", Route.defaults())
+		var finished: bool = Route.next_point(route).is_empty()
+		column.add_child(_label(("Recorrido de prueba completado · 4/4. Puedes repetir encuentros o entrenar." if finished else "Recorrido · %d/4 completados. Vence para avanzar; capturar es opcional." % route.completed.size()) + " El equipo y el árbol se aplican al iniciar cada encuentro.", 21))
 		var points := HBoxContainer.new()
 		column.add_child(points)
 		points.add_theme_constant_override("separation", 16)
 		points.add_child(_button("● Ezel y Axe", func(): navigate.emit("intro")))
 		var active: bool = not App.profile.campaign.encounter.is_empty() and App.profile.campaign.encounter.phase in ["battle", "replacement", "capture"]
-		points.add_child(_button("● Retomar encuentro" if active else "● Entrenamiento", func():
+		points.add_child(_button("● Retomar encuentro" if active else "● Entrenamiento libre", func():
 			if active:
 				if App.start_trial(): navigate.emit("battle")
 				else: _notice()
@@ -174,10 +189,15 @@ func _battle() -> void:
 		var used: int = state.capture.actions.size()
 		column.add_child(_label("Libro inicial · 45%% por intento · quedan %d de 3" % (3 - used), 25))
 		column.add_child(_button("Intentar vínculo con el Libro", func(): _act("capture", "", revision)))
+		if App.profile.campaign.get("route", Route.defaults()).current.get("encounter_id") == state.id:
+			column.add_child(_button("Continuar recorrido sin vínculo", func():
+				_confirm("La victoria ya cuenta para el recorrido. Continuar renuncia a los intentos restantes de este encuentro; podrás repetirlo después para intentar el vínculo.", func(): _continue_route(state.id, revision), "Continuar sin vínculo")))
 	else:
 		var text: String = enemy_name + " capturado y añadido a la colección." if state.phase == "captured" else (enemy_name + " escapó; puedes iniciar otro encuentro." if state.phase == "escaped" else (encounter.ally_name() + " quedó fuera de combate. La próxima prueba comienza recuperado." if state.phase == "defeat" else "Regresaste al valle."))
 		column.add_child(_label(text, 25))
 		column.add_child(_button("Volver al mapa", func(): navigate.emit("jade_play")))
+		if state.phase in ["captured", "escaped"] and App.profile.campaign.get("route", Route.defaults()).current.get("encounter_id") == state.id:
+			column.add_child(_button("Continuar recorrido", func(): _continue_route(state.id, revision)))
 
 func _notice() -> void:
 	message.text = App.notice
@@ -199,11 +219,11 @@ func _rivals() -> void:
 	dialog.confirmed.connect(dialog.queue_free)
 	dialog.popup_centered(Vector2i(440, 330))
 
-func _confirm(text: String, action: Callable) -> void:
+func _confirm(text: String, action: Callable, confirmation: String = "Confirmar cambio") -> void:
 	var dialog := ConfirmationDialog.new()
 	dialog.dialog_text = text
 	dialog.dialog_autowrap = true
-	dialog.ok_button_text = "Confirmar cambio"
+	dialog.ok_button_text = confirmation
 	add_child(dialog)
 	dialog.confirmed.connect(func():
 		action.call()
@@ -235,3 +255,7 @@ func _details() -> void:
 		return
 	add_child(dialog)
 	dialog.popup_centered(Vector2i(820, 520))
+
+func _continue_route(encounter_id: String, revision: int) -> void:
+	if App.continue_route(encounter_id, revision): navigate.emit("jade_play")
+	else: _notice()

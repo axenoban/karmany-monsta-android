@@ -1,17 +1,17 @@
 # Propuesta de bloque 12 · Recorrido jugable de Valle Jade
 
-Estado: propuesta pendiente de dos decisiones del creador. No modifica reglas ni el juego validado. Baseline: Preview 17 (0.8.1), código 1f6deae, cierre aprobado eded1d0, 14 de octubre de 2026.
+Estado: ruta guiada y avance por victoria aprobados por el creador el 14 de octubre de 2026. Implementación en RECORRIDO_JADE_12.md; pendiente de validación física. Baseline: Preview 17 (0.8.1), código 1f6deae, cierre aprobado eded1d0, 14 de octubre de 2026.
 
 ## Objetivo recomendado
 
 Pasar del encuentro de entrenamiento repetible a un recorrido con avance visible y persistente. Reutilizar los cuatro rivales actuales y sus fichas aprobadas: Tanugami, Ushigane, Kitsunibi y Sakuromushi. El entrenamiento se conserva como acceso separado. Los puntos del recorrido serán identificadores funcionales de prueba; no se presentan como localizaciones canónicas nuevas.
 
-## Decisiones pendientes
+## Decisiones presentadas (resueltas)
 
 1. Acceso: ruta guiada que desbloquea el siguiente encuentro, o cuatro puntos disponibles desde el inicio. Recomendación: guiada, para comprobar un recorrido de principio a fin.
 2. Condición de avance: vencer, manteniendo la captura opcional, o capturar para completar el punto. Recomendación: vencer; no hacer depender el avance de los intentos de Libro. Si la captura falla tres veces, sigue siendo una victoria y se permite repetir el encuentro para intentar el vínculo.
 
-Las recomendaciones son propuestas, no autorizaciones inferidas. No implementar estos dos comportamientos antes de la decisión del creador.
+El creador eligió explícitamente ambas recomendaciones: acceso guiado y victoria suficiente, con captura opcional.
 
 ## Bloque técnico propuesto
 

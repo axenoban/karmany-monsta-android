@@ -109,6 +109,11 @@ jobs:
           set -o pipefail
           godot --headless --path . --script tests/combat_readout_tests.gd 2>&1 | tee build/combat-readout.log
           python3 ci/check_log.py build/combat-readout.log
+      - name: Validate guided Jade route and migration
+        run: |
+          set -o pipefail
+          godot --headless --path . --script tests/jade_route_tests.gd 2>&1 | tee build/jade-route.log
+          python3 ci/check_log.py build/jade-route.log
       - name: Export playable encounter APK
         run: |
           set -o pipefail
@@ -159,5 +164,5 @@ jobs:
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" "${ASSETS[@]}" --clobber
           else
-            gh release create "$TAG" "${ASSETS[@]}" --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Preview 0.8.1: panel Estado y técnicas accesible por toque, con Vida, efectos por individuo, recargas, técnicas y resonancias escaladas por rango. Conserva combate, balance, encuentros anteriores y partida. Revisión mediante imágenes desactivada por defecto. Balance y arte sujetos a prueba. Firma pública solo de pruebas."
+            gh release create "$TAG" "${ASSETS[@]}" --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Preview 0.9.0: recorrido guiado de cuatro encuentros en Valle Jade, desbloqueo por victoria y captura opcional. Progreso persistente y reanudación; conserva entrenamiento libre, combate y partida. Revisión mediante imágenes desactivada por defecto. Balance y arte sujetos a prueba. Firma pública solo de pruebas."
           fi

@@ -156,7 +156,7 @@ func _show(next_page: String) -> void:
 	if page in ["intro", "jade_play", "battle"]:
 		toast.hide()
 	column.add_child(toast)
-	column.add_child(_label("PREVIEW 0.8.1 · ESTADO Y TÉCNICAS", 16, Color("93aaa3")))
+	column.add_child(_label("PREVIEW 0.9 · RECORRIDO DE VALLE JADE", 16, Color("93aaa3")))
 	_safe_margins()
 
 func _label(text: String, font_size: int = 24, color: Color = PAPER) -> Label:

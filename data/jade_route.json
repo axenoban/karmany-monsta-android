@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "id": "jade_trial_route",
+  "experimental": true,
+  "points": [
+    {"id": "jade_point_1", "species": "tanugami"},
+    {"id": "jade_point_2", "species": "ushigane"},
+    {"id": "jade_point_3", "species": "kitsunibi"},
+    {"id": "jade_point_4", "species": "sakuromushi"}
+  ]
+}

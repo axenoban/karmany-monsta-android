@@ -6,9 +6,11 @@ Ramas previstas: main (publicable), dev/karmany-core (baseline validado), featur
 
 ## Probar desde Android
 
-Descargar el APK de la preview más reciente en [Releases](https://github.com/axenoban/karmany-monsta-android/releases). Seguir [Prueba Android 11](docs/PRUEBA_ANDROID_11.md). Cada entrega permite instalación y actualización sobre la preview anterior.
+Descargar el APK de la preview más reciente en [Releases](https://github.com/axenoban/karmany-monsta-android/releases). Para la nueva entrega de recorrido, seguir [Prueba Android 12](docs/PRUEBA_ANDROID_12.md). Cada entrega permite instalación y actualización sobre la preview anterior.
 
 ## Documentación
+
+- [Recorrido guiado de Valle Jade](docs/RECORRIDO_JADE_12.md), nueva entrega pendiente de validación.
 
 - [Decisiones, arquitectura y guía del chat de ilustración](docs/BASE_DESARROLLO.md).
 - [Compilación y firma pública de pruebas](ci/README.md).

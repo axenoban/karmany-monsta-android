@@ -10,6 +10,7 @@ var response_revision := -1
 
 const Store = preload("res://scripts/save_store.gd")
 const TreeModel = preload("res://scripts/trainer_skill_tree.gd")
+const Route = preload("res://scripts/jade_route.gd")
 const Roster = preload("res://scripts/trial_roster.gd")
 const Encounter = preload("res://scripts/trial_encounter.gd")
 const Router = preload("res://scripts/encounter_router.gd")
@@ -125,6 +126,22 @@ func _notification(what: int) -> void:
 		log_event("Aplicación reanudada.")
 
 func start_trial(enemy_species: String = "tanugami") -> bool:
+	return _start_encounter(enemy_species)
+
+func start_route(point_id: String) -> bool:
+	if load_failed: return false
+	var route: Dictionary = profile.campaign.get("route", Route.defaults())
+	var selected := Route.point(point_id)
+	if selected.is_empty() or not Route.unlocked(route, point_id):
+		notice = "Vence en el punto anterior para desbloquear este encuentro."
+		return false
+	if not profile.campaign.encounter.is_empty() and profile.campaign.encounter.phase in ["battle", "replacement", "capture"]:
+		if route.current.get("point_id") == point_id: return true
+		notice = "Retoma y termina el encuentro actual antes de iniciar otro."
+		return false
+	return _start_encounter(selected.species, point_id)
+
+func _start_encounter(enemy_species: String, point_id: String = "") -> bool:
 	if load_failed:
 		return false
 	var next_profile := profile.duplicate(true)
@@ -140,6 +157,8 @@ func start_trial(enemy_species: String = "tanugami") -> bool:
 		notice = "No se pudo iniciar el encuentro."
 		return false
 	next_profile.campaign.encounter = encounter.snapshot()
+	if not next_profile.campaign.has("route"): next_profile.campaign.route = Route.defaults()
+	next_profile.campaign.route.current = {} if point_id.is_empty() else {"point_id": point_id, "encounter_id": encounter.state.id}
 	next_profile.journey.started = true
 	next_profile.journey.visited_jade = true
 	return commit_profile(next_profile)
@@ -182,6 +201,8 @@ func trial_action(operation: String, action_id: String = "", expected_revision: 
 	tree.restore(next_profile.skill_tree)
 	if previous_phase == "battle" and encounter.state.phase == "capture":
 		next_profile.campaign.victories += 1
+		if next_profile.campaign.has("route"):
+			next_profile.campaign.route = Route.record_victory(next_profile.campaign.route, encounter.state.id)
 		if tree.state.level < TreeModel.specification().level_cap:
 			tree.gain_level()
 	if previous_phase == "capture" and encounter.state.phase == "captured":
@@ -239,3 +260,16 @@ func consume_animation(data: Dictionary) -> bool:
 	if key == animation_key: return false
 	animation_key = key
 	return not data.get("event", {}).is_empty()
+
+func continue_route(expected_encounter_id: String, expected_revision: int) -> bool:
+	if load_failed: return false
+	var campaign: Dictionary = profile.campaign
+	var encounter: Dictionary = campaign.encounter
+	var route: Dictionary = campaign.get("route", Route.defaults())
+	if encounter.is_empty() or encounter.id != expected_encounter_id or int(encounter.revision) != expected_revision or route.current.get("encounter_id") != encounter.id or encounter.phase not in ["capture", "captured", "escaped"] or not Route.completed(route, route.current.get("point_id", "")):
+		notice = "Este resultado ya cambió o el encuentro no terminó en victoria."
+		return false
+	var next_profile := profile.duplicate(true)
+	next_profile.campaign.encounter = {}
+	next_profile.campaign.route.current = {}
+	return commit_profile(next_profile)
