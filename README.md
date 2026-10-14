@@ -1,6 +1,6 @@
 # Karmany Monsta Android
 
-Videojuego Android del universo Karmany Monsta. Preview 0.7.0 aplica resonancia opcional primero y habilidad del Karmany después, con respuesta automática del rival y guardado de respuestas pendientes. Preview 14 (0.6.1) fue validada por el creador e integrada a dev/karmany-core; esta fase se prueba en feature/automatic-combat-turns. Las imágenes de revisión continúan desactivadas por defecto.
+Videojuego Android del universo Karmany Monsta. Preview 0.7.0 aplica resonancia opcional primero y habilidad del Karmany después, con respuesta automática del rival y guardado de respuestas pendientes. Preview 15 (0.7.0) fue validada por el creador e integrada a dev/karmany-core. La siguiente fase está pendiente del cuestionario de alcance. Las imágenes de revisión continúan desactivadas por defecto.
 
 Ramas previstas: main (publicable), dev/karmany-core (baseline validado), feature/* (trabajo pendiente de validación).
 

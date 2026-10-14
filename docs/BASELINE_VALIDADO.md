@@ -44,3 +44,14 @@ No cambiar motor, paquete, firma de preview ni esquema de guardado sin justifica
 - Capturas de revisión desactivadas por defecto, solo activación manual de escritorio; bloqueadas en Android y excluidas del APK.
 - Integrado por fast-forward desde `b2c411a`, sin reescribir historia ni alterar main.
 - Nueva decisión del creador para la próxima rama: resonancia opcional primero; habilidad del Karmany termina el turno y da respuesta automática del rival. El cierre manual y el orden libre se reemplazarán únicamente en ese bloque.
+
+## Bloque 09 · Turnos automáticos
+
+- Aprobación: «Prueba exitosa y hasta el momento no encontré errores graves o visibles», 14 de octubre de 2026.
+- APK: Preview 15, versión 0.7.0, versionCode 1015.
+- Código validado: `61cfc5c6b505e38f65f39488e10ddf5ef122bdf5`.
+- Verificación: 344 comprobaciones Godot y tres pruebas Python; CI, exportación, firma v2/v3 y auditoría del APK correctas.
+- Incluye: resonancia opcional antes de la habilidad, respuesta rival automática, recuperación de respuestas pendientes sin duplicar daño y paso directo al Libro tras la derrota rival.
+- Capturas de revisión desactivadas; el paso de render en CI fue omitido.
+- Integrado por fast-forward desde `d078c8b`; main conserva su estado.
+- La siguiente fase se definirá mediante cuestionario solicitado por el creador. No se autorizan aún nuevas reglas, balance, especies o economía.
