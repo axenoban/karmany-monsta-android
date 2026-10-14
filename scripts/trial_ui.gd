@@ -60,6 +60,7 @@ func _build() -> void:
 		header.add_child(_button("Opciones", _options_menu))
 	elif mode == "map": header.add_child(_button("Opciones", _map_options))
 	else: header.add_child(_button("Mapa", func(): navigate.emit("jade_play")))
+	header.get_child(1).size_flags_horizontal = Control.SIZE_SHRINK_END
 	if mode in ["intro", "map", "exploration"]:
 		_world()
 	else:
@@ -165,6 +166,8 @@ func _battle() -> void:
 			actions.add_child(_button(name + extra, func():
 				if tactical and chosen == "insignia" and state.ally_species == "sakuromushi": _support(state, revision)
 				else: _act("karmany", chosen, revision), not reason.is_empty()))
+			var technique_button := actions.get_child(actions.get_child_count() - 1) as Button
+			technique_button.modulate = Color("e2c9ff") if id == "insignia" else (Color("a9e8ff") if id == "guardia" else Color("bdffe3"))
 			if tactical: actions.get_child(actions.get_child_count() - 1).tooltip_text = Catalog.action(state.ally_species, id).description + (" " + reason if not reason.is_empty() else "")
 		var secondary := HBoxContainer.new()
 		column.add_child(secondary)
@@ -378,7 +381,7 @@ func _location_details(point_id: String) -> void:
 	image_view.texture = Stage.texture(info.background)
 	image_view.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	image_view.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	image_view.custom_minimum_size = Vector2(0, 150)
+	image_view.custom_minimum_size = Vector2(0, 120)
 	content.add_child(image_view)
 	content.add_child(_label(info.description, 22))
 	content.add_child(_label("Las criaturas se revelan al buscar un encuentro dentro del lugar.", 20))
@@ -396,6 +399,11 @@ func _location_details(point_id: String) -> void:
 	location_enter_button.name = "LocationEnter"
 	content.add_child(location_enter_button)
 	_update_location_entry()
+	# Keep the entry action visible on first open, including large text.
+	var scroll := content.get_parent() as ScrollContainer
+	scroll.custom_minimum_size.y = 430
+	var dialog := get_node("LocationDetails") as Window
+	dialog.popup_centered(Vector2i(740, 560))
 
 func _update_location_entry() -> void:
 	if not is_instance_valid(location_energy_label) or not is_instance_valid(location_enter_button): return

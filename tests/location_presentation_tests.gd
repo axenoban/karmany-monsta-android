@@ -48,7 +48,10 @@ func _run() -> void:
 		await process_frame
 		button(main, "● 1").pressed.emit()
 		await process_frame
+		await process_frame
 		entry = main.find_child("LocationEnter", true, false) as Button
+		var scroll := entry.get_parent().get_parent() as ScrollContainer
+		check(entry.get_global_rect().end.y <= scroll.get_global_rect().end.y, "entry action fully visible before scrolling, large=%s" % large)
 		check(not entry.disabled and entry.text.contains("10 stamina"), "cost shown before entry")
 		check(app.profile == before and main.page == "jade_play", "opening details does not create encounter, roll or charge")
 		var label := main.find_child("LocationEnergy", true, false) as Label

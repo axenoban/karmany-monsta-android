@@ -15,7 +15,7 @@ const RESTYLED := ["zephyr", "tanugami", "ushigane", "kitsunibi", "sakuromushi",
 
 static func texture(id: String) -> Texture2D:
 	if not _textures.has(id):
-		var asset_id := id + "_v2" if id in RESTYLED else ("jade_overhead_v2" if id == "jade_overhead" else id)
+		var asset_id := id + "_v2" if id in RESTYLED else ("jade_overhead_v2" if id == "jade_overhead" else ("jade_point_1" if id == "jade" else id))
 		_textures[id] = load("res://assets/trial/%s.png" % asset_id)
 	return _textures[id]
 
@@ -85,8 +85,8 @@ func _draw() -> void:
 		if not collection_species.is_empty():
 			_actor(collection_species, 0.66, 0.82, 1.0)
 	else:
-		_actor("ezel", 0.12, 0.80, 0.7)
-		_actor("axe", 0.88, 0.75, 0.7)
+		_actor("ezel", 0.12, 0.80)
+		_actor("axe", 0.88, 0.75)
 		_actor(ally_species, 0.34, 0.86, 0.45 if player_defeated else 1.0, ally_species != "zephyr")
 		_actor(enemy_species, 0.66, 0.82, 0.50 if enemy_defeated else 1.0, enemy_species == "zephyr")
 		if elapsed < DURATION and event.get("action") == "insignia":

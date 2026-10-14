@@ -20,6 +20,8 @@ AdventureTheme centraliza los estilos de botones, paneles y barras. Texto, cifra
 
 ## Validación
 
-788 comprobaciones Godot y 3 pruebas Python correctas. Importación sin errores. 43 comprobaciones nuevas de fichas, consulta sin gasto, bloqueos, pago/reanudación, correspondencia fondo/origen, fallback de Entrenamiento y consumo de arte v2. Se mantienen las regresiones del Libro, árbol, colección, captura, reemplazo y turnos automáticos.
+790 comprobaciones Godot y 3 pruebas Python correctas. Importación sin errores. 45 comprobaciones nuevas de fichas, consulta sin gasto, bloqueos, pago/reanudación, correspondencia fondo/origen, fallback de Entrenamiento y consumo de arte v2. Se mantienen las regresiones del Libro, árbol, colección, captura, reemplazo y turnos automáticos.
 
 Prueba física: docs/PRUEBA_ANDROID_14.md. Capturas de revisión de escritorio excluidas del APK; no activar captura en Android.
+
+Revisión visual de 14 pantallas locales: mapa, ficha e introducción normal/grande, exploración y combate de los cuatro lugares. Corregido el recorte inicial del botón Entrar; se fija un mínimo de contenido y se comprueba su visibilidad con texto normal/grande. Las técnicas se distinguen por color y el acceso Opciones ocupa solo su ancho necesario.
