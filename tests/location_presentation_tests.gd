@@ -93,6 +93,9 @@ func _run() -> void:
 	check(Visuals.details("unknown").is_empty(), "unknown location not invented")
 	for id in Stage.RESTYLED:
 		check(Stage.texture(id).resource_path.ends_with(id + "_v2.png"), "all characters and creatures consume renewed art")
+	for id in ["zephyr", "tanugami", "kitsunibi"]:
+		check(not Stage.mirror_for(id, true), "right-facing ally keeps sprite orientation")
+		check(Stage.mirror_for(id, false), "right-facing enemy faces center after mirror")
 	main.queue_free()
 	await process_frame
 	app.response_timer.stop()

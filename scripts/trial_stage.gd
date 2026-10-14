@@ -12,6 +12,10 @@ var player_defeated := false
 var enemy_defeated := false
 static var _textures: Dictionary = {}
 const RESTYLED := ["zephyr", "tanugami", "ushigane", "kitsunibi", "sakuromushi", "ezel", "axe"]
+const FACING_RIGHT := ["zephyr", "tanugami", "kitsunibi"]
+
+static func mirror_for(species: String, ally: bool) -> bool:
+	return (species in FACING_RIGHT) != ally
 
 static func texture(id: String) -> Texture2D:
 	if not _textures.has(id):
@@ -87,8 +91,8 @@ func _draw() -> void:
 	else:
 		_actor("ezel", 0.12, 0.80)
 		_actor("axe", 0.88, 0.75)
-		_actor(ally_species, 0.34, 0.86, 0.45 if player_defeated else 1.0, ally_species != "zephyr")
-		_actor(enemy_species, 0.66, 0.82, 0.50 if enemy_defeated else 1.0, enemy_species == "zephyr")
+		_actor(ally_species, 0.34, 0.86, 0.45 if player_defeated else 1.0, mirror_for(ally_species, true))
+		_actor(enemy_species, 0.66, 0.82, 0.50 if enemy_defeated else 1.0, mirror_for(enemy_species, false))
 		if elapsed < DURATION and event.get("action") == "insignia":
 			var progress := elapsed / DURATION
 			var color: Color = {"zephyr": Color("9deaff"), "tanugami": Color("87eca1"), "ushigane": Color("e8b763"), "kitsunibi": Color("9eeef0"), "sakuromushi": Color("f3a8ca")}.get(event.get("species"), Color.WHITE)
