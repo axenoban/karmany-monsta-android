@@ -361,13 +361,14 @@ func _species() -> void:
 
 func _settings() -> void:
 	_heading("Ajustes")
-	for key in ["large_text", "haptics", "sound"]:
+	for key in ["large_text", "haptics", "sound", "reduced_motion"]:
 		var current_key: String = key
-		var title: String = {"large_text": "Texto grande", "haptics": "Vibración al tocar", "sound": "Efectos de sonido"}[key]
+		var title: String = {"large_text": "Texto grande", "haptics": "Vibración al tocar", "sound": "Efectos de sonido", "reduced_motion": "Movimiento reducido"}[key]
 		var enabled: bool = App.profile.settings[key]
 		var button := _button(title + (" · Activado" if enabled else " · Desactivado"), func(): _toggle(current_key))
 		button.disabled = App.load_failed
 		body.add_child(button)
+	_copy("Movimiento reducido mantiene quietos a los personajes y simplifica el vínculo. Conserva sonidos y resultados.")
 	var volume := HSlider.new()
 	volume.name = "EffectsVolume"
 	volume.min_value = 0

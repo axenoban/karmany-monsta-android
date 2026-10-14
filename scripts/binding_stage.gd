@@ -1,4 +1,6 @@
 extends Control
+const Motion = preload("res://scripts/motion_preferences.gd")
+var reduced_motion := false
 const EffectAudio = preload("res://scripts/effect_audio.gd")
 var effect_audio: Node
 # The outcome is already persisted. This node never changes capture or inventory.
@@ -45,6 +47,7 @@ static func sample(seconds: float, success: bool) -> Dictionary:
 	return {"position": point, "scale": maxf(0.0, shrink), "alpha": alpha, "rotation": angle}
 
 func _ready() -> void:
+	reduced_motion = Motion.reduced(self)
 	effect_audio = EffectAudio.new()
 	add_child(effect_audio)
 	mouse_filter = Control.MOUSE_FILTER_STOP if cinematic else Control.MOUSE_FILTER_IGNORE
@@ -121,6 +124,9 @@ func _draw() -> void:
 	var source := size / maxf(maxf(size.x / dimensions.x, size.y / dimensions.y), 0.001)
 	draw_texture_rect_region(bg, Rect2(Vector2.ZERO, size), Rect2((dimensions - source) * 0.5, source))
 	draw_rect(Rect2(Vector2.ZERO, size), Color(0.015, 0.04, 0.07, 0.60 if cinematic else 0.30))
+	if reduced_motion:
+		_draw_reduced()
+		return
 	var t := elapsed if cinematic else 0.7
 	var success := outcome == "captured"
 	var book_center := Vector2(size.x * 0.5, size.y * 0.62)
@@ -186,3 +192,17 @@ func _draw() -> void:
 				var sparkle := (2 + i % 3) * unit * result_pulse
 				draw_line(point - Vector2(sparkle, 0), point + Vector2(sparkle, 0), color, 2 * unit, true)
 				draw_line(point - Vector2(0, sparkle), point + Vector2(0, sparkle), color, 2 * unit, true)
+
+func _draw_reduced() -> void:
+	var unit := art_scale(size, cinematic)
+	var center := Vector2(size.x * 0.5, size.y * 0.62)
+	_sprite(BOOK, center, Vector2(390, 235) * unit)
+	var pose: Dictionary = Motion.binding_pose(elapsed, outcome == "captured") if cinematic else {"position": Vector2(0.79, 0.39), "scale": 1.0, "alpha": 0.0 if outcome in ["captured", "escaped"] else 1.0, "rotation": 0.0}
+	_sprite(Stage.texture(species), pose.position * size, Vector2(280, 300) * unit, pose.alpha, 0, Stage.mirror_for(species, false))
+	if cinematic and elapsed >= 2.05:
+		var color := Color("9de4bd") if outcome == "captured" else Color("ffd0a1")
+		color.a = 0.65
+		draw_arc(center + Vector2(0, -40) * unit, 44 * unit, 0, TAU, 48, color, 3 * unit, true)
+		if outcome == "captured":
+			var point := center + Vector2(0, -40) * unit
+			draw_polyline(PackedVector2Array([point + Vector2(-20, 0) * unit, point + Vector2(-5, 14) * unit, point + Vector2(23, -18) * unit]), color, 4 * unit, true)

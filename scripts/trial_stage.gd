@@ -1,4 +1,6 @@
 extends Control
+const Motion = preload("res://scripts/motion_preferences.gd")
+var reduced_motion := false
 const EffectAudio = preload("res://scripts/effect_audio.gd")
 var effect_audio: Node
 
@@ -26,6 +28,7 @@ static func texture(id: String) -> Texture2D:
 	return _textures[id]
 
 func _ready() -> void:
+	reduced_motion = Motion.reduced(self)
 	effect_audio = EffectAudio.new()
 	add_child(effect_audio)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -76,6 +79,7 @@ func _actor(id: String, center: float, height: float, opacity: float = 1.0, mirr
 	elif elapsed < DURATION and id not in ["ezel", "axe"] and offensive(event.get("species", ""), event.get("action", "")):
 		var hit := impact(elapsed / DURATION)
 		motion = Vector3(hit * (18 if side == "enemy" else -18), -hit * 5, hit * (0.06 if side == "enemy" else -0.06))
+	motion = Motion.actor_motion(motion, reduced_motion)
 	var pivot := rect.position + rect.size * 0.5
 	draw_set_transform(pivot + Vector2(motion.x, motion.y), motion.z)
 	rect.position = -rect.size * 0.5
@@ -109,6 +113,9 @@ func _draw() -> void:
 		if elapsed < DURATION: _effects()
 
 func _effects() -> void:
+	if reduced_motion:
+		_still_effects()
+		return
 	var p := elapsed / DURATION
 	var species: String = event.get("species", "")
 	var action: String = event.get("action", "")
@@ -151,3 +158,19 @@ func _effects() -> void:
 	if action in ["control", "propia"]:
 		for i in range(3):
 			draw_arc(target + Vector2(0, (i - 1) * 15), radius * (0.6 + p * 0.2), 0, TAU, 32, color, 2, true)
+
+func _still_effects() -> void:
+	var action: String = event.get("action", "")
+	var attacks := offensive(event.get("species", ""), action)
+	var ally: bool = event.get("side", "ally") == "ally"
+	var center := Vector2(size.x * (0.66 if ally == attacks else 0.34), size.y * 0.52)
+	var radius := minf(28.0, size.y * 0.14)
+	var alpha := sin(clampf(elapsed / DURATION, 0, 1) * PI) * 0.8
+	var color := Color(0.68, 0.93, 0.95, alpha)
+	if action == "curacion" or (action == "insignia" and event.get("species") == "tanugami"):
+		color = Color(0.65, 1.0, 0.75, alpha)
+		draw_line(center - Vector2(radius, 0), center + Vector2(radius, 0), color, 4, true)
+		draw_line(center - Vector2(0, radius), center + Vector2(0, radius), color, 4, true)
+	else:
+		draw_arc(center, radius, 0, TAU, 32, color, 3, true)
+		if attacks: draw_line(center + Vector2(-radius * 0.5, radius * 0.5), center + Vector2(radius * 0.5, -radius * 0.5), color, 3, true)
