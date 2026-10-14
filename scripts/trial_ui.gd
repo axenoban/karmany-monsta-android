@@ -109,7 +109,7 @@ func _battle() -> void:
 			var chosen: String = id
 			var reason := encounter.reason("karmany", chosen)
 			var name: String = Encounter.rules().actions[id].name
-			var extra := " · %d turnos" % maxi(0, int(state.ready.get(id, 0)) - state.round) if int(state.ready.get(id, 0)) > state.round else ""
+			var extra := " · T%d" % int(state.ready.get(id, 0)) if int(state.ready.get(id, 0)) > state.round else ""
 			actions.add_child(_button(name + extra, func(): _act("karmany", chosen, revision), not reason.is_empty()))
 		var resonances := HBoxContainer.new()
 		column.add_child(resonances)

@@ -14,14 +14,11 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	resized.connect(queue_redraw)
 
-func _actor(id: String, center: float, height: float, opacity: float = 1.0, flip: bool = false) -> void:
+func _actor(id: String, center: float, height: float, opacity: float = 1.0) -> void:
 	var art := texture(id)
 	var h := size.y * height
 	var w := h * art.get_width() / art.get_height()
 	var rect := Rect2(size.x * center - w / 2, size.y * 0.96 - h, w, h)
-	if flip:
-		rect.position.x += rect.size.x
-		rect.size.x = -rect.size.x
 	draw_texture_rect(art, rect, false, Color(1, 1, 1, opacity))
 
 func _draw() -> void:
@@ -34,9 +31,9 @@ func _draw() -> void:
 	elif mode == "collection":
 		_actor("zephyr", 0.34, 0.86)
 		if not App.profile.campaign.collection.is_empty():
-			_actor("tanugami", 0.66, 0.82, 1.0, true)
+			_actor("tanugami", 0.66, 0.82, 1.0)
 	else:
 		_actor("ezel", 0.12, 0.80, 0.7)
 		_actor("axe", 0.88, 0.75, 0.7)
 		_actor("zephyr", 0.34, 0.86, 0.45 if player_defeated else 1.0)
-		_actor("tanugami", 0.66, 0.82, 0.50 if enemy_defeated else 1.0, true)
+		_actor("tanugami", 0.66, 0.82, 0.50 if enemy_defeated else 1.0)
