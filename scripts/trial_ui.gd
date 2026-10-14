@@ -56,6 +56,8 @@ func _stage(stage_mode: String, dead_player: bool = false, dead_enemy: bool = fa
 	stage.mode = stage_mode
 	stage.player_defeated = dead_player
 	stage.enemy_defeated = dead_enemy
+	if stage_mode == "battle":
+		stage.ally_species = App.profile.campaign.encounter.get("ally_species", "zephyr")
 	stage.custom_minimum_size = Vector2(0, 170)
 	stage.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	column.add_child(stage)
@@ -83,6 +85,7 @@ func _world() -> void:
 		var links := HBoxContainer.new()
 		column.add_child(links)
 		links.add_child(_button("Colección · %d" % (1 + App.profile.campaign.collection.size()), func(): navigate.emit("collection")))
+		links.add_child(_button("Equipo", func(): navigate.emit("team")))
 		links.add_child(_button("Libro", func(): navigate.emit("book")))
 		links.add_child(_button("Menú", func(): navigate.emit("home")))
 
@@ -99,7 +102,7 @@ func _battle() -> void:
 		return
 	var state := encounter.state
 	var revision: int = state.revision
-	column.add_child(_label("Zephyr  %d / 80                 Tanugami  %d / 80                 Turno %d" % [state.player_hp, state.enemy_hp, state.round], 26))
+	column.add_child(_label("%s  %d / 80       Tanugami rival  %d / 80       Turno %d" % [encounter.ally_name(), state.player_hp, state.enemy_hp, state.round], 26))
 	_stage("battle", state.player_hp == 0, state.enemy_hp == 0)
 	var action_label := _label(encounter.last_action_text(), 22)
 	action_label.name = "LastAction"
@@ -131,7 +134,7 @@ func _battle() -> void:
 		column.add_child(_label("Libro inicial · 45%% por intento · quedan %d de 3" % (3 - used), 25))
 		column.add_child(_button("Intentar vínculo con el Libro", func(): _act("capture", "", revision)))
 	else:
-		var text := "Tanugami capturado y añadido a la colección." if state.phase == "captured" else ("Tanugami escapó; puedes iniciar otro encuentro." if state.phase == "escaped" else ("Zephyr quedó fuera de combate. La próxima prueba comienza recuperado." if state.phase == "defeat" else "Regresaste al valle."))
+		var text := "Tanugami capturado y añadido a la colección." if state.phase == "captured" else ("Tanugami escapó; puedes iniciar otro encuentro." if state.phase == "escaped" else (encounter.ally_name() + " quedó fuera de combate. La próxima prueba comienza recuperado." if state.phase == "defeat" else "Regresaste al valle."))
 		column.add_child(_label(text, 25))
 		column.add_child(_button("Volver al mapa", func(): navigate.emit("jade_play")))
 

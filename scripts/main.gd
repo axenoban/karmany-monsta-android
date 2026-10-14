@@ -7,6 +7,7 @@ const Catalog = preload("res://scripts/species_catalog.gd")
 const Books = preload("res://scripts/book_progression.gd")
 const Structure = preload("res://scripts/combat_structure.gd")
 const TreeModel = preload("res://scripts/trainer_skill_tree.gd")
+const Roster = preload("res://scripts/trial_roster.gd")
 const TrialUI = preload("res://scripts/trial_ui.gd")
 const Stage = preload("res://scripts/trial_stage.gd")
 var tree_scroll_position := 0
@@ -148,12 +149,13 @@ func _show(next_page: String) -> void:
 		"tree_lab": _tree_lab()
 		"intro", "jade_play", "battle": _playable()
 		"collection": _collection()
+		"team": _team()
 	toast = _label("", 18, JADE)
 	toast.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	if page in ["intro", "jade_play", "battle"]:
 		toast.hide()
 	column.add_child(toast)
-	column.add_child(_label("PREVIEW 0.5 · ENCUENTRO JUGABLE", 16, Color("93aaa3")))
+	column.add_child(_label("PREVIEW 0.6 · EQUIPO Y ÚLTIMA ACCIÓN", 16, Color("93aaa3")))
 	_safe_margins()
 
 func _label(text: String, font_size: int = 24, color: Color = PAPER) -> Label:
@@ -420,7 +422,7 @@ func _back() -> void:
 		export_dialog.hide()
 	elif dialog.visible:
 		dialog.hide()
-	elif page in ["battle", "intro", "collection"]:
+	elif page in ["battle", "intro", "collection", "team"]:
 		_show("jade_play")
 	elif page == "jade_play":
 		_show("home")
@@ -477,8 +479,60 @@ func _collection() -> void:
 	stage.mode = "collection"
 	stage.custom_minimum_size = Vector2(0, 260)
 	body.add_child(stage)
-	_copy("Zephyr · vínculo inicial")
-	for entry in App.profile.campaign.collection:
-		_copy("Tanugami · " + entry.id + " · Común")
+	var in_progress := _encounter_in_progress()
+	for member in Roster.owned(App.profile.campaign):
+		var chosen_id: String = member.instance_id
+		_copy(Roster.member_name(member))
+		var equipped := false
+		for current in App.profile.campaign.team.members:
+			if current.instance_id == chosen_id: equipped = true
+		var add := _button("Ya está en el equipo" if equipped else "Añadir al equipo", func(): _team_action("add", chosen_id, "collection"))
+		add.disabled = equipped or in_progress or App.profile.campaign.team.members.size() >= 3 or App.load_failed
+		body.add_child(add)
+	body.add_child(_button("Preparar equipo", func(): _show("team")))
 	_copy("Capturas guardadas: %d. Los duplicados son individuos diferentes y no repiten la bonificación del árbol." % App.profile.campaign.collection.size())
+	body.add_child(_button("Volver al valle", func(): _show("jade_play")))
+
+func _encounter_in_progress() -> bool:
+	return not App.profile.campaign.encounter.is_empty() and App.profile.campaign.encounter.phase in ["battle", "capture"]
+
+func _team_action(operation: String, member_id: String, return_page: String = "team") -> void:
+	if App.change_team(operation, member_id):
+		_show(return_page)
+		toast.text = "Equipo guardado. Se aplica al siguiente encuentro."
+	else:
+		toast.text = App.notice
+
+func _team() -> void:
+	var team: Dictionary = App.profile.campaign.team
+	_heading("Equipo · %d / 3" % team.members.size())
+	_copy("Elige el Karmany activo antes del encuentro. Cada individuo capturado puede ocupar un espacio.")
+	var locked := _encounter_in_progress()
+	if locked:
+		_copy("El encuentro está en curso. Termínalo o abandónalo para cambiar el equipo.")
+	for member in team.members:
+		var chosen: String = member.instance_id
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 18)
+		body.add_child(row)
+		var portrait := TextureRect.new()
+		portrait.texture = Stage.texture(member.species_id)
+		portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		portrait.custom_minimum_size = Vector2(120, 120)
+		row.add_child(portrait)
+		var text := VBoxContainer.new()
+		text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_child(text)
+		text.add_child(_label(Roster.member_name(member) + (" · ACTIVO" if chosen == team.active_id else " · RESERVA")))
+		var buttons := HBoxContainer.new()
+		text.add_child(buttons)
+		var active := _button("Elegir activo", func(): _team_action("active", chosen))
+		active.disabled = chosen == team.active_id or locked or App.load_failed
+		buttons.add_child(active)
+		var remove := _button("Retirar del equipo", func(): _team_action("remove", chosen))
+		remove.disabled = locked or team.members.size() == 1 or App.load_failed
+		buttons.add_child(remove)
+	_copy("Retirar del equipo conserva la criatura en la colección. En esta prueba todos usan las fichas experimentales ya definidas.")
+	body.add_child(_button("Añadir desde la colección", func(): _show("collection")))
 	body.add_child(_button("Volver al valle", func(): _show("jade_play")))

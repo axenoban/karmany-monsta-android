@@ -25,6 +25,8 @@ static func policy() -> BookCapturePolicy:
 static func valid(data: Variant) -> bool:
 	if not data is Dictionary or data.get("schema") != 1 or not data.get("id") is String or data.id.is_empty():
 		return false
+	if data.get("ally_species", "zephyr") not in ["zephyr", "tanugami"] or not data.get("ally_id", "zephyr-start") is String or data.get("ally_id", "zephyr-start").is_empty():
+		return false
 	if data.get("phase") not in ["battle", "capture", "captured", "escaped", "defeat", "retreated"]:
 		return false
 	for key in ["round", "revision"]:
@@ -67,7 +69,7 @@ static func valid(data: Variant) -> bool:
 	var capture := Capture.new()
 	return data.enemy_hp == 0 and data.player_hp > 0 and capture.restore(data.get("capture"), policy()) and data.capture.encounter_id == data.id and capture.state == ("offered" if data.phase == "capture" else data.phase)
 
-func begin(id: String, tree: Dictionary, rolls: Array) -> bool:
+func begin(id: String, tree: Dictionary, rolls: Array, ally_species: String = "zephyr", ally_id: String = "zephyr-start") -> bool:
 	if not state.is_empty() or id.is_empty() or not SkillTreeModel.valid(tree):
 		return false
 	var loadout := {}
@@ -75,7 +77,7 @@ func begin(id: String, tree: Dictionary, rolls: Array) -> bool:
 		loadout[resonance] = int(tree.ranks[resonance])
 	var turn := Turn.new()
 	turn.begin(id + ":1")
-	state = {"schema": 1, "id": id, "phase": "battle", "round": 1, "revision": 0, "player_hp": int(rules().stats.life), "enemy_hp": int(rules().stats.life), "guard": 0.0, "boost": 0.0, "weaken": 0.0, "ready": {}, "loadout": loadout, "rolls": rolls.duplicate(), "log": [], "last_action": "", "turn": turn.snapshot(), "capture": {}}
+	state = {"schema": 1, "id": id, "ally_species": ally_species, "ally_id": ally_id, "phase": "battle", "round": 1, "revision": 0, "player_hp": int(rules().stats.life), "enemy_hp": int(rules().stats.life), "guard": 0.0, "boost": 0.0, "weaken": 0.0, "ready": {}, "loadout": loadout, "rolls": rolls.duplicate(), "log": [], "last_action": "", "turn": turn.snapshot(), "capture": {}}
 	if not valid(state):
 		state.clear()
 		return false
@@ -86,6 +88,8 @@ func restore(data: Variant) -> bool:
 		last_error = "Encuentro guardado inválido."
 		return false
 	state = data.duplicate(true)
+	state.ally_species = state.get("ally_species", "zephyr")
+	state.ally_id = state.get("ally_id", "zephyr-start")
 	for key in ["round", "revision", "player_hp", "enemy_hp"]:
 		state[key] = int(state[key])
 	return true
@@ -111,7 +115,7 @@ func reason(owner: String, id: String) -> String:
 	if int(state.ready.get(id, 0)) > state.round:
 		return "Disponible en turno %d." % int(state.ready[id])
 	if id == "curacion" and state.player_hp == int(rules().stats.life):
-		return "Zephyr ya tiene toda su vida."
+		return ally_name() + " ya tiene toda su vida."
 	return ""
 
 func _log(line: String) -> void:
@@ -131,14 +135,14 @@ func act(owner: String, id: String) -> bool:
 		var damage := maxi(1, roundi(float(rules().stats.attack) * float(effect.power) * (1.0 + float(state.boost)) - float(rules().stats.defense)))
 		state.enemy_hp = maxi(0, state.enemy_hp - damage)
 		state.boost = 0.0
-		_log("Zephyr · %s · %d de daño." % [effect.name, damage])
+		_log("%s · %s · %d de daño." % [ally_name(), effect.name, damage])
 	elif effect.has("heal"):
 		var healing := mini(int(rules().stats.life) - state.player_hp, roundi(effect.heal * scale))
 		state.player_hp += healing
 		_log("Ezel · %s · +%d de Vida." % [effect.name, healing])
 	elif effect.has("guard"):
 		state.guard = maxf(state.guard, minf(0.8, effect.guard * scale))
-		_log("%s · %s · %d%% de protección ante el próximo ataque." % ["Zephyr" if owner == "karmany" else "Ezel", effect.name, roundi(state.guard * 100)])
+		_log("%s · %s · %d%% de protección ante el próximo ataque." % [ally_name() if owner == "karmany" else "Ezel", effect.name, roundi(state.guard * 100)])
 	elif effect.has("boost"):
 		state.boost = effect.boost * scale
 		_log("Ezel · %s · +%d%% al próximo golpe." % [effect.name, roundi(state.boost * 100)])
@@ -160,7 +164,7 @@ func act(owner: String, id: String) -> bool:
 func end_round() -> bool:
 	last_error = ""
 	if state.get("phase") != "battle" or _turn().available("karmany"):
-		last_error = "Primero elige una acción de Zephyr."
+		last_error = "Primero elige una acción de " + ally_name() + "."
 		return false
 	var power := 1.5 if state.round % 3 == 0 else 1.0
 	var base_damage := maxi(1, roundi(float(rules().stats.attack) * power - float(rules().stats.defense)))
@@ -215,3 +219,6 @@ static func last_action_from(data: Dictionary) -> String:
 func last_action_text() -> String:
 	var action := last_action_from(state)
 	return "Última acción: " + action if not action.is_empty() else "Elige una acción y una resonancia opcional, en orden libre."
+
+func ally_name() -> String:
+	return "Tanugami aliado" if state.get("ally_species", "zephyr") == "tanugami" else "Zephyr"

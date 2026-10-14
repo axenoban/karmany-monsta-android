@@ -77,6 +77,11 @@ jobs:
           set -o pipefail
           godot --headless --path . --script tests/last_action_tests.gd 2>&1 | tee build/last-action.log
           python3 ci/check_log.py build/last-action.log
+      - name: Validate collection and team loadout
+        run: |
+          set -o pipefail
+          godot --headless --path . --script tests/roster_tests.gd 2>&1 | tee build/roster.log
+          python3 ci/check_log.py build/roster.log
       - name: Export playable encounter APK
         run: |
           set -o pipefail
@@ -123,5 +128,5 @@ jobs:
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" build/karmany-monsta-preview.apk build/apk.sha256 build/ui-review.zip --clobber
           else
-            gh release create "$TAG" build/karmany-monsta-preview.apk build/apk.sha256 build/ui-review.zip --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Preview 0.5.0: encuentro jugable Ezel y Zephyr contra Tanugami, personajes y paisaje ilustrados, resonancias experimentales, captura con tres intentos y colección persistente. Mejora de touch y migración del guardado. Balance y arte sujetos a prueba. Firma pública solo de pruebas."
+            gh release create "$TAG" build/karmany-monsta-preview.apk build/apk.sha256 build/ui-review.zip --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Preview 0.6.0: muestra únicamente la última acción con actor, habilidad y resultado. Equipo de hasta tres individuos capturados y selección del activo antes de combatir. Conserva combate, resonancias, Libro y guardado migrado. Balance y arte sujetos a prueba. Firma pública solo de pruebas."
           fi

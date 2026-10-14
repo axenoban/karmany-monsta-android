@@ -77,6 +77,19 @@ func _run() -> void:
 		await process_frame
 		await RenderingServer.frame_post_draw
 		root.get_texture().get_image().save_png("res://build/screenshots/%s-result.png" % page)
+	app.change_team("add", "jade-1")
+	app.change_team("active", "jade-1")
+	for page in ["team", "collection"]:
+		main._show(page)
+		await process_frame
+		await RenderingServer.frame_post_draw
+		root.get_texture().get_image().save_png("res://build/screenshots/%s-roster.png" % page)
+	app.start_trial()
+	app.trial_action("karmany", "golpe")
+	main._show("battle")
+	await process_frame
+	await RenderingServer.frame_post_draw
+	root.get_texture().get_image().save_png("res://build/screenshots/tanugami-ally.png")
 	main.queue_free()
 	await process_frame
 	print("Rendered UI screens")

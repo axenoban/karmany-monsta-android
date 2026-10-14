@@ -1,12 +1,12 @@
 # Karmany Monsta Android
 
-Videojuego Android del universo Karmany Monsta. Preview 0.5.0 incorpora el primer encuentro jugable: Ezel y Zephyr contra Tanugami, paisaje/personajes ilustrados, acciones tácticas, resonancias, captura con el Libro y colección guardada. Balance y técnicas son experimentales aprobados para esta prueba. Preview 8 (0.4.0) es el último baseline validado; el touch del árbol se mejora en esta rama.
+Videojuego Android del universo Karmany Monsta. Preview 0.6.0 muestra solo la última acción de combate y conecta la colección con un equipo de hasta tres Karmany: el activo se elige antes del encuentro. Conserva el combate de prueba, ilustraciones, resonancias, Libro y guardado. Preview 8 (0.4.0) sigue siendo el baseline validado; la rama jugable espera validación física.
 
 Ramas previstas: main (publicable), dev/karmany-core (baseline validado), feature/* (trabajo pendiente de validación).
 
 ## Probar desde Android
 
-Descargar el APK de la preview más reciente en [Releases](https://github.com/axenoban/karmany-monsta-android/releases). Seguir [Prueba Android 05](docs/PRUEBA_ANDROID_05.md). Cada entrega permite instalación y actualización sobre la preview anterior.
+Descargar el APK de la preview más reciente en [Releases](https://github.com/axenoban/karmany-monsta-android/releases). Seguir [Prueba Android 06](docs/PRUEBA_ANDROID_06.md). Cada entrega permite instalación y actualización sobre la preview anterior.
 
 ## Documentación
 
@@ -17,6 +17,9 @@ Descargar el APK de la preview más reciente en [Releases](https://github.com/ax
 - [Propuesta de combate para aprobación](docs/COMBATE_PROPUESTA_01.md).
 - [Decisiones de entrenadores](docs/DECISIONES_ENTRENADORES_03.md).
 - [Prueba Android 03](docs/PRUEBA_ANDROID_03.md).
+- [Última acción](docs/CORRECCION_ULTIMA_ACCION.md).
+- [Equipo jugable](docs/EQUIPO_JUGABLE_07.md).
+- [Prueba Android 06](docs/PRUEBA_ANDROID_06.md).
 - [Encuentro jugable y fuentes](docs/ENCUENTRO_JUGABLE_06.md).
 - [Prueba Android 05](docs/PRUEBA_ANDROID_05.md).
 - [Análisis y decisiones del árbol](docs/ARBOL_RESONANCIAS_05.md).

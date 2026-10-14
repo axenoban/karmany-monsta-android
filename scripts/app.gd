@@ -2,6 +2,7 @@ extends Node
 
 const Store = preload("res://scripts/save_store.gd")
 const TreeModel = preload("res://scripts/trainer_skill_tree.gd")
+const Roster = preload("res://scripts/trial_roster.gd")
 const Encounter = preload("res://scripts/trial_encounter.gd")
 const Campaign = preload("res://scripts/trial_campaign.gd")
 const LOG_PATH := "user://diagnostic.log"
@@ -106,10 +107,17 @@ func start_trial() -> bool:
 	var next_profile := profile.duplicate(true)
 	if not next_profile.campaign.encounter.is_empty() and next_profile.campaign.encounter.phase in ["battle", "capture"]:
 		return true
+	if not Roster.valid(next_profile.campaign.team, next_profile.campaign):
+		notice = "Elige un equipo válido antes de comenzar."
+		return false
 	var encounter := Encounter.new()
 	next_profile.campaign.sequence += 1
 	var rolls := [randf(), randf(), randf()]
-	if not encounter.begin("jade-%d" % int(next_profile.campaign.sequence), profile.skill_tree, rolls):
+	var active_member := {}
+	for member in next_profile.campaign.team.members:
+		if member.instance_id == next_profile.campaign.team.active_id:
+			active_member = member
+	if not encounter.begin("jade-%d" % int(next_profile.campaign.sequence), profile.skill_tree, rolls, active_member.species_id, active_member.instance_id):
 		notice = "No se pudo iniciar el encuentro."
 		return false
 	next_profile.campaign.encounter = encounter.snapshot()
@@ -157,4 +165,16 @@ func trial_action(operation: String, action_id: String = "", expected_revision: 
 		if not tree.state.captured_species.has("tanugami"):
 			tree.record_capture("tanugami")
 	next_profile.skill_tree = tree.snapshot()
+	return commit_profile(next_profile)
+
+func change_team(operation: String, instance_id: String) -> bool:
+	if load_failed:
+		return false
+	var roster := Roster.new()
+	var next_team := roster.change(profile.campaign, operation, instance_id)
+	if next_team.is_empty():
+		notice = roster.last_error
+		return false
+	var next_profile := profile.duplicate(true)
+	next_profile.campaign.team = next_team
 	return commit_profile(next_profile)

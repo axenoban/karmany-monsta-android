@@ -1,6 +1,7 @@
 extends Control
 
 var mode := "battle"
+var ally_species := "zephyr"
 var player_defeated := false
 var enemy_defeated := false
 static var _textures: Dictionary = {}
@@ -14,12 +15,17 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	resized.connect(queue_redraw)
 
-func _actor(id: String, center: float, height: float, opacity: float = 1.0) -> void:
+func _actor(id: String, center: float, height: float, opacity: float = 1.0, mirrored: bool = false) -> void:
 	var art := texture(id)
 	var h := size.y * height
 	var w := h * art.get_width() / art.get_height()
 	var rect := Rect2(size.x * center - w / 2, size.y * 0.96 - h, w, h)
-	draw_texture_rect(art, rect, false, Color(1, 1, 1, opacity))
+	if mirrored:
+		draw_set_transform(rect.position + Vector2(rect.size.x, 0), 0.0, Vector2(-1, 1))
+		draw_texture_rect(art, Rect2(Vector2.ZERO, rect.size), false, Color(1, 1, 1, opacity))
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+	else:
+		draw_texture_rect(art, rect, false, Color(1, 1, 1, opacity))
 
 func _draw() -> void:
 	var background := texture("jade")
@@ -35,5 +41,5 @@ func _draw() -> void:
 	else:
 		_actor("ezel", 0.12, 0.80, 0.7)
 		_actor("axe", 0.88, 0.75, 0.7)
-		_actor("zephyr", 0.34, 0.86, 0.45 if player_defeated else 1.0)
+		_actor(ally_species, 0.34, 0.86, 0.45 if player_defeated else 1.0, ally_species == "tanugami")
 		_actor("tanugami", 0.66, 0.82, 0.50 if enemy_defeated else 1.0)
