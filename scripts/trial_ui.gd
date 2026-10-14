@@ -126,7 +126,7 @@ func _battle() -> void:
 		finish.add_child(_button("Abandonar encuentro", func(): _act("retreat", "", revision)))
 	elif state.phase == "capture":
 		var used: int = state.capture.actions.size()
-		column.add_child(_label("Libro inicial · 45% por intento · quedan %d de 3" % (3 - used), 25))
+		column.add_child(_label("Libro inicial · 45%% por intento · quedan %d de 3" % (3 - used), 25))
 		column.add_child(_button("Intentar vínculo con el Libro", func(): _act("capture", "", revision)))
 	else:
 		var text := "Tanugami capturado y añadido a la colección." if state.phase == "captured" else ("Tanugami escapó; puedes iniciar otro encuentro." if state.phase == "escaped" else ("Zephyr quedó fuera de combate. La próxima prueba comienza recuperado." if state.phase == "defeat" else "Regresaste al valle."))

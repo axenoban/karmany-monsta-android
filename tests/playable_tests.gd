@@ -105,6 +105,14 @@ func _run() -> void:
 			app.trial_action("karmany", "insignia" if current.reason("karmany", "insignia").is_empty() else "golpe")
 		else: app.trial_action("end")
 	_check(app.profile.campaign.victories == 1 and app.profile.skill_tree.level == 2, "victory awards one trainer level exactly once")
+	var capture_scene: PackedScene = load("res://scenes/main.tscn")
+	var capture_ui := capture_scene.instantiate()
+	root.add_child(capture_ui)
+	capture_ui._show("battle")
+	await process_frame
+	_check(capture_ui.get_node_or_null("Page") != null, "capture UI formats the literal percent sign")
+	capture_ui.queue_free()
+	await process_frame
 	app.profile.campaign.encounter.rolls = [0.1, 0.1, 0.1]
 	_check(app.trial_action("capture") and app.profile.campaign.collection.size() == 1, "capture adds one persistent individual")
 	_check(not app.trial_action("capture") and app.profile.campaign.collection.size() == 1, "terminal capture cannot duplicate rewards")
