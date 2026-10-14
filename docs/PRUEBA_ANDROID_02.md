@@ -1,6 +1,8 @@
 # Bloque 02 · Bestiario y contratos de captura
 
-Estado: pendiente de validación del creador.
+Estado: aprobado por el creador el 14 de octubre de 2026 mediante «Prueba correcta».
+
+Versión aprobada: 0.2.0, Android Preview 4, commit `e09462a6d551c1583a8c30f67be9dbe2908fea4d`. El bloque se integra en `dev/karmany-core`; su aprobación no implica aprobar estadísticas o reglas nuevas de combate.
 
 ## Incluye
 

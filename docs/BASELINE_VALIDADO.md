@@ -14,3 +14,12 @@
 `dev/karmany-core` se establece desde este código validado, seguido solo por documentación de cierre. `main` conserva la inicialización; no hay versión comercial publicable.
 
 No cambiar motor, paquete, firma de preview ni esquema de guardado sin justificación y regresiones. Los bloques nuevos se trabajan en `feature/*` y no se integran hasta su validación.
+
+## Bloque 02 · Bestiario de Valle Jade y contratos de captura
+
+- Aprobación: «Prueba correcta», 14 de octubre de 2026.
+- APK: Preview 4, versión 0.2.0, versionCode 1004.
+- Código aprobado: `e09462a6d551c1583a8c30f67be9dbe2908fea4d`.
+- Verificación: 35 regresiones de base/navegación y 38 de catálogo/captura, CI y firma correctos.
+- Alcance: 15 especies canónicas, filtros/fichas, contratos de captura y restauración. No incluye combate o captura jugable.
+- `dev/karmany-core` avanza por fast-forward desde el baseline anterior; el cierre solo cambia documentación.
