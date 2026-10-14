@@ -23,6 +23,14 @@ func load_data(data: Variant) -> bool:
 	if data.get("stats") != ["vida", "ataque", "defensa", "velocidad"] or data.get("resonance_owner") != "trainer":
 		last_error = "Estadísticas o propietario de resonancias incorrectos."
 		return false
+	var turn: Variant = data.get("shared_turn")
+	var learning: Variant = data.get("resonance_learning")
+	if not turn is Dictionary or turn.get("karmany_actions") != 1 or turn.get("trainer_actions") != 1 or turn.get("order") != "free":
+		last_error = "El turno no coincide con el orden libre y presupuesto aprobados."
+		return false
+	if not learning is Dictionary or learning.get("general_access") != "any_trainer_type" or learning.get("personal_access") != "type_and_personality" or learning.get("provider") != "library_or_school":
+		last_error = "El aprendizaje no coincide con las reglas aprobadas."
+		return false
 	if not data.get("trainer_roles") is Array or data.trainer_roles.is_empty():
 		last_error = "Tipos de entrenador ausentes."
 		return false

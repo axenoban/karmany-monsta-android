@@ -57,7 +57,12 @@ jobs:
           set -o pipefail
           godot --headless --path . --script tests/book_trainer_rules_tests.gd 2>&1 | tee build/book-trainer.log
           python3 ci/check_log.py build/book-trainer.log
-      - name: Export signed Android APK
+      - name: Validate shared turn and resonance learning
+        run: |
+          set -o pipefail
+          godot --headless --path . --script tests/shared_turn_learning_tests.gd 2>&1 | tee build/turn-learning.log
+          python3 ci/check_log.py build/turn-learning.log
+      - name: Export and verify signed APK
         run: |
           set -o pipefail
           godot --headless --path . --export-debug "Android Preview" build/karmany-monsta-preview.apk 2>&1 | tee build/export.log
