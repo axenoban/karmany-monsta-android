@@ -1,6 +1,7 @@
 extends Control
 
 signal navigate(page: String)
+const Details = preload("res://scripts/combat_details.gd")
 const Encounter = preload("res://scripts/trial_encounter.gd")
 const Router = preload("res://scripts/encounter_router.gd")
 const Catalog = preload("res://scripts/combat_catalog.gd")
@@ -45,6 +46,8 @@ func _build() -> void:
 	var title := _label("VALLE JADE · " + ((("Error al guardar respuesta" if not App.response_error.is_empty() else "Respuesta rival") if not App.profile.campaign.encounter.is_empty() and Router.pending(App.profile.campaign.encounter) else "Resonancia → Karmany") if mode == "battle" else "Ezel, Axe y Zephyr"), 26)
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(title)
+	if mode == "battle" and Router.valid(App.profile.campaign.encounter):
+		header.add_child(_button("Estado y técnicas", _details))
 	header.add_child(_button("Mapa", func(): navigate.emit("jade_play")))
 	if mode == "intro" or mode == "map":
 		_world()
@@ -223,3 +226,12 @@ func _support(state: Dictionary, revision: int) -> void:
 	dialog.canceled.connect(dialog.queue_free)
 	dialog.confirmed.connect(dialog.queue_free)
 	dialog.popup_centered(Vector2i(580, 300))
+
+func _details() -> void:
+	if get_node_or_null("CombatDetails") != null: return
+	var dialog := Details.new()
+	if not dialog.setup(App.profile.campaign.encounter, App.profile.settings.large_text):
+		dialog.free()
+		return
+	add_child(dialog)
+	dialog.popup_centered(Vector2i(820, 520))
