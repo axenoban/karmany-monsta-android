@@ -1,0 +1,90 @@
+name: Android Preview
+
+on:
+  pull_request:
+    branches: [main, dev/karmany-core]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-preview-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install exact Godot and Android templates
+        run: python3 ci/install_godot.py
+      - name: Prepare Android SDK
+        run: |
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platform-tools" "build-tools;35.0.1" "platforms;android-35"
+      - name: Prepare preview metadata and test signing
+        env:
+          BUILD_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: python3 ci/prepare_android.py
+      - name: Import and verify scripts
+        run: |
+          set -o pipefail
+          godot --headless --editor --path . --import --quit 2>&1 | tee build/import.log
+          if rg 'SCRIPT ERROR:|Parse Error:|Failed to load script' build/import.log; then exit 1; fi
+      - name: Run regression tests
+        run: |
+          set -o pipefail
+          godot --headless --path . --script tests/run_tests.gd 2>&1 | tee build/tests.log
+          if rg 'SCRIPT ERROR:|ERROR:' build/tests.log; then exit 1; fi
+      - name: Export Android APK
+        run: |
+          set -o pipefail
+          godot --headless --path . --export-debug "Android Preview" build/karmany-monsta-preview.apk 2>&1 | tee build/export.log
+          test -s build/karmany-monsta-preview.apk
+          "$ANDROID_HOME/build-tools/35.0.1/apksigner" verify --verbose build/karmany-monsta-preview.apk
+          sha256sum build/karmany-monsta-preview.apk > build/apk.sha256
+      - name: Render UI for review
+        run: |
+          set -o pipefail
+          xvfb-run -a godot --path . --script tests/render_smoke.gd 2>&1 | tee build/ui.log
+          if rg 'SCRIPT ERROR:|ERROR:' build/ui.log; then exit 1; fi
+      - name: Upload APK and diagnostic logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: karmany-android-preview-${{ github.run_number }}
+          path: build/
+          retention-days: 14
+          if-no-files-found: error
+
+  preview-download:
+    needs: build
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: karmany-android-preview-${{ github.run_number }}
+          path: build
+      - name: Publish downloadable test APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BUILD_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+          BUILD_NUMBER: ${{ github.run_number }}
+        run: |
+          TAG="android-preview-${BUILD_NUMBER}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" build/karmany-monsta-preview.apk build/apk.sha256 --clobber
+          else
+            gh release create "$TAG" build/karmany-monsta-preview.apk build/apk.sha256 --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Base Android 0.1.0 para validación. Incluye menú, visita a Valle Jade, ajustes, guardado y diagnóstico. Combate y captura pendientes. Firma pública de pruebas; no es una versión comercial."
+          fi
