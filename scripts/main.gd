@@ -7,6 +7,9 @@ const Catalog = preload("res://scripts/species_catalog.gd")
 const Books = preload("res://scripts/book_progression.gd")
 const Structure = preload("res://scripts/combat_structure.gd")
 const TreeModel = preload("res://scripts/trainer_skill_tree.gd")
+const TrialUI = preload("res://scripts/trial_ui.gd")
+const Stage = preload("res://scripts/trial_stage.gd")
+var tree_scroll_position := 0
 const TreeMap = preload("res://scripts/skill_tree_map.gd")
 var catalog := Catalog.new()
 var books := Books.new()
@@ -50,7 +53,7 @@ func _ready() -> void:
 	theme = ui_theme
 	dialog = ConfirmationDialog.new()
 	dialog.title = "Comenzar un nuevo viaje"
-	dialog.dialog_text = "Se reemplazarán el viaje y el árbol actuales. Tus ajustes se conservarán."
+	dialog.dialog_text = "Se reemplazarán el viaje, el árbol, la colección y el encuentro actuales. Tus ajustes se conservarán."
 	dialog.ok_button_text = "Comenzar"
 	dialog.cancel_button_text = "Cancelar"
 	dialog.confirmed.connect(_start)
@@ -122,6 +125,9 @@ func _show(next_page: String) -> void:
 		header.add_child(_button("Volver", _back))
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.scroll_deadzone = 18
+	if page == "skill_tree":
+		scroll.set_deferred("scroll_vertical", tree_scroll_position)
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	column.add_child(scroll)
 	body = VBoxContainer.new()
@@ -140,10 +146,14 @@ func _show(next_page: String) -> void:
 		"skill_tree": _skill_tree()
 		"loadout": _loadout()
 		"tree_lab": _tree_lab()
+		"intro", "jade_play", "battle": _playable()
+		"collection": _collection()
 	toast = _label("", 18, JADE)
 	toast.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	if page in ["intro", "jade_play", "battle"]:
+		toast.hide()
 	column.add_child(toast)
-	column.add_child(_label("PREVIEW 0.4 · ÁRBOL DE RESONANCIAS", 16, Color("93aaa3")))
+	column.add_child(_label("PREVIEW 0.5 · ENCUENTRO JUGABLE", 16, Color("93aaa3")))
 	_safe_margins()
 
 func _label(text: String, font_size: int = 24, color: Color = PAPER) -> Label:
@@ -182,8 +192,9 @@ func _home() -> void:
 	row.add_child(_button("Comenzar viaje", _new_journey))
 	row.add_child(_button("Ajustes", func(): _show("settings")))
 	body.add_child(_button("Diagnóstico", func(): _show("diagnostics")))
+	body.add_child(_button("Jugar en Valle Jade", func(): _show("jade_play" if App.profile.campaign.intro_seen else "intro")))
 	body.add_child(_button("Árbol de resonancias", func(): _show("skill_tree")))
-	_copy("Aprende, mejora y equipa resonancias. Los encuentros de combate y captura se incorporarán después.")
+	_copy("Explora el valle, prepara tus resonancias y prueba el encuentro de Zephyr contra Tanugami.")
 
 func _new_journey() -> void:
 	if App.profile.journey.started or App.load_failed:
@@ -198,6 +209,7 @@ func _start() -> void:
 		toast.text = App.notice
 
 func _map() -> void:
+	body.add_child(_button("Entrar al valle jugable", func(): _show("jade_play" if App.profile.campaign.intro_seen else "intro")))
 	_heading("Valle Jade")
 	_copy("Punto de partida de Ezel y Axe.")
 	var button := _button("◆  Valle Jade   ·   " + ("Visitado" if App.profile.journey.visited_jade else "Visitar"), _visit)
@@ -229,7 +241,7 @@ func _book() -> void:
 			for rarity in ["Común", "Raro", "Épico"]:
 				description += rarity + ": " + ("%d%%" % roundi(policy.chance_for(rarity) * 100) if policy.permits(rarity) else "Bloqueado") + "   "
 			_copy(description)
-	_copy("Esta pantalla consulta las reglas del Libro. Las mejoras y la captura jugable estarán disponibles con el combate.")
+	_copy("El Libro inicial funciona en el encuentro de Tanugami con tres intentos y 45% por intento. Las compras de mejoras y los encuentros de rarezas superiores se incorporarán después.")
 
 func _trainers() -> void:
 	_heading("Entrenadores")
@@ -242,7 +254,7 @@ func _trainers() -> void:
 	_copy("Cada Karmany tendrá tres habilidades, incluida una insignia, y estadísticas de Vida, Ataque, Defensa y Velocidad.")
 	for role in rules.trainer_roles:
 		_copy(role.name + "\n" + role.purpose + ".")
-	_copy("Las habilidades concretas del entrenador y su funcionamiento en el combate están pendientes de definición.")
+	_copy("El encuentro de prueba aplica Curación, Escudo, Potenciación, Control y Raíces experimentales a las resonancias equipadas. Sus valores están separados del canon.")
 	body.add_child(_button("Abrir árbol de resonancias", func(): _show("skill_tree")))
 
 func _tree_model() -> TrainerSkillTree:
@@ -255,13 +267,10 @@ func _skill_tree() -> void:
 	var slots := int(TreeModel.specification().equip_slots)
 	_heading("Árbol de resonancias")
 	_copy("Nivel %d · %d puntos disponibles · %d/%d equipadas" % [tree.state.level, tree.points_available(), tree.state.equipped.size(), slots])
-	_copy("Perfil experimental. El árbol funciona; sus efectos se conectarán al combate con las fichas aprobadas.")
+	_copy("Equipa hasta cuatro resonancias. El encuentro usa tu selección al comenzar.")
 	var map := TreeMap.new()
 	map.setup(TreeModel.specification(), tree.snapshot(), selected_tree_node, App.profile.settings.large_text)
-	map.node_selected.connect(func(node_id: String):
-		App.tap()
-		selected_tree_node = node_id
-		_show("skill_tree"))
+	map.node_selected.connect(_select_tree_node)
 	body.add_child(map)
 	var node := TreeModel.node_definition(selected_tree_node)
 	var chosen_node: String = selected_tree_node
@@ -411,6 +420,10 @@ func _back() -> void:
 		export_dialog.hide()
 	elif dialog.visible:
 		dialog.hide()
+	elif page in ["battle", "intro", "collection"]:
+		_show("jade_play")
+	elif page == "jade_play":
+		_show("home")
 	elif page == "loadout":
 		_show("skill_tree")
 	elif page == "tree_lab":
@@ -435,3 +448,37 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		_back()
 		get_viewport().set_input_as_handled()
+
+func _select_tree_node(node_id: String) -> void:
+	App.tap()
+	selected_tree_node = node_id
+	var scroll := body.get_parent() as ScrollContainer
+	tree_scroll_position = scroll.scroll_vertical
+	_show("skill_tree")
+
+func _playable() -> void:
+	# Use the full content area for combat; controls remain outside the scrolling stage.
+	var scroll := body.get_parent() as ScrollContainer
+	var parent := scroll.get_parent()
+	parent.get_child(0).hide()
+	parent.remove_child(scroll)
+	scroll.queue_free()
+	var trial := TrialUI.new()
+	trial.mode = "intro" if page == "intro" else ("map" if page == "jade_play" else "battle")
+	trial.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	trial.custom_minimum_size = Vector2(0, 500)
+	parent.add_child(trial)
+	trial.navigate.connect(_show)
+
+func _collection() -> void:
+	_heading("Colección")
+	_copy("Zephyr está vinculado a Ezel desde su nacimiento; no es una captura del Libro.")
+	var stage := Stage.new()
+	stage.mode = "collection"
+	stage.custom_minimum_size = Vector2(0, 260)
+	body.add_child(stage)
+	_copy("Zephyr · vínculo inicial")
+	for entry in App.profile.campaign.collection:
+		_copy("Tanugami · " + entry.id + " · Común")
+	_copy("Capturas guardadas: %d. Los duplicados son individuos diferentes y no repiten la bonificación del árbol." % App.profile.campaign.collection.size())
+	body.add_child(_button("Volver al valle", func(): _show("jade_play")))

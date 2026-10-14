@@ -1,12 +1,12 @@
 # Karmany Monsta Android
 
-Videojuego Android del universo Karmany Monsta. Bloques 01 y 02 validados en Preview 3 y 4. Preview 0.4.0 añade un árbol funcional para aprender, mejorar y equipar resonancias, con progreso simulado y guardado persistente. Libro y turno compartido tienen contratos verificados; combate y captura jugable todavía pendientes de fichas y efectos concretos.
+Videojuego Android del universo Karmany Monsta. Preview 0.5.0 incorpora el primer encuentro jugable: Ezel y Zephyr contra Tanugami, paisaje/personajes ilustrados, acciones tácticas, resonancias, captura con el Libro y colección guardada. Balance y técnicas son experimentales aprobados para esta prueba. Preview 8 (0.4.0) es el último baseline validado; el touch del árbol se mejora en esta rama.
 
 Ramas previstas: main (publicable), dev/karmany-core (baseline validado), feature/* (trabajo pendiente de validación).
 
 ## Probar desde Android
 
-Descargar el APK de la preview más reciente en [Releases](https://github.com/axenoban/karmany-monsta-android/releases). Seguir [Prueba Android 04](docs/PRUEBA_ANDROID_04.md). Cada entrega permite instalación y actualización sobre la preview anterior.
+Descargar el APK de la preview más reciente en [Releases](https://github.com/axenoban/karmany-monsta-android/releases). Seguir [Prueba Android 05](docs/PRUEBA_ANDROID_05.md). Cada entrega permite instalación y actualización sobre la preview anterior.
 
 ## Documentación
 
@@ -17,6 +17,8 @@ Descargar el APK de la preview más reciente en [Releases](https://github.com/ax
 - [Propuesta de combate para aprobación](docs/COMBATE_PROPUESTA_01.md).
 - [Decisiones de entrenadores](docs/DECISIONES_ENTRENADORES_03.md).
 - [Prueba Android 03](docs/PRUEBA_ANDROID_03.md).
+- [Encuentro jugable y fuentes](docs/ENCUENTRO_JUGABLE_06.md).
+- [Prueba Android 05](docs/PRUEBA_ANDROID_05.md).
 - [Análisis y decisiones del árbol](docs/ARBOL_RESONANCIAS_05.md).
 - [Prueba Android 04](docs/PRUEBA_ANDROID_04.md).
 

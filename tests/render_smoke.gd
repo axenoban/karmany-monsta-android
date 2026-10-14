@@ -37,6 +37,39 @@ func _run() -> void:
 		await process_frame
 		await RenderingServer.frame_post_draw
 		root.get_texture().get_image().save_png("res://build/screenshots/%s-full-large.png" % page)
+	app.profile = SaveStore.defaults()
+	for page in ["intro", "jade_play"]:
+		main._show(page)
+		await process_frame
+		await RenderingServer.frame_post_draw
+		root.get_texture().get_image().save_png("res://build/screenshots/%s.png" % page)
+	app.profile.skill_tree.level = 5
+	app.profile.skill_tree.ranks = {"curacion": 1, "proteccion": 1, "propia": 1, "potenciacion": 1}
+	app.profile.skill_tree.equipped = ["curacion", "proteccion", "propia", "potenciacion"]
+	app.start_trial()
+	for large in [false, true]:
+		app.profile.settings.large_text = large
+		main._show("battle")
+		await process_frame
+		await RenderingServer.frame_post_draw
+		root.get_texture().get_image().save_png("res://build/screenshots/battle%s.png" % ("-large" if large else ""))
+	while app.profile.campaign.encounter.phase == "battle":
+		var encounter := TrialEncounter.new()
+		encounter.restore(app.profile.campaign.encounter)
+		if encounter._turn().available("karmany"):
+			app.trial_action("karmany", "insignia" if encounter.reason("karmany", "insignia").is_empty() else "golpe")
+		else: app.trial_action("end")
+	main._show("battle")
+	await process_frame
+	await RenderingServer.frame_post_draw
+	root.get_texture().get_image().save_png("res://build/screenshots/capture.png")
+	app.profile.campaign.encounter.rolls = [0.1, 0.1, 0.1]
+	app.trial_action("capture")
+	for page in ["battle", "collection"]:
+		main._show(page)
+		await process_frame
+		await RenderingServer.frame_post_draw
+		root.get_texture().get_image().save_png("res://build/screenshots/%s-result.png" % page)
 	main.queue_free()
 	await process_frame
 	print("Rendered UI screens")

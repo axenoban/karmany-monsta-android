@@ -2,7 +2,8 @@ class_name SaveStore
 extends RefCounted
 
 const TreeModel = preload("res://scripts/trainer_skill_tree.gd")
-const SCHEMA_VERSION := 2
+const Campaign = preload("res://scripts/trial_campaign.gd")
+const SCHEMA_VERSION := 3
 var base_path: String
 var last_error := ""
 var recovered_backup := false
@@ -11,10 +12,10 @@ func _init(path: String = "user://profile.json") -> void:
 	base_path = path
 
 static func defaults() -> Dictionary:
-	return {"schema": SCHEMA_VERSION, "settings": {"large_text": false, "haptics": true}, "journey": {"started": false, "visited_jade": false}, "skill_tree": TreeModel.defaults()}
+	return {"schema": SCHEMA_VERSION, "settings": {"large_text": false, "haptics": true}, "journey": {"started": false, "visited_jade": false}, "skill_tree": TreeModel.defaults(), "campaign": Campaign.defaults()}
 
 static func valid(data: Variant) -> bool:
-	if not data is Dictionary or (data.get("schema") != 1 and data.get("schema") != SCHEMA_VERSION):
+	if not data is Dictionary or (data.get("schema") != 1 and data.get("schema") != 2 and data.get("schema") != SCHEMA_VERSION):
 		return false
 	if not data.get("settings") is Dictionary or not data.get("journey") is Dictionary:
 		return false
@@ -27,8 +28,8 @@ static func valid(data: Variant) -> bool:
 	if data.journey.visited_jade and not data.journey.started:
 		return false
 	if data.schema == 1:
-		return not data.has("skill_tree")
-	return TreeModel.valid(data.get("skill_tree"))
+		return not data.has("skill_tree") and not data.has("campaign")
+	return TreeModel.valid(data.get("skill_tree")) and (not data.has("campaign") if data.schema == 2 else Campaign.valid(data.get("campaign")))
 
 func _read(path: String) -> Variant:
 	if not FileAccess.file_exists(path):
@@ -45,8 +46,11 @@ func _read(path: String) -> Variant:
 	# Upgrade old APK saves in memory; preserve the original bytes until a real save.
 	if parsed.schema == 1:
 		parsed.skill_tree = TreeModel.defaults()
+	if parsed.schema < 3:
+		parsed.campaign = Campaign.defaults()
 	parsed.schema = SCHEMA_VERSION
 	parsed.skill_tree = TreeModel.normalized(parsed.skill_tree)
+	parsed.campaign = Campaign.normalized(parsed.campaign)
 	return parsed
 
 func load_profile() -> Dictionary:

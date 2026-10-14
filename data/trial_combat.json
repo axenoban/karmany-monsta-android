@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "experimental": true,
+  "stats": {"life": 80, "attack": 20, "defense": 8, "speed": 10},
+  "actions": {
+    "golpe": {"name": "Golpe", "power": 1.0, "cooldown": 0},
+    "guardia": {"name": "Protección", "guard": 0.5, "cooldown": 0},
+    "insignia": {"name": "Insignia", "power": 1.5, "cooldown": 2}
+  },
+  "resonances": {
+    "curacion": {"name": "Curación", "heal": 18, "cooldown": 2},
+    "proteccion": {"name": "Escudo", "guard": 0.5, "cooldown": 2},
+    "potenciacion": {"name": "Potenciación", "boost": 0.25, "cooldown": 2},
+    "control": {"name": "Control", "weaken": 0.3, "cooldown": 2},
+    "propia": {"name": "Raíces · prueba", "weaken": 0.4, "cooldown": 3}
+  }
+}

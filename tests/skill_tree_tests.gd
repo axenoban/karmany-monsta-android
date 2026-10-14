@@ -88,15 +88,15 @@ func _run() -> void:
 	handle.close()
 	var store := Store.new(PATH)
 	var migrated := store.load_profile()
-	_check(migrated.schema == 2 and migrated.journey.visited_jade and migrated.settings.large_text, "old APK save migrates without losing visit or settings")
+	_check(migrated.schema == 3 and migrated.journey.visited_jade and migrated.settings.large_text, "old APK save migrates without losing visit or settings")
 	_check(migrated.skill_tree == TreeModel.defaults(), "migration adds a fresh tree only")
 	_check(JSON.parse_string(FileAccess.get_file_as_string(PATH)).schema == 1, "read-only migration preserves original bytes")
 	migrated.skill_tree = tree.snapshot()
-	_check(store.save_profile(migrated), "migrated progress saves as version two")
+	_check(store.save_profile(migrated), "migrated progress saves as current schema")
 	_check(Store.new(PATH).load_profile() == migrated, "tree persists through reopening")
 	_check(Store.valid(JSON.parse_string(JSON.stringify(migrated))), "JSON float schema versions are accepted")
 	var invalid := migrated.duplicate(true)
-	invalid.schema = 2.5
+	invalid.schema = 3.5
 	_check(not Store.valid(invalid), "fractional schema version refused")
 	var app := root.get_node("App")
 	app.storage = Store.new(PATH)
