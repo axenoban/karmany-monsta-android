@@ -19,15 +19,18 @@ Preview27,0.15.0/versionCode1027,código413ab07813724cf4bd68e562c6fb0fc81e3cbefc
 
 Historial: docs/BASELINE_VALIDADO.md. Movimiento reducido opcional/desactivado de inicio, normalización compatible, misma duración/audio y resultados. Audio22 efectos originales con volumen/silencio persistentes. Reglas y guardados de bloques anteriores aprobados.
 
-## Bloque19: progresión del Libro · decisión pendiente
-Leer docs/PROPUESTA_LIBRO_19.md y data/book_levels.json antes de implementar. Usuario pidió siguiente paso; el cuestionario concreta decisiones de diseño faltantes. No convertir recomendaciones en aprobación por silencio.
+## Bloque19 ampliado: niveles/experiencia/libros/regiones
+Usuario el14/10/2026 amplió el alcance: nivel de entrenador para desbloquear libros/regiones, nivel individual Karmany, experiencia solo en equipo principal, tope de Valle Jade10 aplicado por individuo (los inferiores siguen ganando), puntos del árbol para desbloqueos y reconocer progreso previo.
 
-Tabla ya aprobada: Inicial45%Común; Mejora1 60%Común/30%Raro; Mejora2 75%Común/45%Raro/20%Épico. Máximo3 intentos. No hay costes o desbloqueos aprobados todavía.
+Leer docs/PROPUESTA_PROGRESION_19.md antes de implementar. Sustituye el cuestionario anterior en cuanto a criterio por especies (descartado) y compra gratuita (descartada). Capturas/niveles previos deben reconocerse. Umbrales4/8 para libros siguen como propuesta hasta confirmación; costes, fórmulaXP, crecimiento de estadísticas y niveles iniciales de Karmany no están fijados.
 
-Cuestionario pendiente de respuesta:1A especies capturadas distintas2/4 (recomendación experimental) frente a1B nivel entrenador4/8;2A reclamar gratis manualmente al cumplir requisito (recomendado),2B automático gratis o2C economía nueva que requerirá propuesta de recurso/costes;3A contar capturas previas reales (recomendado) frente a3B empezar contador nuevo sin borrar colección. InicialZephyr y duplicados no cuentan como especies capturadas distintas en1A. Aplicar mejoras solo fuera de encuentros activos para conservar probabilidades/tiradas de sesiones existentes: recomendación técnica del bloque, incluida en propuesta para aprobación.
+Estado real: entrenador sube1nivel por victoria, máximo10; Karmany no tienen XP/niveles históricos. Puntos existentes se calculan desde nivel/hitos menos rangos aprendidos. Gastos permanentes requieren registro compartido que sobreviva redistribución. Solo Jade tiene ruta jugable; no inventar región siguiente.
+
+## Decisiones pendientes antes de programar balance
+Propuesta numérica completa en PROPUESTA_PROGRESION_19:25XP por victoria para cada elegible,100×nivel para subir; criaturas nivel1/XP0 y+5%Vida/Ataque/Defensa por nivel (Velocidad fija); libros nivel4/8 y costes1/2 puntos. Regiones configurables, Jade accesible, siguiente por definir. Resolver si entrenamiento libre daXP y política de redistribución para evitar bloqueo por puntos gastados. Todo ello pendiente de aprobación. No atribuir XP histórica ficticia.
 
 ## Después de responder
-Registrar decisiones exactas antes de editar reglas. Si el usuario aprueba una combinación completa, trabajar en feature/book-progression, implementar progreso persistente, requisitos/confirmación, política elegida para encuentros nuevos, probabilidades reales en UI y migración de sesiones históricas. Probar doble toque, escritura fallida, conservación de intentos/tiradas/progreso y capturas únicas. Ante coste/recurso o umbral sin definir, preguntar antes de inventarlo. Este bloque no autoriza generar encuentros/especies raros o épicos adicionales.
+Registrar valores exactos y dividir bloque19A (XP/niveles/tope/migración/UI) y19B (libros/gasto/acceso regional). Crear feature/level-progression cuando reglas numéricas estén aprobadas. Proteger sesiones activas y validar transacciones únicas, escalado, migración, errores de guardado y puntos compartidos. No entregar un APK con balance supuesto.
 
 ## Protocolo al terminar cada actualización
 Actualizar bloque actual, estado probado y pendiente, rama y referencias verificadas, enlace de entrega cuando exista, riesgos reales y siguiente paso tras aprobación. Distinguir siempre CI/local de validación en dispositivo. Usar git log como referencia de commit cuando el documento forma parte del mismo commit, evitando autorreferencias imposibles.
