@@ -117,3 +117,11 @@ No cambiar motor, paquete, firma de preview ni esquema de guardado sin justifica
 - CI38654312252:1084 comprobaciones Godot y3 Python, firma/auditoría correctas. Humo real44 comprobaciones.
 - Integrado en dev por fast-forward desde9db69ac abb406ce. PR13 cerrada.
 - Siguiente bloque: movimiento reducido para combate/vínculo, conforme a continuidad y solicitud de seguir.
+
+## Bloque18 · Movimiento reducido
+
+- Aprobación «ok pruebas correctas»,14/10/2026. Preview27,0.15.0/versionCode1027.
+- Código413ab07813724cf4bd68e562c6fb0fc81e3cbefc, documentación10e3886.
+- CI38655224968:1174 Godot y3 Python, firma/auditoría correctas.
+- Integrado por fast-forward desdea62ecb3 a10e3886, PR14 cerrada.
+- Próximo paso: decidir progresión del Libro mediante docs/PROPUESTA_LIBRO_19.md; todavía no hay reglas nuevas aprobadas.
