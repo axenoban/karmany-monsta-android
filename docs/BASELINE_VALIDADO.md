@@ -109,3 +109,11 @@ No cambiar motor, paquete, firma de preview ni esquema de guardado sin justifica
 - 1041 comprobaciones Godot y3 Python; CI38652857621, exportación, firma y auditoría correctas.
 - Integración por fast-forward desde39ef4b6 a5c63dff en dev/karmany-core; PRs11/12 cerradas.
 - Siguiente bloque autorizado: efectos de sonido para golpes, habilidades, vínculo y avisos necesarios.
+
+## Bloque17 · Efectos de sonido
+
+- Aprobación «pruebas correctas»,14/10/2026. Preview26,0.14.0/versionCode1026.
+- Código27e066ea00adbcf625f61f584003e4c42e8cc1b3; documentaciónbb406ce.
+- CI38654312252:1084 comprobaciones Godot y3 Python, firma/auditoría correctas. Humo real44 comprobaciones.
+- Integrado en dev por fast-forward desde9db69ac abb406ce. PR13 cerrada.
+- Siguiente bloque: movimiento reducido para combate/vínculo, conforme a continuidad y solicitud de seguir.

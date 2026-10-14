@@ -15,21 +15,15 @@ Leer este documento antes de cada proceso; `AGENTS.md` en la raíz establece est
 - Libro: no inventar costes/desbloqueos de mejoras; requieren decisión del creador.
 
 ## Última base aprobada
-Preview25, versión0.13.0/versionCode1025, código dd1fc0b530f4907f94dce1e017ace807dfba6d5e, documentación5c63dff. Usuario confirmó «prueba correcta» el14/10/2026; incluye combate animado (bloque15) y vínculo (bloque16). Integrado en dev/karmany-core por fast-forward desde39ef4b6, PRs11/12 cerradas. CI38652857621:1041 Godot y3 Python, exportación/firma/auditoría correctas. main conserva su estado.
+Preview26,versión0.14.0/versionCode1026, código27e066ea00adbcf625f61f584003e4c42e8cc1b3, documentaciónbb406ce. Aprobada por el creador «pruebas correctas» el14/10/2026. Integrada por fast-forward en dev desde9db69ac abb406ce; PR13 cerrada. CI38654312252:1084 Godot y3 Python, firma/auditoría correctas; humo separado del mezclador real44. main conserva su estado.
 
-Historial: docs/BASELINE_VALIDADO.md. Vínculo: scripts/binding_stage.gd y docs/PRUEBA_ANDROID_16.md; secuencia3.6s, resultado persistido antes de animación, omitir/cerrar sin nuevo intento. Combate: scripts/trial_stage.gd, duración0.66s antes de respuesta0.7s.
+Historial: docs/BASELINE_VALIDADO.md. Audio: scripts/effect_audio.gd y docs/PRUEBA_ANDROID_17.md;22 efectos originales, voces acotadas, busSFX, ajustes persistentes. Pruebas headless sin salida y humo real --verify-audio-mixer bajo renderizador/Movie Maker. Combate0.66s y respuesta0.7s. Vínculo3.6s con resultado persistido antes de presentación y omisión segura.
 
-## Bloque actual17: efectos de sonido
-Rama feature/game-sound-effects, basada en cierre aprobado9db69ac. Versión0.14.0.
-
-22 clips originales sintetizados con semilla fija: assets/sfx/*.wav y manifest.json; reproducibles por ci/generate_sfx.py. Sin grabaciones externas ni música. Cubren toque/error, preparación/impacto, cuatro Insignias ofensivas y curación/protección de Tanugami, guardia, curación, potenciación, control, cambio, apertura/atracción/éxito/rebote/escape del Libro, victoria/derrota, entrada/exploración y recuperador. Cada efecto usa monoPCM22050Hz y pico máximo0.5 antes de mezcla.
-
-Arquitectura: effect_audio.gd, voces limitadas por ámbito y propiedad de su escena; busSFX con limitador y margen de volumen; ajustes opcionales sound/effects_volume, valor inicial65%, migración compatible sin nuevo esquema ni pérdida de progreso. App aplica preferencias tras guardar. Golpe impacta a0.34s; Libro abre0s, atrae1s y resuelve2.05s; escape2.85s. No reproducir sonidos al consultar/reabrir acciones ya consumidas. Omitir/cerrar/suspender cancela la secuencia de sonido. Los sonidos de resultado se emiten tras guardado correcto.
-
-Pruebas:1084 comprobaciones Godot (43 nuevas) y3 Python correctas. Prueba separada del mezclador real:44 comprobaciones, salida capturada no silenciosa y pico0.5845<1. Las pruebas headless de reglas verifican programación sin iniciar voces porque su controlador sin salida no mezcla; el humo de audio activa --verify-audio-mixer bajo renderizador de escritorio y Movie Maker. No se ignoran errores en logs. Se usa reproducción diferida propiedad del nodo y se liberan streams al parar. Validación pendiente: volumen percibido, timbres y latencia en Android. CI38654312252 correcta:1084 comprobaciones Godot y3 Python, exportación/firma v2/v3/auditoría aprobadas. Código27e066ea00adbcf625f61f584003e4c42e8cc1b3. APK0.14.0/versionCode1026: [Preview26](https://github.com/axenoban/karmany-monsta-android/releases/download/android-preview-26/karmany-monsta-preview.apk). [PR13](https://github.com/axenoban/karmany-monsta-android/pull/13). El commit posterior de documentación no cambia el APK. Prueba física: docs/PRUEBA_ANDROID_17.md.
+## Próximo bloque18: movimiento reducido
+El creador solicita seguir tras validar sonido. Continuar con el siguiente bloque técnico propuesto: ajuste persistente para reducir desplazamientos y efectos móviles en combate/vínculo, conservando señales legibles, sonidos, resultados y reglas. Trabajar en feature/reduced-motion. Pendiente de implementación y validación.
 
 ## Si las pruebas son correctas
-Cerrar bloque17 e integrar por fast-forward solo tras aprobación. Siguiente propuesta: movimiento reducido en combate y vínculo, aún pendiente de autorización; o siguiente prioridad del creador. Acordar reglas antes de progreso del Libro.
+Cerrar bloque18, integrar por fast-forward tras validación y revisar siguiente prioridad. Antes de sistemas nuevos de progresión del Libro se necesita acordar costes/desbloqueos, no inventarlos.
 
 ## Protocolo al terminar cada actualización
 Actualizar bloque actual, estado probado y pendiente, rama y referencias verificadas, enlace de entrega cuando exista, riesgos reales y siguiente paso tras aprobación. Distinguir siempre CI/local de validación en dispositivo. Usar git log como referencia de commit cuando el documento forma parte del mismo commit, evitando autorreferencias imposibles.
