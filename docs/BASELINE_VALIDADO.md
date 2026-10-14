@@ -23,3 +23,13 @@ No cambiar motor, paquete, firma de preview ni esquema de guardado sin justifica
 - Verificación: 35 regresiones de base/navegación y 38 de catálogo/captura, CI y firma correctos.
 - Alcance: 15 especies canónicas, filtros/fichas, contratos de captura y restauración. No incluye combate o captura jugable.
 - `dev/karmany-core` avanza por fast-forward desde el baseline anterior; el cierre solo cambia documentación.
+
+## Bloques 03–05 · Libro, turno compartido y árbol de resonancias
+
+- Aprobación: «El avance está correcto», 14 de octubre de 2026. Mejora pendiente del touch del árbol para la siguiente entrega.
+- APK: Preview 8, versión 0.4.0, versionCode 1008.
+- Código validado: `a436d58b3a08c55cebe2d0b3654d8d2af011bc5d`.
+- Verificación: 221 comprobaciones, exportación y firma correctas; capturas normal/texto grande revisadas.
+- Incluye: tabla del Libro, equipo/turno compartido, árbol aprendible/mejorable y cuatro espacios, laboratorio experimental y migración persistente.
+- No incluye todavía combate ni captura jugable. El usuario autorizó comenzar ese bloque con fichas experimentales y Ezel/Zephyr frente a Tanugami.
+- Integración mediante fast-forward desde `ad618c2`; `main` se conserva.
