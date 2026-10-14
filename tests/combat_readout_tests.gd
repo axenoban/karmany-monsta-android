@@ -78,6 +78,8 @@ func _run() -> void:
 		app.profile.settings.large_text = large
 		main._show("battle")
 		await process_frame
+		find_button(main.get_node("Page"), "Opciones").pressed.emit()
+		await process_frame
 		find_button(main.get_node("Page"), "Estado y técnicas").pressed.emit()
 		await process_frame
 		var dialogs := main.find_children("CombatDetails", "AcceptDialog", true, false)
@@ -99,6 +101,8 @@ func _run() -> void:
 	app.profile.settings.large_text = false
 	check(app.trial_action("karmany", "golpe"), "queued rival response for panel lifecycle")
 	main._show("battle")
+	await process_frame
+	find_button(main.get_node("Page"), "Opciones").pressed.emit()
 	await process_frame
 	find_button(main.get_node("Page"), "Estado y técnicas").pressed.emit()
 	await process_frame

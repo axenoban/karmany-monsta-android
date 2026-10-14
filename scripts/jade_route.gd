@@ -4,6 +4,11 @@ static var _definition: Dictionary = {}
 static func points() -> Array:
 	if _definition.is_empty(): _definition = JSON.parse_string(FileAccess.get_file_as_string("res://data/jade_route.json"))
 	return _definition.points.duplicate(true)
+static func entry_cost(id: String) -> int:
+	var entries := points()
+	for i in range(entries.size()):
+		if entries[i].id == id: return int(preload("res://scripts/exploration_energy.gd").rules().entry_costs[i])
+	return 0
 static func point(id: String) -> Dictionary:
 	for entry in points():
 		if entry.id == id: return entry

@@ -1,14 +1,14 @@
 extends Control
 signal point_selected(point_id: String)
 const Route = preload("res://scripts/jade_route.gd")
-const Catalog = preload("res://scripts/combat_catalog.gd")
 const Stage = preload("res://scripts/trial_stage.gd")
+const POSITIONS := [Vector2(0.16, 0.60), Vector2(0.39, 0.32), Vector2(0.64, 0.63), Vector2(0.85, 0.30)]
 var cards: Array[VBoxContainer] = []
 var buttons: Array[Button] = []
 var progress: Dictionary = {}
 var encounter_active := false
 var controls_locked := false
-
+var stamina := 100
 func setup(route: Dictionary, active_encounter: bool, locked: bool) -> void:
 	progress = route.duplicate(true)
 	encounter_active = active_encounter
@@ -17,48 +17,44 @@ func setup(route: Dictionary, active_encounter: bool, locked: bool) -> void:
 	for i in range(Route.points().size()):
 		var point: Dictionary = Route.points()[i]
 		var card := VBoxContainer.new()
-		card.add_theme_constant_override("separation", 4)
+		card.add_theme_constant_override("separation", 2)
 		cards.append(card)
 		add_child(card)
-		var title := Label.new()
-		title.text = "%d · %s" % [i + 1, Catalog.species_name(point.species)]
-		title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		title.add_theme_font_size_override("font_size", 22)
-		card.add_child(title)
-		var portrait := TextureRect.new()
-		portrait.texture = Stage.texture(point.species)
-		portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		portrait.custom_minimum_size.y = 90
-		card.add_child(portrait)
-		var done := Route.completed(progress, point.id)
-		var available := Route.unlocked(progress, point.id)
-		var status := Label.new()
-		status.text = "Completado" if done else ("Disponible" if available else "Bloqueado")
-		status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		status.add_theme_font_size_override("font_size", 20)
-		card.add_child(status)
 		var button := Button.new()
 		button.name = point.id
-		button.text = "Repetir" if done else ("Iniciar" if available else "Vence el anterior")
-		button.custom_minimum_size.y = 58
-		button.disabled = not available or encounter_active or controls_locked
+		button.text = "● %d" % (i + 1)
+		button.custom_minimum_size = Vector2(90, 58)
 		var point_id: String = point.id
 		button.pressed.connect(func(): point_selected.emit(point_id))
 		card.add_child(button)
 		buttons.append(button)
-
+		var label := Label.new()
+		label.text = "Lugar %d · %d stamina\n%s" % [i + 1, Route.entry_cost(point.id), "Completado" if Route.completed(progress, point.id) else ("Explorar" if Route.unlocked(progress, point.id) else "Bloqueado")]
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		label.add_theme_font_size_override("font_size", 20)
+		label.add_theme_color_override("font_shadow_color", Color.BLACK)
+		label.add_theme_constant_override("shadow_offset_x", 2)
+		label.add_theme_constant_override("shadow_offset_y", 2)
+		card.add_child(label)
+	update_stamina(stamina)
+func update_stamina(value: int) -> void:
+	stamina = value
+	for i in range(buttons.size()):
+		var id: String = Route.points()[i].id
+		buttons[i].disabled = not Route.unlocked(progress, id) or encounter_active or controls_locked or stamina < Route.entry_cost(id)
+		buttons[i].tooltip_text = "Retoma el encuentro actual." if encounter_active else ("Stamina insuficiente." if stamina < Route.entry_cost(id) else "Entrar a la localización.")
 func _ready() -> void:
 	resized.connect(_layout)
 	_layout()
 func _layout() -> void:
 	for i in range(cards.size()):
-		cards[i].position = Vector2(size.x * (0.03 + i * 0.245), maxf(0, (size.y - 228) * 0.5))
-		cards[i].size = Vector2(size.x * 0.205, 228)
+		cards[i].size = Vector2(190, 110)
+		cards[i].position = size * POSITIONS[i] - Vector2(95, 50)
 	queue_redraw()
 func _draw() -> void:
-	draw_texture_rect(Stage.texture("jade"), Rect2(Vector2.ZERO, size), false, Color(0.5, 0.5, 0.5))
-	for i in range(cards.size() - 1):
-		var start := Vector2(size.x * (0.13 + i * 0.245), size.y * 0.5)
-		var end := Vector2(size.x * (0.13 + (i + 1) * 0.245), size.y * 0.5)
-		draw_line(start, end, Color(0.6, 0.85, 0.7, 0.5), 4, true)
+	var art := Stage.texture("jade_overhead")
+	var tex_size := Vector2(art.get_width(), art.get_height())
+	var scale_factor := maxf(size.x / tex_size.x, size.y / tex_size.y)
+	var source_size := size / maxf(scale_factor, 0.001)
+	draw_texture_rect_region(art, Rect2(Vector2.ZERO, size), Rect2((tex_size - source_size) * 0.5, source_size))
+	for i in range(cards.size() - 1): draw_line(size * POSITIONS[i], size * POSITIONS[i + 1], Color(1, 0.92, 0.55, 0.6), 3, true)

@@ -1,5 +1,6 @@
 class_name TrialCampaign
 extends RefCounted
+const Energy = preload("res://scripts/exploration_energy.gd")
 const Route = preload("res://scripts/jade_route.gd")
 const Roster = preload("res://scripts/trial_roster.gd")
 const Router = preload("res://scripts/encounter_router.gd")
@@ -7,7 +8,7 @@ const Catalog = preload("res://scripts/combat_catalog.gd")
 const Encounter = preload("res://scripts/trial_encounter.gd")
 
 static func defaults() -> Dictionary:
-	return {"schema": 1, "intro_seen": false, "sequence": 0, "victories": 0, "collection": [], "encounter": {}, "team": Roster.defaults(), "route": Route.defaults()}
+	return {"schema": 1, "intro_seen": false, "sequence": 0, "victories": 0, "collection": [], "encounter": {}, "team": Roster.defaults(), "route": Route.defaults(), "exploration": Energy.defaults()}
 
 static func valid(data: Variant) -> bool:
 	if not data is Dictionary or data.get("schema") != 1 or not data.get("intro_seen") is bool:
@@ -42,12 +43,16 @@ static func valid(data: Variant) -> bool:
 		if data.encounter.phase == "captured" and not ids.has(data.encounter.id):
 			return false
 	if data.has("route") and not Route.valid(data.route, data): return false
+	if data.has("exploration") and not Energy.valid(data.exploration, data): return false
 	return true
 
 static func normalized(data: Dictionary) -> Dictionary:
 	var result := data.duplicate(true)
 	if not result.has("route"): result.route = Route.defaults()
 	result.route.schema = 1
+	if not result.has("exploration"): result.exploration = Energy.defaults()
+	for key in ["schema", "value", "anchor", "items", "revision"]: result.exploration[key] = int(result.exploration[key])
+	if not result.exploration.drop.is_empty(): result.exploration.drop.roll = int(result.exploration.drop.roll)
 	if not result.has("team"):
 		result.team = Roster.defaults()
 	result.team.schema = 1

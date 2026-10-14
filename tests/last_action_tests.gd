@@ -12,6 +12,12 @@ func _check(value: bool, label: String) -> void:
 	if not value:
 		failures += 1
 		push_error(label)
+func _find(node: Node, caption: String) -> Button:
+	if node is Button and node.text.begins_with(caption): return node
+	for child in node.get_children(true):
+		var found := _find(child, caption)
+		if found != null: return found
+	return null
 func _run() -> void:
 	var tree := TreeModel.new()
 	for i in range(4): tree.gain_level()
@@ -62,17 +68,19 @@ func _run() -> void:
 	await process_frame
 	# Exercise the actual UI callback and rebuilt screen, not just the model.
 	var trial := main.get_node("Page").get_child(0).get_child(1)
-	var row: Node = trial.column.get_child(4)
-	trial.column.get_child(5).get_child(1).pressed.emit()
+	_find(trial, "Entrenador").pressed.emit()
+	await process_frame
+	_find(trial, "Ezel: Escudo").pressed.emit()
 	await process_frame
 	trial = main.get_node("Page").get_child(0).get_child(1)
-	row = trial.column.get_child(4)
-	row.get_child(0).pressed.emit()
+	_find(trial, "Golpe").pressed.emit()
 	await process_frame
 	trial = main.get_node("Page").get_child(0).get_child(1)
 	var label: Label = trial.column.get_node("LastAction")
 	_check(label.text == "Última acción: Zephyr · Golpe · 12 de daño.", "tapping real Golpe button refreshes latest-action label")
-	_check(trial.column.get_child(5).get_child(1).disabled, "trainer button locks during automatic rival response")
+	_find(trial, "Entrenador").pressed.emit()
+	await process_frame
+	_check(_find(trial, "Ezel: Escudo").disabled, "trainer button locks during automatic rival response")
 	_check(app.storage.load_profile().campaign.encounter.last_action == app.profile.campaign.encounter.last_action, "displayed action matches persisted action")
 	main.queue_free()
 	await process_frame

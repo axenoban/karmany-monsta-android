@@ -17,7 +17,7 @@ func _button(main: Node, text: String) -> Button:
 	return _find_button(_trial(main), text)
 func _find_button(node: Node, text: String) -> Button:
 	if node is Button and node.text.begins_with(text): return node
-	for child in node.get_children():
+	for child in node.get_children(true):
 		var result := _find_button(child, text)
 		if result != null: return result
 	return null
@@ -38,10 +38,18 @@ func _run() -> void:
 		await process_frame
 		await process_frame
 		var trial := _trial(main)
-		var hint: Label = trial.column.get_child(5).get_child(0)
-		_check(hint.size.x > 500 and hint.size.y < 80, "empty-loadout hint wraps horizontally, large=%s" % large)
+		_button(main, "Entrenador").pressed.emit()
+		await process_frame
+		var hint: Label = trial.find_child("TrainerHint", true, false)
+		_check(hint.size.x > 500 and hint.size.y < 80, "empty-loadout menu hint wraps horizontally, large=%s" % large)
+		trial.get_node("TrainerMenu").get_ok_button().pressed.emit()
+		await process_frame
+		_button(main, "Opciones").pressed.emit()
+		await process_frame
 		var finish := _button(main, "Abandonar")
-		_check(finish.get_global_rect().end.y < 690 and finish.size.y >= 58, "bottom control stays visible, large=%s" % large)
+		_check(finish.get_global_rect().end.y < 690 and finish.size.y >= 58, "retreat remains accessible inside options, large=%s" % large)
+		trial.get_node("OptionsMenu").get_ok_button().pressed.emit()
+		await process_frame
 		_check(_button(main, "Cerrar turno") == null, "manual close control removed, large=%s" % large)
 	app.profile.settings.large_text = false
 	main._show("battle")

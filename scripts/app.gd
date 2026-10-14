@@ -10,6 +10,7 @@ var response_revision := -1
 
 const Store = preload("res://scripts/save_store.gd")
 const TreeModel = preload("res://scripts/trainer_skill_tree.gd")
+const Energy = preload("res://scripts/exploration_energy.gd")
 const Route = preload("res://scripts/jade_route.gd")
 const Roster = preload("res://scripts/trial_roster.gd")
 const Encounter = preload("res://scripts/trial_encounter.gd")
@@ -150,6 +151,15 @@ func _start_encounter(enemy_species: String, point_id: String = "") -> bool:
 	if not Roster.valid(next_profile.campaign.team, next_profile.campaign):
 		notice = "Elige un equipo válido antes de comenzar."
 		return false
+	var energy: Dictionary = next_profile.campaign.get("exploration", Energy.defaults())
+	if not point_id.is_empty():
+		energy = Energy.spend(energy, Route.entry_cost(point_id), int(Time.get_unix_time_from_system()))
+		if energy.is_empty():
+			notice = "Stamina insuficiente. Espera la recuperación o usa un recuperador en el mapa."
+			return false
+	energy.drop = {}
+	energy.scouting = not point_id.is_empty()
+	next_profile.campaign.exploration = energy
 	var encounter := Tactical.new()
 	next_profile.campaign.sequence += 1
 	var rolls := [randf(), randf(), randf()]
@@ -159,6 +169,8 @@ func _start_encounter(enemy_species: String, point_id: String = "") -> bool:
 	next_profile.campaign.encounter = encounter.snapshot()
 	if not next_profile.campaign.has("route"): next_profile.campaign.route = Route.defaults()
 	next_profile.campaign.route.current = {} if point_id.is_empty() else {"point_id": point_id, "encounter_id": encounter.state.id}
+	if not point_id.is_empty():
+		next_profile.campaign.exploration.drop = {"encounter_id": encounter.state.id, "roll": randi_range(0, 9999), "resolved": false, "received": false}
 	next_profile.journey.started = true
 	next_profile.journey.visited_jade = true
 	return commit_profile(next_profile)
@@ -180,6 +192,9 @@ func trial_action(operation: String, action_id: String = "", expected_revision: 
 	if expected_revision >= 0 and expected_revision != encounter.state.revision:
 		notice = "Esta acción ya fue procesada."
 		return false
+	if profile.campaign.get("exploration", Energy.defaults()).scouting and operation != "retreat":
+		notice = "Explora la localización antes de iniciar el combate."
+		return false
 	var previous_phase: String = encounter.state.phase
 	var changed := false
 	match operation:
@@ -195,12 +210,14 @@ func trial_action(operation: String, action_id: String = "", expected_revision: 
 		return false
 	var next_profile := profile.duplicate(true)
 	next_profile.campaign.encounter = encounter.snapshot()
+	if next_profile.campaign.has("exploration"): next_profile.campaign.exploration.scouting = false
 	if encounter is Tactical:
 		next_profile.campaign.team.active_id = encounter.state.ally_id
 	var tree := TreeModel.new()
 	tree.restore(next_profile.skill_tree)
 	if previous_phase == "battle" and encounter.state.phase == "capture":
 		next_profile.campaign.victories += 1
+		if next_profile.campaign.has("exploration"): next_profile.campaign.exploration = Energy.resolve_drop(next_profile.campaign.exploration, encounter.state.id)
 		if next_profile.campaign.has("route"):
 			next_profile.campaign.route = Route.record_victory(next_profile.campaign.route, encounter.state.id)
 		if tree.state.level < TreeModel.specification().level_cap:
@@ -272,4 +289,30 @@ func continue_route(expected_encounter_id: String, expected_revision: int) -> bo
 	var next_profile := profile.duplicate(true)
 	next_profile.campaign.encounter = {}
 	next_profile.campaign.route.current = {}
+	if next_profile.campaign.has("exploration"):
+		next_profile.campaign.exploration.drop = {}
+		next_profile.campaign.exploration.scouting = false
+	return commit_profile(next_profile)
+
+func stamina_view(now: int = -1) -> Dictionary:
+	return Energy.refreshed(profile.campaign.get("exploration", Energy.defaults()), int(Time.get_unix_time_from_system()) if now < 0 else now)
+
+func use_recovery_item(expected_revision: int) -> bool:
+	if load_failed: return false
+	var current: Dictionary = profile.campaign.get("exploration", Energy.defaults())
+	if int(current.revision) != expected_revision:
+		notice = "El inventario ya cambió."
+		return false
+	var next_energy := Energy.consume_item(current, int(Time.get_unix_time_from_system()))
+	if next_energy.is_empty():
+		notice = "Necesitas un recuperador y stamina por recuperar."
+		return false
+	var next_profile := profile.duplicate(true)
+	next_profile.campaign.exploration = next_energy
+	return commit_profile(next_profile)
+
+func discover_location(expected_id: String) -> bool:
+	if load_failed or not profile.campaign.get("exploration", Energy.defaults()).scouting or profile.campaign.encounter.get("id") != expected_id: return false
+	var next_profile := profile.duplicate(true)
+	next_profile.campaign.exploration.scouting = false
 	return commit_profile(next_profile)

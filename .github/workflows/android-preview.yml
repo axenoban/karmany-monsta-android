@@ -114,6 +114,11 @@ jobs:
           set -o pipefail
           godot --headless --path . --script tests/jade_route_tests.gd 2>&1 | tee build/jade-route.log
           python3 ci/check_log.py build/jade-route.log
+      - name: Validate exploration, stamina, rewards and compact combat UI
+        run: |
+          set -o pipefail
+          godot --headless --path . --script tests/exploration_energy_tests.gd 2>&1 | tee build/exploration-energy.log
+          python3 ci/check_log.py build/exploration-energy.log
       - name: Export playable encounter APK
         run: |
           set -o pipefail
@@ -164,5 +169,5 @@ jobs:
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" "${ASSETS[@]}" --clobber
           else
-            gh release create "$TAG" "${ASSETS[@]}" --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Preview 0.9.0: recorrido guiado de cuatro encuentros en Valle Jade, desbloqueo por victoria y captura opcional. Progreso persistente y reanudación; conserva entrenamiento libre, combate y partida. Revisión mediante imágenes desactivada por defecto. Balance y arte sujetos a prueba. Firma pública solo de pruebas."
+            gh release create "$TAG" "${ASSETS[@]}" --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Preview 0.10.0: mapa cenital con localizaciones y búsqueda, stamina 100 con costes 10/10/10/30 y recuperación 1/minuto. Recuperadores +30 con 20% por victoria en localizaciones. Barras de PS y menús de Opciones, Entrenador y Equipo. Conserva progreso y partida. Revisión mediante imágenes desactivada por defecto. Balance y arte sujetos a prueba. Firma pública solo de pruebas."
           fi

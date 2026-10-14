@@ -142,7 +142,7 @@ func _run() -> void:
 		main._show("battle")
 		await process_frame
 		await process_frame
-		var finish := find_button(main.get_node("Page"), "Abandonar")
+		var finish := find_button(main.get_node("Page"), "Entrenador")
 		check(finish != null and finish.get_global_rect().end.y < 690, "tactical controls fit viewport large=%s" % large)
 	# Exercise confirmation and recipient selection through actual UI callbacks.
 	app.profile = Store.defaults()
@@ -163,6 +163,8 @@ func _run() -> void:
 	check(app.profile.campaign.encounter.members[2].boost == 0.25, "UI chooses reserve support beneficiary")
 	app.trial_action("enemy")
 	main._show("battle")
+	await process_frame
+	find_button(main.get_node("Page"), "Equipo").pressed.emit()
 	await process_frame
 	find_button(main.get_node("Page"), "Ushigane 96/96").pressed.emit()
 	await process_frame

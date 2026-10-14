@@ -21,7 +21,7 @@ func _tree() -> Dictionary:
 	return tree.snapshot()
 func _find(node: Node, text: String) -> Button:
 	if node is Button and node.text.begins_with(text): return node
-	for child in node.get_children():
+	for child in node.get_children(true):
 		var result := _find(child, text)
 		if result != null: return result
 	return null
@@ -55,6 +55,8 @@ func _run() -> void:
 	main._show("battle")
 	await process_frame
 	_check(_find(main.get_node("Page"), "Cerrar turno") == null, "no manual close button")
+	_find(main.get_node("Page"), "Entrenador").pressed.emit()
+	await process_frame
 	_find(main.get_node("Page"), "Ezel: Escudo").pressed.emit()
 	await process_frame
 	_check(not app.profile.campaign.encounter.enemy_pending and app.response_timer.is_stopped(), "UI support preserves the Karmany action")
@@ -63,6 +65,8 @@ func _run() -> void:
 	_check(app.profile.campaign.encounter.enemy_pending and not app.response_timer.is_stopped(), "real ability tap starts automatic response timer")
 	var action: String = app.profile.campaign.encounter.last_action
 	_check(action.begins_with("Zephyr"), "player action remains readable before rival response")
+	_find(main.get_node("Page"), "Entrenador").pressed.emit()
+	await process_frame
 	_check(_find(main.get_node("Page"), "Ezel: Control").disabled, "trainer cannot act after Karmany")
 	_check(not app.trial_action("karmany", "golpe", 0), "stale double tap cannot issue another action")
 	app._notification(MainLoop.NOTIFICATION_APPLICATION_PAUSED)

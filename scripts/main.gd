@@ -148,15 +148,15 @@ func _show(next_page: String) -> void:
 		"skill_tree": _skill_tree()
 		"loadout": _loadout()
 		"tree_lab": _tree_lab()
-		"intro", "jade_play", "battle": _playable()
+		"intro", "jade_play", "battle", "exploration": _playable()
 		"collection": _collection()
 		"team": _team()
 	toast = _label("", 18, JADE)
 	toast.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	if page in ["intro", "jade_play", "battle"]:
+	if page in ["intro", "jade_play", "battle", "exploration"]:
 		toast.hide()
 	column.add_child(toast)
-	column.add_child(_label("PREVIEW 0.9 · RECORRIDO DE VALLE JADE", 16, Color("93aaa3")))
+	column.add_child(_label("PREVIEW 0.10 · EXPLORACIÓN", 16, Color("93aaa3")))
 	_safe_margins()
 
 func _label(text: String, font_size: int = 24, color: Color = PAPER) -> Label:
@@ -423,7 +423,7 @@ func _back() -> void:
 		export_dialog.hide()
 	elif dialog.visible:
 		dialog.hide()
-	elif page in ["battle", "intro", "collection", "team"]:
+	elif page in ["battle", "intro", "collection", "team", "exploration"]:
 		_show("jade_play")
 	elif page == "jade_play":
 		_show("home")
@@ -467,7 +467,7 @@ func _playable() -> void:
 	parent.remove_child(scroll)
 	scroll.queue_free()
 	var trial := TrialUI.new()
-	trial.mode = "intro" if page == "intro" else ("map" if page == "jade_play" else "battle")
+	trial.mode = "intro" if page == "intro" else ("map" if page == "jade_play" else ("exploration" if page == "exploration" else "battle"))
 	trial.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	trial.custom_minimum_size = Vector2(0, 500)
 	parent.add_child(trial)
@@ -548,5 +548,5 @@ func _team() -> void:
 	body.add_child(_button("Volver al valle", func(): _show("jade_play")))
 
 func _refresh_combat() -> void:
-	if page in ["battle", "jade_play", "team"]:
+	if page in ["battle", "jade_play", "team", "exploration"]:
 		_show(page)

@@ -14,7 +14,12 @@ func check(value: bool, label: String) -> void:
 	if not value:
 		failures += 1
 		push_error("FAIL: " + label)
+func start_route(app: Node, id: String) -> bool:
+	if not app.start_route(id): return false
+	if app.profile.campaign.get("exploration", {}).get("scouting", false): return app.discover_location(app.profile.campaign.encounter.id)
+	return true
 func win(app: Node) -> void:
+	if app.profile.campaign.get("exploration", {}).get("scouting", false): app.discover_location(app.profile.campaign.encounter.id)
 	var actions := 0
 	while app.profile.campaign.encounter.phase == "battle" and actions < 80:
 		var model = Router.create(app.profile.campaign.encounter)
@@ -39,7 +44,7 @@ func _run() -> void:
 	app.storage = Store.new(PATH)
 	app.profile = Store.defaults()
 	app.load_failed = false
-	check(not app.start_route("jade_point_4") and app.profile.campaign.sequence == 0, "model rejects out-of-order start")
+	check(not start_route(app, "jade_point_4") and app.profile.campaign.sequence == 0, "model rejects out-of-order start")
 	check(app.start_trial("tanugami"), "training remains available")
 	win(app)
 	check(app.profile.campaign.route == defaults, "training win never advances route")
@@ -49,15 +54,15 @@ func _run() -> void:
 	# Each point records victory exactly once; capture is not the progress gate.
 	for point in Route.points():
 		var index: int = app.profile.campaign.route.completed.size()
-		check(app.start_route(point.id), "start unlocked route point")
+		check(start_route(app, point.id), "start unlocked route point")
 		check(app.profile.campaign.encounter.enemy_species == point.species, "point uses actual species")
 		# Fixed random fixtures make exact JSON equality reproducible; JSON numbers
 		# otherwise round arbitrary random doubles at the serializer boundary.
 		app.profile.campaign.encounter.rolls = [0.9, 0.8, 0.7]
 		check(app.commit_profile(app.profile), "fixed route checkpoint saved")
 		var starting: Dictionary = app.profile.duplicate(true)
-		check(app.start_route(point.id) and app.profile == starting, "same point resumes without rerolling or new encounter")
-		check(not app.start_route("unknown") and app.profile == starting, "unknown point cannot replace live encounter")
+		check(start_route(app, point.id) and app.profile == starting, "same point resumes without rerolling or new encounter")
+		check(not start_route(app, "unknown") and app.profile == starting, "unknown point cannot replace live encounter")
 		var v: int = app.profile.campaign.victories
 		win(app)
 		var encounter: Dictionary = app.profile.campaign.encounter
@@ -82,7 +87,7 @@ func _run() -> void:
 		check(not app.continue_route(current.id, current.revision), "duplicate continuation rejected")
 	check(Route.next_point(app.profile.campaign.route).is_empty(), "four-point completion")
 	var receipt: Array = app.profile.campaign.route.completed.duplicate(true)
-	check(app.start_route("jade_point_1"), "completed point can be replayed for capture")
+	check(start_route(app, "jade_point_1"), "completed point can be replayed for capture")
 	win(app)
 	check(app.profile.campaign.route.completed == receipt, "replay preserves first completion receipts")
 	app.continue_route(app.profile.campaign.encounter.id, app.profile.campaign.encounter.revision)
@@ -90,7 +95,7 @@ func _run() -> void:
 	app.trial_action("retreat")
 	var previous: Dictionary = app.profile.duplicate(true)
 	app.storage = Store.new("user://missing-route-directory/profile.json")
-	check(not app.start_route("jade_point_2") and app.profile == previous, "failed start does not create a route encounter")
+	check(not start_route(app, "jade_point_2") and app.profile == previous, "failed start does not create a route encounter")
 	app.storage = Store.new(PATH)
 	# Migration adds empty progress while preserving old encounter and capture state.
 	var old := Store.defaults()
@@ -105,11 +110,11 @@ func _run() -> void:
 	check(migrated.campaign.route == defaults and migrated.campaign.encounter == Campaign.normalized(old.campaign).encounter, "migration does not infer route completion from old training")
 	# Defeat, withdrawal, pending rival and replacement must not grant route completion.
 	app.profile = Store.defaults()
-	app.start_route("jade_point_1")
+	start_route(app, "jade_point_1")
 	check(not app.continue_route(app.profile.campaign.encounter.id, 0), "cannot continue live encounter")
 	app.trial_action("retreat")
 	check(app.profile.campaign.route.completed.is_empty(), "retreat never advances")
-	app.start_route("jade_point_1")
+	start_route(app, "jade_point_1")
 	app.trial_action("karmany", "golpe")
 	app._notification(MainLoop.NOTIFICATION_APPLICATION_PAUSED)
 	app.profile = app.storage.load_profile()
@@ -123,7 +128,7 @@ func _run() -> void:
 	app.profile.campaign.victories = 1
 	app.profile.campaign.collection = [{"id": "jade-1", "species": "ushigane"}]
 	app.change_team("add", "jade-1")
-	app.start_route("jade_point_1")
+	start_route(app, "jade_point_1")
 	var model = Router.create(app.profile.campaign.encounter)
 	model.restore(app.profile.campaign.encounter)
 	model.active().hp = 1
@@ -137,7 +142,7 @@ func _run() -> void:
 	app.trial_action("replace", "jade-1")
 	app.trial_action("retreat")
 	app.profile = Store.defaults()
-	app.start_route("jade_point_1")
+	start_route(app, "jade_point_1")
 	model = Router.create(app.profile.campaign.encounter)
 	model.restore(app.profile.campaign.encounter)
 	model.active().hp = 1
@@ -148,10 +153,10 @@ func _run() -> void:
 	app.trial_action("enemy")
 	app.response_timer.stop()
 	check(app.profile.campaign.encounter.phase == "defeat" and app.profile.campaign.route.completed.is_empty(), "total defeat does not advance route")
-	check(app.start_route("jade_point_1") and app.profile.campaign.encounter.round == 1, "defeated point can be retried with recovered team")
+	check(start_route(app, "jade_point_1") and app.profile.campaign.encounter.round == 1, "defeated point can be retried with recovered team")
 	app.trial_action("retreat")
 	# A winning action and its route receipt must commit together or neither does.
-	app.start_route("jade_point_1")
+	start_route(app, "jade_point_1")
 	model = Router.create(app.profile.campaign.encounter)
 	model.restore(app.profile.campaign.encounter)
 	model.state.enemy.hp = 1
@@ -189,7 +194,7 @@ func _run() -> void:
 		check(not map_node.buttons[0].disabled and map_node.buttons[1].disabled, "UI mirrors ordered access")
 		for button in map_node.buttons:
 			check(button.get_global_rect().end.x <= 1280 and button.get_global_rect().end.y < 600 and button.size.y >= 58, "map point fits viewport")
-	find_button(main.get_node("Page"), "Iniciar").pressed.emit()
+	find_button(main.get_node("Page"), "● 1").pressed.emit()
 	await process_frame
 	check(app.profile.campaign.route.current.point_id == "jade_point_1", "real map button starts correct route")
 	win(app)

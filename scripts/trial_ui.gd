@@ -1,6 +1,7 @@
 extends Control
 
 signal navigate(page: String)
+const Energy = preload("res://scripts/exploration_energy.gd")
 const Route = preload("res://scripts/jade_route.gd")
 const RouteMap = preload("res://scripts/jade_route_map.gd")
 const Details = preload("res://scripts/combat_details.gd")
@@ -12,6 +13,9 @@ const Stage = preload("res://scripts/trial_stage.gd")
 var mode := "battle"
 var column: VBoxContainer
 var message: Label
+var stamina_label: Label
+var stamina_item_button: Button
+var route_map_node: Control
 
 func _ready() -> void:
 	_build()
@@ -45,13 +49,14 @@ func _build() -> void:
 	margin.add_child(column)
 	var header := HBoxContainer.new()
 	column.add_child(header)
-	var title := _label("VALLE JADE · " + ((("Error al guardar respuesta" if not App.response_error.is_empty() else "Respuesta rival") if not App.profile.campaign.encounter.is_empty() and Router.pending(App.profile.campaign.encounter) else "Resonancia → Karmany") if mode == "battle" else "Ezel, Axe y Zephyr"), 26)
+	var title := _label("COMBATE · Turno %d" % int(App.profile.campaign.encounter.get("round", 1)) if mode == "battle" else "VALLE JADE · Exploración", 26)
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(title)
-	if mode == "battle" and Router.valid(App.profile.campaign.encounter):
-		header.add_child(_button("Estado y técnicas", _details))
-	header.add_child(_button("Mapa", func(): navigate.emit("jade_play")))
-	if mode == "intro" or mode == "map":
+	if mode == "battle":
+		header.add_child(_button("Opciones", _options_menu))
+	elif mode == "map": header.add_child(_button("Opciones", _map_options))
+	else: header.add_child(_button("Mapa", func(): navigate.emit("jade_play")))
+	if mode in ["intro", "map", "exploration"]:
 		_world()
 	else:
 		_battle()
@@ -67,22 +72,26 @@ func _stage(stage_mode: String, dead_player: bool = false, dead_enemy: bool = fa
 	if stage_mode == "battle":
 		stage.ally_species = App.profile.campaign.encounter.get("ally_species", "zephyr")
 		stage.enemy_species = App.profile.campaign.encounter.get("enemy_species", "tanugami")
-	stage.custom_minimum_size = Vector2(0, 170)
+	stage.custom_minimum_size = Vector2(0, 130 if stage_mode == "battle" and App.profile.campaign.encounter.get("phase") in ["capture", "captured", "escaped", "defeat", "retreated"] else 170)
 	stage.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	column.add_child(stage)
 	if stage_mode == "battle" and App.consume_animation(App.profile.campaign.encounter):
 		stage.play(App.profile.campaign.encounter.get("event", {}))
 
 func _world() -> void:
+	if mode == "exploration":
+		_exploration_scene()
+		return
 	if mode == "map":
 		var route_map := RouteMap.new()
+		route_map_node = route_map
 		var route: Dictionary = App.profile.campaign.get("route", Route.defaults())
 		var active: bool = not App.profile.campaign.encounter.is_empty() and App.profile.campaign.encounter.phase in ["battle", "replacement", "capture"]
 		route_map.setup(route, active, App.load_failed)
 		route_map.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		route_map.point_selected.connect(func(id: String):
 			App.tap()
-			if App.start_route(id): navigate.emit("battle")
+			if App.start_route(id): _open_encounter()
 			else: _notice())
 		column.add_child(route_map)
 	else: _stage(mode)
@@ -94,26 +103,25 @@ func _world() -> void:
 			if App.mark_intro_seen(): navigate.emit("jade_play")
 			else: _notice()))
 	else:
-		var route: Dictionary = App.profile.campaign.get("route", Route.defaults())
-		var finished: bool = Route.next_point(route).is_empty()
-		column.add_child(_label(("Recorrido de prueba completado · 4/4. Puedes repetir encuentros o entrenar." if finished else "Recorrido · %d/4 completados. Vence para avanzar; capturar es opcional." % route.completed.size()) + " El equipo y el árbol se aplican al iniciar cada encuentro.", 21))
+		var energy_row := HBoxContainer.new()
+		column.add_child(energy_row)
+		stamina_label = _label("", 21)
+		stamina_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		energy_row.add_child(stamina_label)
+		stamina_item_button = _button("", _use_stamina_item)
+		energy_row.add_child(stamina_item_button)
+		_update_stamina()
+		var clock := Timer.new()
+		clock.wait_time = 1.0
+		clock.timeout.connect(_update_stamina)
+		add_child(clock)
+		clock.start()
 		var points := HBoxContainer.new()
 		column.add_child(points)
-		points.add_theme_constant_override("separation", 16)
-		points.add_child(_button("● Ezel y Axe", func(): navigate.emit("intro")))
 		var active: bool = not App.profile.campaign.encounter.is_empty() and App.profile.campaign.encounter.phase in ["battle", "replacement", "capture"]
-		points.add_child(_button("● Retomar encuentro" if active else "● Entrenamiento libre", func():
-			if active:
-				if App.start_trial(): navigate.emit("battle")
-				else: _notice()
+		points.add_child(_button("Retomar localización" if active and App.profile.campaign.get("exploration", Energy.defaults()).scouting else ("Retomar encuentro" if active else "Entrenamiento libre"), func():
+			if active: _open_encounter()
 			else: _rivals()))
-		points.add_child(_button("● Árbol", func(): navigate.emit("skill_tree")))
-		var links := HBoxContainer.new()
-		column.add_child(links)
-		links.add_child(_button("Colección · %d" % (1 + App.profile.campaign.collection.size()), func(): navigate.emit("collection")))
-		links.add_child(_button("Equipo", func(): navigate.emit("team")))
-		links.add_child(_button("Libro", func(): navigate.emit("book")))
-		links.add_child(_button("Menú", func(): navigate.emit("home")))
 
 func _act(operation: String, id: String, revision: int, target_id: String = "") -> void:
 	if App.trial_action(operation, id, revision, target_id):
@@ -133,7 +141,11 @@ func _battle() -> void:
 	var enemy_name := Catalog.species_name(enemy_species)
 	var player_max: int = int(Catalog.stats(state.ally_species).life) if tactical else 80
 	var enemy_max: int = int(Catalog.stats(enemy_species).life) if tactical else 80
-	column.add_child(_label("%s  %d / %d       %s rival  %d / %d       Turno %d" % [encounter.ally_name(), state.player_hp, player_max, enemy_name, state.enemy_hp, enemy_max, state.round], 24))
+	var health := HBoxContainer.new()
+	health.add_theme_constant_override("separation", 24)
+	column.add_child(health)
+	_health_bar(health, "AllyHP", encounter.ally_name(), int(state.player_hp), player_max)
+	_health_bar(health, "EnemyHP", enemy_name, int(state.enemy_hp), enemy_max)
 	_stage("battle", state.player_hp == 0, state.enemy_hp == 0)
 	var action_label := _label(encounter.last_action_text(), 22)
 	action_label.name = "LastAction"
@@ -150,33 +162,12 @@ func _battle() -> void:
 				if tactical and chosen == "insignia" and state.ally_species == "sakuromushi": _support(state, revision)
 				else: _act("karmany", chosen, revision), not reason.is_empty()))
 			if tactical: actions.get_child(actions.get_child_count() - 1).tooltip_text = Catalog.action(state.ally_species, id).description + (" " + reason if not reason.is_empty() else "")
-		if tactical:
-			var team_row := HBoxContainer.new()
-			team_row.name = "BattleTeam"
-			column.add_child(team_row)
-			for member in state.members:
-				var member_id: String = member.instance_id
-				var caption := "%s %d/%d" % [Catalog.species_name(member.species_id), member.hp, int(Catalog.stats(member.species_id).life)]
-				team_row.add_child(_button(caption + (" · activo" if member_id == state.ally_id else " · cambiar"), func():
-					_confirm("Entrará " + Catalog.species_name(member.species_id) + " · " + member_id + ". Cambiar consume la acción del Karmany y el rival atacará al nuevo activo. Los efectos y recargas permanecen en cada individuo; una resonancia ya usada no se traslada.", func(): _act("switch", member_id, revision)), member.hp == 0 or member_id == state.ally_id or state.enemy_pending))
-		var resonances := HBoxContainer.new()
-		resonances.name = "Resonances"
-		column.add_child(resonances)
-		if state.loadout.is_empty():
-			var hint := _label("Sin resonancias equipadas. La habilidad del Karmany dará paso al rival.", 20)
-			hint.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			resonances.add_child(hint)
-		for id in state.loadout:
-			var chosen: String = id
-			var reason: String = encounter.reason("trainer", chosen)
-			var name: String = Encounter.rules().resonances[id].name
-			resonances.add_child(_button("Ezel: " + name, func(): _act("trainer", chosen, revision), not reason.is_empty()))
-		var finish := HBoxContainer.new()
-		column.add_child(finish)
+		var secondary := HBoxContainer.new()
+		column.add_child(secondary)
+		secondary.add_child(_button("Entrenador", _trainer_menu))
+		if tactical: secondary.add_child(_button("Equipo", _team_menu))
 		if state.enemy_pending and not App.response_error.is_empty():
-			finish.add_child(_button("Reintentar respuesta", App.retry_enemy_response))
-		else:
-			finish.add_child(_button("Abandonar encuentro", func(): _act("retreat", "", revision), state.enemy_pending))
+			secondary.add_child(_button("Reintentar respuesta", App.retry_enemy_response))
 	elif state.phase == "replacement":
 		column.add_child(_label("Elige un reemplazo. El rival no atacará otra vez por este cambio.", 22))
 		var replacements := HBoxContainer.new()
@@ -186,6 +177,7 @@ func _battle() -> void:
 			if member.hp > 0:
 				replacements.add_child(_button("Entrar: " + Catalog.species_name(member.species_id), func(): _act("replace", member_id, revision)))
 	elif state.phase == "capture":
+		_drop_notice(state.id)
 		var used: int = state.capture.actions.size()
 		column.add_child(_label("Libro inicial · 45%% por intento · quedan %d de 3" % (3 - used), 25))
 		column.add_child(_button("Intentar vínculo con el Libro", func(): _act("capture", "", revision)))
@@ -194,6 +186,7 @@ func _battle() -> void:
 				_confirm("La victoria ya cuenta para el recorrido. Continuar renuncia a los intentos restantes de este encuentro; podrás repetirlo después para intentar el vínculo.", func(): _continue_route(state.id, revision), "Continuar sin vínculo")))
 	else:
 		var text: String = enemy_name + " capturado y añadido a la colección." if state.phase == "captured" else (enemy_name + " escapó; puedes iniciar otro encuentro." if state.phase == "escaped" else (encounter.ally_name() + " quedó fuera de combate. La próxima prueba comienza recuperado." if state.phase == "defeat" else "Regresaste al valle."))
+		_drop_notice(state.id)
 		column.add_child(_label(text, 25))
 		column.add_child(_button("Volver al mapa", func(): navigate.emit("jade_play")))
 		if state.phase in ["captured", "escaped"] and App.profile.campaign.get("route", Route.defaults()).current.get("encounter_id") == state.id:
@@ -211,7 +204,7 @@ func _rivals() -> void:
 	for species in ["tanugami", "ushigane", "kitsunibi", "sakuromushi"]:
 		var chosen: String = species
 		choices.add_child(_button(Catalog.species_name(chosen), func():
-			if App.start_trial(chosen): navigate.emit("battle")
+			if App.start_trial(chosen): _open_encounter()
 			else: _notice()
 			dialog.queue_free()))
 	add_child(dialog)
@@ -259,3 +252,136 @@ func _details() -> void:
 func _continue_route(encounter_id: String, revision: int) -> void:
 	if App.continue_route(encounter_id, revision): navigate.emit("jade_play")
 	else: _notice()
+
+func _health_bar(parent: HBoxContainer, id: String, caption: String, hp: int, maximum: int) -> void:
+	var box := VBoxContainer.new()
+	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	parent.add_child(box)
+	box.add_child(_label("%s · %d/%d PS" % [caption, hp, maximum], 23))
+	var bar := ProgressBar.new()
+	bar.name = id
+	bar.max_value = maximum
+	bar.value = hp
+	bar.show_percentage = false
+	bar.custom_minimum_size.y = 22
+	box.add_child(bar)
+
+func _popup(id: String, caption: String) -> VBoxContainer:
+	if get_node_or_null(id) != null: return null
+	var dialog := AcceptDialog.new()
+	dialog.name = id
+	dialog.title = caption
+	dialog.ok_button_text = "Cerrar"
+	var scroll := ScrollContainer.new()
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.custom_minimum_size = Vector2(610, 300)
+	dialog.add_child(scroll)
+	var content := VBoxContainer.new()
+	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	content.add_theme_constant_override("separation", 8)
+	scroll.add_child(content)
+	add_child(dialog)
+	dialog.confirmed.connect(dialog.queue_free)
+	dialog.canceled.connect(dialog.queue_free)
+	dialog.popup_centered(Vector2i(680, 430))
+	return content
+
+func _options_menu() -> void:
+	var content := _popup("OptionsMenu", "Opciones de combate")
+	if content == null: return
+	var state: Dictionary = App.profile.campaign.encounter
+	content.add_child(_button("Estado y técnicas", func():
+		_dismiss("OptionsMenu")
+		_details()))
+	content.add_child(_button("Volver al mapa", func(): navigate.emit("jade_play")))
+	content.add_child(_label("Volver al mapa conserva el encuentro y su respuesta pendiente.", 20))
+	if state.phase in ["battle", "replacement"]:
+		content.add_child(_button("Abandonar pelea", func():
+			_dismiss("OptionsMenu")
+			_confirm("Abandonar termina el encuentro sin victoria. La stamina de entrada ya se gastó y no se devuelve.", func(): _act("retreat", "", int(state.revision)), "Abandonar pelea"), Router.pending(state)))
+		if Router.pending(state): content.add_child(_label("Espera la respuesta rival para abandonar.", 20))
+
+func _trainer_menu() -> void:
+	var content := _popup("TrainerMenu", "Entrenador · resonancia opcional")
+	if content == null: return
+	var model = Router.create(App.profile.campaign.encounter)
+	if not model.restore(App.profile.campaign.encounter): return
+	var state: Dictionary = model.state
+	if state.loadout.is_empty():
+		var hint := _label("Sin resonancias equipadas. Puedes actuar con tu Karmany.")
+		hint.name = "TrainerHint"
+		content.add_child(hint)
+	for id in state.loadout:
+		var chosen: String = id
+		var reason: String = model.reason("trainer", id)
+		content.add_child(_button("Ezel: " + Encounter.rules().resonances[id].name, func(): _act("trainer", chosen, int(state.revision)), not reason.is_empty()))
+		if not reason.is_empty(): content.add_child(_label(reason, 20))
+
+func _team_menu() -> void:
+	var content := _popup("TeamMenu", "Equipo · cambiar consume la acción")
+	if content == null: return
+	var state: Dictionary = App.profile.campaign.encounter
+	for member in state.get("members", []):
+		var id: String = member.instance_id
+		content.add_child(_button("%s %d/%d · %s" % [Catalog.species_name(member.species_id), member.hp, int(Catalog.stats(member.species_id).life), "activo" if id == state.ally_id else id], func():
+			_dismiss("TeamMenu")
+			_confirm("Entrará " + Catalog.species_name(member.species_id) + ". El cambio consume la acción y el rival responderá contra el nuevo activo. Los efectos y recargas permanecen en cada individuo.", func(): _act("switch", id, int(state.revision))), id == state.ally_id or member.hp == 0 or Router.pending(state)))
+
+func _open_encounter() -> void:
+	navigate.emit("exploration" if App.profile.campaign.get("exploration", Energy.defaults()).scouting else "battle")
+
+func _exploration_scene() -> void:
+	var view := TextureRect.new()
+	view.texture = Stage.texture("jade_overhead")
+	view.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	view.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	view.custom_minimum_size.y = 220
+	view.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	column.add_child(view)
+	var point_id: String = App.profile.campaign.get("route", Route.defaults()).current.get("point_id", "")
+	var number := 1
+	for i in range(Route.points().size()):
+		if Route.points()[i].id == point_id: number = i + 1
+	column.add_child(_label("Lugar %d · busca señales para encontrar un Karmany." % number, 24))
+	var encounter_id: String = App.profile.campaign.encounter.get("id", "")
+	column.add_child(_button("Buscar encuentro", func():
+		if App.discover_location(encounter_id): navigate.emit("battle")
+		else: _notice()))
+	column.add_child(_button("Salir de la localización", func():
+		_confirm("Salir termina esta exploración. La stamina de entrada no se devuelve.", func():
+			if App.trial_action("retreat"): navigate.emit("jade_play")
+			else: _notice(), "Salir")))
+
+func _update_stamina() -> void:
+	if stamina_label == null: return
+	var energy := App.stamina_view()
+	var countdown := 0
+	if energy.value < 100:
+		countdown = maxi(1, int(energy.anchor) + 60 - int(Time.get_unix_time_from_system()))
+	stamina_label.text = "Ruta %d/4 · Stamina %d/100 · %s · Objetos: %d" % [App.profile.campaign.get("route", Route.defaults()).completed.size(), energy.value, "+1 en %ds" % countdown if energy.value < 100 else "Completa", energy.items]
+	stamina_item_button.text = "Usar recuperador +30"
+	stamina_item_button.disabled = energy.items <= 0 or energy.value >= 100 or App.load_failed
+	if route_map_node != null: route_map_node.update_stamina(int(energy.value))
+
+func _use_stamina_item() -> void:
+	var revision: int = int(App.profile.campaign.get("exploration", Energy.defaults()).revision)
+	if App.use_recovery_item(revision): navigate.emit("jade_play")
+	else: _notice()
+
+func _drop_notice(encounter_id: String) -> void:
+	var drop: Dictionary = App.profile.campaign.get("exploration", Energy.defaults()).drop
+	if drop.get("encounter_id") == encounter_id and drop.get("received", false):
+		column.add_child(_label("Objeto obtenido: recuperador de stamina (+30). Disponible en el mapa.", 21))
+
+func _map_options() -> void:
+	var content := _popup("MapOptions", "Valle Jade · opciones")
+	if content == null: return
+	for entry in [["Equipo", "team"], ["Colección", "collection"], ["Árbol", "skill_tree"], ["Libro", "book"], ["Ezel y Axe", "intro"], ["Menú principal", "home"]]:
+		var target: String = entry[1]
+		content.add_child(_button(entry[0], func(): navigate.emit(target)))
+
+func _dismiss(id: String) -> void:
+	var dialog := get_node_or_null(id) as Window
+	if dialog != null:
+		dialog.hide()
+		dialog.queue_free()
