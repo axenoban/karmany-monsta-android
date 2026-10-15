@@ -1,8 +1,8 @@
-> Antes de desarrollar: leer [Continuidad](docs/CONTINUIDAD.md) y [AGENTS.md](AGENTS.md).
+> **Antes de continuar:** leer [Estado vivo y responsable actual](docs/ROADMAP_ESTADO.md) → [Roadmap Chat + Work E0–E10](docs/ROADMAP_CHAT_WORK.md) → [Continuidad técnica](docs/CONTINUIDAD.md) → [AGENTS.md](AGENTS.md).
 
 # Karmany Monsta Android
 
-Videojuego Android del universo Karmany Monsta. Baseline validado: Preview 19 (0.10.0), con exploración, stamina y combate. La nueva Preview 0.11.0 añade fichas de localización antes de gastar, cuatro fondos de combate y dirección artística renovada de mapa, cinco Karmany, dos personajes e interfaz. Conserva partida, Libro, árbol, equipo, balance y animaciones. Pendiente de validación física.
+Videojuego Android de Karmany Monsta. **Base jugable validada:** Preview 29 (v0.17.0) en `dev/karmany-core`; mapa Jade de cuatro puntos, combate, captura, stamina, niveles/XP, Libro y guardado. **Prototipo no validado:** Preview 34 (v0.18.0, rama `feature/e1-jade-relay`) con ensayo de ataque y relevo de Sakuromushi, a la espera de prueba física. Para el progreso real y el próximo responsable consultar siempre `docs/ROADMAP_ESTADO.md`.
 
 Ramas previstas: main (publicable), dev/karmany-core (baseline validado), feature/* (trabajo pendiente de validación).
 

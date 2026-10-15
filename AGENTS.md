@@ -7,3 +7,15 @@ Al terminar cada mejora actualizar `docs/CONTINUIDAD.md`: implementación, rama,
 «Prueba correcta» permite cerrar el bloque e integrar por fast-forward en `dev/karmany-core`, sin force push. `main` se reserva para publicación. Trabajar en `feature/*` para bloques no validados. Conservar guardados y reglas aprobadas; no inventar canon, balance o economía. Si el siguiente bloque requiere decisiones nuevas, preparar preguntas concretas antes de implementarlo.
 
 Las instrucciones del usuario tienen prioridad. No es necesario recuperar el chat anterior si este documento y el estado real del repositorio proporcionan el contexto suficiente.
+
+## Roadmap vivo y reparto Chat / Work (lectura obligatoria)
+
+**Antes de cualquier acción**, desde Chat, Work u otro agente, leer desde la rama actual `docs/ROADMAP_ESTADO.md` (estado vigente/propietario), `docs/ROADMAP_CHAT_WORK.md` (etapas E0–E10, roles, prompts y puertas) y `docs/CONTINUIDAD.md` (historial técnico). Verificar después los HEAD/commits reales de `dev/karmany-core`, `feature/*`, PR abiertos, checks y últimas APK. Un texto con SHA antiguo o un comentario de chat nunca sustituye a GitHub.
+
+- Cuando el creador diga «continúa», identificar primero la etapa activa y **su dueño único de escritura** según `docs/ROADMAP_ESTADO.md`. Si no te toca programar, revisar, especificar, auditar o explicar el bloqueo sin duplicar trabajo de otro agente.
+- Chat suele ser responsable de diseño, decisiones, balance, auditoría y QA; Work de programación de bloques, compilación y APK. La prioridad es la **fase del tablero**, no el tipo de agente. La asignación puede cambiar expresamente por el creador; registrar el traspaso antes de modificar código.
+- Solo **una rama funcional escribible** para los mismos archivos; lecturas simultáneas sí. No permitir doble edición de `AGENTS.md`, `CONTINUIDAD.md`, `ROADMAP_ESTADO.md`, código compartido o archivos de reglas mientras otro es dueño.
+- Tras cada avance, fallo, interrupción, prueba o traspaso, **el dueño de la rama** actualiza `docs/ROADMAP_ESTADO.md` y `docs/CONTINUIDAD.md` en esa misma rama. Anotar fase, estado real, responsable, SHA, PR, CI, release/APK, validación física (o pendiente) y siguiente acción. No marcar `aprobado` por CI verde.
+- Solo cuando el creador valide explícitamente la APK/cambio, el dueño verifica historial, CI y contratos; **integra por fast-forward si es seguro**, verifica `dev/karmany-core`, cierra PR y actualiza ambos documentos de estado en `dev`. Si `dev` avanzó por documentación, incorporar `dev` a la feature de manera trazable antes de intentar FF; no forzar ni reescribir historia.
+- No dar por terminado E1 por la publicación de Preview34: el relevo de Sakuromushi tiene observación humana pendiente. No iniciar implementación E2 sin cerrar ese bloqueo y adjudicar expresamente la escritura.
+
