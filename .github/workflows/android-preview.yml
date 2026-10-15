@@ -201,5 +201,5 @@ jobs:
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" "${ASSETS[@]}" --clobber
           else
-            gh release create "$TAG" "${ASSETS[@]}" --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Preview 0.17.0: ventana de experiencia tras victoria, barras animadas con subida de nivel y cambios de estadísticas del Karmany. Movimiento reducido, progreso guardado sin duplicar recompensas y límite regional conservados."
+            gh release create "$TAG" "${ASSETS[@]}" --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Preview 0.18.0 experimental (E1): Sakuromushi ataca y releva automáticamente al compañero seleccionado, bonificación de daño durante dos rondas y respuesta contra el entrante. Conserva guardados y demás sistemas. No contiene aún las etapas 5 y 6 de Jade."
           fi
