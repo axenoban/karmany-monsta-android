@@ -23,3 +23,10 @@ static func action(species: String, id: String) -> Dictionary:
 		"sakuromushi": "Ataque de potencia 100%; potencia 25% el próximo golpe del compañero elegido."
 	}.get(species, "")
 	return effect
+
+static func stats_at_level(id: String, level: int) -> Dictionary:
+	var result := stats(id)
+	if result.is_empty(): return result
+	var multiplier := 1.0 + float(preload("res://scripts/progression_rules.gd").rules().stat_step) * (level - 1)
+	for key in ["life", "attack", "defense"]: result[key] = roundi(float(result[key]) * multiplier)
+	return result

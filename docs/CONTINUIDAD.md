@@ -12,25 +12,28 @@ Leer este documento antes de cada proceso; `AGENTS.md` en la raíz establece est
 - Cuatro lugares desbloqueados por victoria; captura opcional. Consultar ficha no gasta, retomar no cobra otra vez.
 - Turno: resonancia opcional, habilidad/cambio, respuesta automática rival. Reemplazo por derrota sin ataque extra.
 - Conservar anatomía y arte aprobado; los nombres de terreno son descriptivos, no canon nuevo.
-- Libro: no inventar costes/desbloqueos de mejoras; requieren decisión del creador.
+- Libro: nivel4/coste1 y nivel8/coste2 aprobados para este bloque; no inventar mejoras adicionales.
 
 ## Última base aprobada
 Preview27,0.15.0/versionCode1027,código413ab07813724cf4bd68e562c6fb0fc81e3cbefc, documentación10e3886. Usuario confirmó «ok pruebas correctas» el14/10/2026. Integrado por fast-forward en dev desdea62ecb3 a10e3886; PR14 cerrada. CI38655224968:1174 Godot y3 Python, exportación/firma/auditoría correctas. main conserva su estado.
 
 Historial: docs/BASELINE_VALIDADO.md. Movimiento reducido opcional/desactivado de inicio, normalización compatible, misma duración/audio y resultados. Audio22 efectos originales con volumen/silencio persistentes. Reglas y guardados de bloques anteriores aprobados.
 
-## Bloque19 ampliado: niveles/experiencia/libros/regiones
-Usuario el14/10/2026 amplió el alcance: nivel de entrenador para desbloquear libros/regiones, nivel individual Karmany, experiencia solo en equipo principal, tope de Valle Jade10 aplicado por individuo (los inferiores siguen ganando), puntos del árbol para desbloqueos y reconocer progreso previo.
+## Bloque19: niveles, XP y Libro · implementación autorizada
+Aprobación del creador14/10/2026: «es correcto, aplica esto a al proyecto». Leer docs/PROPUESTA_PROGRESION_19.md y docs/NIVELES_LIBRO_19.md. Rama feature/level-progression, base cb98974, versión0.16.0.
 
-Leer docs/PROPUESTA_PROGRESION_19.md antes de implementar. Sustituye el cuestionario anterior en cuanto a criterio por especies (descartado) y compra gratuita (descartada). Capturas/niveles previos deben reconocerse. Umbrales4/8 para libros siguen como propuesta hasta confirmación; costes, fórmulaXP, crecimiento de estadísticas y niveles iniciales de Karmany no están fijados.
+Reglas aprobadas e implementadas:25XP por victoria de localización al entrenador y a cada integrante del equipo, sin repartir;100×nivel actual para subir. Jade deja de darXP a cada individuo desde10, los inferiores siguen ganando y el excedente al llegar al límite se descarta. Entrenamiento libre/derrota/retirada sinXP. Capturas y nivel del entrenador anteriores conservados; XP parcial previa inexistente se inicia en0 y Karmany antiguos/nuevos en1. +5%Vida/Ataque/Defensa por nivel sobre base con redondeo; Velocidad y técnicas intactas.
 
-Estado real: entrenador sube1nivel por victoria, máximo10; Karmany no tienen XP/niveles históricos. Puntos existentes se calculan desde nivel/hitos menos rangos aprendidos. Gastos permanentes requieren registro compartido que sobreviva redistribución. Solo Jade tiene ruta jugable; no inventar región siguiente.
+Libro secuencial: Mejora1 Nv4/coste1punto; Mejora2 Nv8/coste2puntos, probabilidades ya aprobadas45/60/75%Común y rarezas de tabla original. Puntos compartidos con resonancias y gastos permanentes registrados en skill_tree.unlocks; redistribuir devuelve solo resonancias. Compras/reset normal fuera de encuentros activos. Encuentros nuevos congelan niveles y book_id; sesiones viejas mantienen política inicial y cifras hasta terminar.
 
-## Decisiones pendientes antes de programar balance
-Propuesta numérica completa en PROPUESTA_PROGRESION_19:25XP por victoria para cada elegible,100×nivel para subir; criaturas nivel1/XP0 y+5%Vida/Ataque/Defensa por nivel (Velocidad fija); libros nivel4/8 y costes1/2 puntos. Regiones configurables, Jade accesible, siguiente por definir. Resolver si entrenamiento libre daXP y política de redistribución para evitar bloqueo por puntos gastados. Todo ello pendiente de aprobación. No atribuir XP histórica ficticia.
+Regiones configuradas en data/level_progression.json: Jade accesible Nv1/coste0/topeXP10. Regla de acceso/gasto preparada para futuras regiones configuradas; no se añadió una región ni un enemigo/encuentro sin canon aprobado. Entrenador sigue con el máximo actual10 hasta aprobar la siguiente región/progresión.
 
-## Después de responder
-Registrar valores exactos y dividir bloque19A (XP/niveles/tope/migración/UI) y19B (libros/gasto/acceso regional). Crear feature/level-progression cuando reglas numéricas estén aprobadas. Proteger sesiones activas y validar transacciones únicas, escalado, migración, errores de guardado y puntos compartidos. No entregar un APK con balance supuesto.
+Persistencia: schema3 compatible con campos opcionales; campaign.progression contiene trainer_xp, units por instance_id y last_reward de victoria. Recibo, nivel/XP, puntos, ruta y recompensa se guardan juntos. Capturar no repiteXP; criaturas fuera del equipo no reciben. Escritura fallida no concedeXP ni consume puntos. Guardado JSON con máxima precisión de números; las pruebas comprueban los mismos resultados de las tiradas al recargar. Se normalizan perfiles de forma idéntica en memoria/disco para conservar enteros y migraciones.
+
+Validación local:1348 comprobaciones Godot,174 nuevas de progresión, y3 Python correctas. Simulados combates a niveles1/5/10 contra cuatro rivales y revisadas pantallas normal/grande de Equipo, Libro, mapa, árbol, combate escalado y resumen deXP. CI/APK pendientes de registrar. Prueba física docs/PRUEBA_ANDROID_19.md.
+
+## Si las pruebas son correctas
+Registrar aprobación e integrar esta rama por fast-forward en dev. Después, definir con el creador la siguiente región canónica: nombre/fuente, nivel de acceso, coste de puntos, tope deXP, especies/encuentros y niveles rivales. No inventar región, elevar el máximo del entrenador ni añadir rarezas jugables por disponer de probabilidades del Libro. Si se prioriza balance, medir duración de combates y ritmo deXP antes de proponer cambios numéricos para aprobación.
 
 ## Protocolo al terminar cada actualización
 Actualizar bloque actual, estado probado y pendiente, rama y referencias verificadas, enlace de entrega cuando exista, riesgos reales y siguiente paso tras aprobación. Distinguir siempre CI/local de validación en dispositivo. Usar git log como referencia de commit cuando el documento forma parte del mismo commit, evitando autorreferencias imposibles.

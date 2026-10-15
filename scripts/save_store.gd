@@ -34,7 +34,11 @@ static func valid(data: Variant) -> bool:
 		return false
 	if data.schema == 1:
 		return not data.has("skill_tree") and not data.has("campaign")
-	return TreeModel.valid(data.get("skill_tree")) and (not data.has("campaign") if data.schema == 2 else Campaign.valid(data.get("campaign")))
+	if not TreeModel.valid(data.get("skill_tree")): return false
+	if data.schema == 2: return not data.has("campaign")
+	if not Campaign.valid(data.get("campaign")): return false
+	if data.campaign.has("progression") and data.campaign.progression.trainer_xp >= preload("res://scripts/level_progression.gd").requirement(int(data.skill_tree.level)): return false
+	return true
 
 func _read(path: String) -> Variant:
 	if not FileAccess.file_exists(path):
@@ -85,7 +89,7 @@ func save_profile(data: Dictionary) -> bool:
 	if handle == null:
 		last_error = "No se pudo escribir el guardado: %s" % error_string(FileAccess.get_open_error())
 		return false
-	handle.store_string(JSON.stringify(data))
+	handle.store_string(JSON.stringify(data, "", true, true))
 	handle.flush()
 	var write_error := handle.get_error()
 	handle.close()

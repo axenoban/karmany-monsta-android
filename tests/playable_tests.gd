@@ -106,7 +106,7 @@ func _run() -> void:
 		if current._turn().available("karmany"):
 			app.trial_action("karmany", "insignia" if current.reason("karmany", "insignia").is_empty() else "golpe")
 		else: app.trial_action("enemy")
-	_check(app.profile.campaign.victories == 1 and app.profile.skill_tree.level == 2, "victory awards one trainer level exactly once")
+	_check(app.profile.campaign.victories == 1 and app.profile.skill_tree.level == 1 and app.profile.campaign.progression.trainer_xp == 0, "training victory is recorded without trainer XP under approved progression")
 	var capture_scene: PackedScene = load("res://scenes/main.tscn")
 	var capture_ui := capture_scene.instantiate()
 	root.add_child(capture_ui)

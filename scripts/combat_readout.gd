@@ -25,9 +25,9 @@ static func describe(effect: Dictionary, scale: float = 1.0) -> String:
 	return " ".join(parts)
 
 static func _unit(data: Dictionary, tactical: bool, role: String, active_id: String, round_id: int) -> Dictionary:
-	var stats: Dictionary = Catalog.stats(data.species_id) if tactical else Legacy.rules().stats
+	var stats: Dictionary = Catalog.stats_at_level(data.species_id, int(data.get("level", 1))) if tactical else Legacy.rules().stats
 	var ready: int = int(data.ready.get("insignia", 0))
-	return {"name": Catalog.species_name(data.species_id), "id": data.instance_id, "role": role if role == "Rival" else ("Derrotado" if data.hp == 0 else ("Activo" if data.instance_id == active_id else "Reserva")), "hp": int(data.hp), "max_hp": int(stats.life), "attack": int(stats.attack), "defense": int(stats.defense), "effects": effects(data), "signature_ready": "Insignia: vuelve en turno %d." % ready if ready > round_id else "Insignia: sin recarga pendiente."}
+	return {"name": Catalog.species_name(data.species_id), "level": int(data.get("level", 1)), "id": data.instance_id, "role": role if role == "Rival" else ("Derrotado" if data.hp == 0 else ("Activo" if data.instance_id == active_id else "Reserva")), "hp": int(data.hp), "max_hp": int(stats.life), "attack": int(stats.attack), "defense": int(stats.defense), "effects": effects(data), "signature_ready": "Insignia: vuelve en turno %d." % ready if ready > round_id else "Insignia: sin recarga pendiente."}
 
 static func build(snapshot: Dictionary) -> Dictionary:
 	var model = Router.create(snapshot)

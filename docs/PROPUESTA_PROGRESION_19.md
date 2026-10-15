@@ -1,6 +1,6 @@
 # Bloque19 ampliado · Niveles, experiencia y desbloqueos
 
-Estado: reglas parciales confirmadas por el creador el14/10/2026. Cifras de balance todavía pendientes. No modificar combate/guardado hasta completar decisiones.
+Estado: propuesta completa aprobada por el creador el14/10/2026: «es correcto, aplica esto a al proyecto». Las recomendaciones numéricas, entrenamiento sinXP y redistribución con gastos permanentes quedan autorizadas. Se conserva el texto de preparación como historial. Implementación en feature/level-progression, pendiente de validación física.
 
 ## Confirmado por el usuario
 - Libros y regiones se desbloquean por nivel del entrenador.

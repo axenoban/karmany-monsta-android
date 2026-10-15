@@ -24,7 +24,7 @@ func _page(caption: String) -> VBoxContainer:
 	return column
 
 func _unit(column: VBoxContainer, unit: Dictionary) -> void:
-	column.add_child(_label(unit.name + " · " + unit.role + " · " + unit.id, 25))
+	column.add_child(_label(unit.name + " · Nv. %d" % int(unit.level) + " · " + unit.role + " · " + unit.id, 25))
 	column.add_child(_label("Vida %d/%d · Ataque %d · Defensa %d" % [unit.hp, unit.max_hp, unit.attack, unit.defense]))
 	var bar := ProgressBar.new()
 	bar.max_value = unit.max_hp

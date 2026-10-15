@@ -1,5 +1,7 @@
 extends Control
 
+const Progress = preload("res://scripts/level_progression.gd")
+const ProgressRules = preload("res://scripts/progression_rules.gd")
 const JADE := Color("8ed6b5")
 const INK := Color("0b2325")
 const PAPER := Color("eee9d9")
@@ -196,13 +198,15 @@ func _map() -> void:
 	body.add_child(_button("Entrar al valle jugable", func(): _show("jade_play" if App.profile.campaign.intro_seen else "intro")))
 	_heading("Valle Jade")
 	_copy("Punto de partida de Ezel y Axe.")
+	var region := ProgressRules.region("jade")
+	_copy("Acceso: entrenador Nv. %d · XP hasta Nv. %d por individuo" % [region.min_level, region.xp_cap])
 	var button := _button("◆  Valle Jade   ·   " + ("Visitado" if App.profile.journey.visited_jade else "Visitar"), _visit)
 	body.add_child(button)
 	body.add_child(_button("Consultar el Libro", func(): _show("book")))
 	body.add_child(_button("Bestiario de Valle Jade", func(): _show("bestiary")))
 	body.add_child(_button("Entrenadores", func(): _show("trainers")))
 	body.add_child(_button("Árbol de resonancias", func(): _show("skill_tree")))
-	_copy("Esta entrega conserva tu visita. Los encuentros y las rutas del primer capítulo llegarán con el contenido jugable.")
+	_copy("Puedes repetir las localizaciones desbloqueadas. El entrenamiento libre no concede experiencia.")
 
 func _visit() -> void:
 	if App.visit_jade():
@@ -213,19 +217,57 @@ func _visit() -> void:
 
 func _book() -> void:
 	_heading("El Libro")
-	_copy("Sus mejoras permitirán capturar rarezas superiores y aumentar las posibilidades de captura.")
-	_copy("Después de derrotar a un Karmany elegible tendrás hasta tres intentos. Si todos fallan, escapará y el encuentro terminará. Podrás encontrarlo de nuevo.")
-	_copy("Probabilidades por intento")
-	if not books.last_error.is_empty():
-		_copy(books.last_error)
-	else:
-		for level in books.all_levels():
-			var policy := books.policy_for(level.id)
-			var description: String = level.name + "\n"
-			for rarity in ["Común", "Raro", "Épico"]:
-				description += rarity + ": " + ("%d%%" % roundi(policy.chance_for(rarity) * 100) if policy.permits(rarity) else "Bloqueado") + "   "
-			_copy(description)
-	_copy("El Libro inicial funciona en el encuentro de Tanugami con tres intentos y 45% por intento. Las compras de mejoras y los encuentros de rarezas superiores se incorporarán después.")
+	var tree := _tree_model()
+	var current := ProgressRules.current_book(tree.state)
+	_copy("Entrenador Nv. %d · %d puntos disponibles" % [tree.state.level, tree.points_available()])
+	_copy("Hasta tres intentos tras derrotar al rival. Las mejoras se aplican al siguiente encuentro.")
+	for level in books.all_levels():
+		var policy := books.policy_for(level.id)
+		var status := " · EQUIPADO" if level.id == current else (" · Adquirido" if level.id == "book_initial" or level.id in tree.state.unlocks else (" · Disponible" if tree.unlock_reason(level.id).is_empty() else " · Bloqueado"))
+		_copy(level.name + status)
+		var chances: Array[String] = []
+		for rarity in ["Común", "Raro", "Épico"]:
+			chances.append(rarity + ": " + ("%d%%" % roundi(policy.chance_for(rarity) * 100) if policy.permits(rarity) else "Bloqueado"))
+		_copy(" · ".join(chances))
+		var requirement := ProgressRules.unlock(level.id)
+		if not requirement.is_empty():
+			_copy("Requiere Nv. %d · Coste %d punto(s)" % [requirement.min_level, requirement.cost])
+			var reason := tree.unlock_reason(level.id)
+			var id: String = level.id
+			var buy := _button("Adquirir " + level.name, func(): _confirm_book_upgrade(id))
+			buy.disabled = not reason.is_empty() or _encounter_in_progress() or App.load_failed
+			body.add_child(buy)
+			if not reason.is_empty(): _copy(reason)
+	if _encounter_in_progress(): _copy("Termina el encuentro para adquirir mejoras. El Libro usado en él se conserva.")
+	body.add_child(_button("Redistribuir resonancias", _confirm_redistribute))
+	_copy("Los puntos de libros permanecen gastados al redistribuir. Raros y épicos requieren encuentros de esas rarezas en futuras regiones.")
+
+func _confirm_book_upgrade(id: String) -> void:
+	var definition := ProgressRules.unlock(id)
+	var confirm := ConfirmationDialog.new()
+	confirm.dialog_text = "Adquirir %s por %d punto(s). La mejora es permanente y usará puntos compartidos con las resonancias." % [definition.name, definition.cost]
+	add_child(confirm)
+	confirm.confirmed.connect(func():
+		if App.purchase_unlock(id):
+			_show("book")
+			toast.text = "Libro mejorado."
+		else: toast.text = App.notice
+		confirm.queue_free())
+	confirm.canceled.connect(confirm.queue_free)
+	confirm.popup_centered(Vector2i(620, 240))
+
+func _confirm_redistribute() -> void:
+	var confirm := ConfirmationDialog.new()
+	confirm.dialog_text = "Se devolverán los puntos de resonancias y se vaciarán las equipadas. Libros y otros desbloqueos conservarán su coste."
+	add_child(confirm)
+	confirm.confirmed.connect(func():
+		if App.redistribute_resonances():
+			_show("skill_tree")
+			toast.text = "Puntos de resonancias recuperados."
+		else: toast.text = App.notice
+		confirm.queue_free())
+	confirm.canceled.connect(confirm.queue_free)
+	confirm.popup_centered(Vector2i(620, 240))
 
 func _trainers() -> void:
 	_heading("Entrenadores")
@@ -280,6 +322,7 @@ func _skill_tree() -> void:
 	equip.disabled = rank_value == 0 or (not equipped and tree.state.equipped.size() >= slots) or App.load_failed
 	actions.add_child(equip)
 	actions.add_child(_button("Ver equipadas", func(): _show("loadout")))
+	body.add_child(_button("Redistribuir resonancias", _confirm_redistribute))
 	_copy("Para probar niveles y bonificaciones: Diagnóstico → Laboratorio del árbol.")
 
 func _loadout() -> void:
@@ -496,7 +539,9 @@ func _collection() -> void:
 		portrait.custom_minimum_size = Vector2(120, 120)
 		body.add_child(portrait)
 		_copy(Roster.member_name(member))
-		var stats := CombatCatalog.stats(member.species_id)
+		var progress := Progress.record_for(App.profile.campaign, member.instance_id)
+		_copy(Progress.summary(App.profile.campaign, member.instance_id))
+		var stats := CombatCatalog.stats_at_level(member.species_id, int(progress.level))
 		_copy("Ensayo · Vida %d · Ataque %d · Defensa %d\nInsignia: %s" % [stats.life, stats.attack, stats.defense, CombatCatalog.action(member.species_id, "insignia").description])
 		var equipped := false
 		for current in App.profile.campaign.team.members:
@@ -540,6 +585,16 @@ func _team() -> void:
 		text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		row.add_child(text)
 		text.add_child(_label(Roster.member_name(member) + (" · ACTIVO" if chosen == team.active_id else " · RESERVA")))
+		var progress := Progress.record_for(App.profile.campaign, chosen)
+		var stats := CombatCatalog.stats_at_level(member.species_id, int(progress.level))
+		text.add_child(_label(Progress.summary(App.profile.campaign, chosen), 22))
+		text.add_child(_label("Vida %d · Ataque %d · Defensa %d" % [stats.life, stats.attack, stats.defense], 22))
+		var xp_bar := ProgressBar.new()
+		xp_bar.max_value = Progress.requirement(int(progress.level))
+		xp_bar.value = progress.xp
+		xp_bar.show_percentage = false
+		xp_bar.custom_minimum_size.y = 14
+		text.add_child(xp_bar)
 		var buttons := HBoxContainer.new()
 		text.add_child(buttons)
 		var active := _button("Elegir activo", func(): _team_action("active", chosen))
@@ -548,7 +603,7 @@ func _team() -> void:
 		var remove := _button("Retirar del equipo", func(): _team_action("remove", chosen))
 		remove.disabled = locked or team.members.size() == 1 or App.load_failed
 		buttons.add_child(remove)
-	_copy("Retirar del equipo conserva la criatura en la colección. En esta prueba todos usan las fichas experimentales ya definidas.")
+	_copy("Solo este equipo gana XP al vencer en localizaciones. Valle Jade deja de dar XP a cada individuo desde Nv. 10. Retirar conserva nivel y experiencia.")
 	body.add_child(_button("Añadir desde la colección", func(): _show("collection")))
 	body.add_child(_button("Volver al valle", func(): _show("jade_play")))
 

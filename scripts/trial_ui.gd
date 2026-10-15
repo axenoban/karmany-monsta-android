@@ -1,6 +1,8 @@
 extends Control
 
 signal navigate(page: String)
+const Progress = preload("res://scripts/level_progression.gd")
+const ProgressRules = preload("res://scripts/progression_rules.gd")
 const Energy = preload("res://scripts/exploration_energy.gd")
 const Route = preload("res://scripts/jade_route.gd")
 const RouteMap = preload("res://scripts/jade_route_map.gd")
@@ -111,6 +113,8 @@ func _world() -> void:
 			if App.mark_intro_seen(): navigate.emit("jade_play")
 			else: _notice()))
 	else:
+		var xp: int = int(Progress.normalized(App.profile.campaign).trainer_xp)
+		column.add_child(_label("Entrenador Nv. %d · XP %d/%d · Valle Jade: límite Nv. 10" % [App.profile.skill_tree.level, xp, Progress.requirement(int(App.profile.skill_tree.level))], 20))
 		var energy_row := HBoxContainer.new()
 		column.add_child(energy_row)
 		stamina_label = _label("", 21)
@@ -176,12 +180,12 @@ func _battle() -> void:
 	var tactical: bool = encounter is Tactical
 	var enemy_species: String = state.get("enemy_species", "tanugami")
 	var enemy_name := Catalog.species_name(enemy_species)
-	var player_max: int = int(Catalog.stats(state.ally_species).life) if tactical else 80
-	var enemy_max: int = int(Catalog.stats(enemy_species).life) if tactical else 80
+	var player_max: int = int(Tactical.stats_for(encounter.active()).life) if tactical else 80
+	var enemy_max: int = int(Tactical.stats_for(state.enemy).life) if tactical else 80
 	var health := HBoxContainer.new()
 	health.add_theme_constant_override("separation", 24)
 	column.add_child(health)
-	_health_bar(health, "AllyHP", encounter.ally_name(), int(state.player_hp), player_max)
+	_health_bar(health, "AllyHP", encounter.ally_name() + (" · Nv. %d" % int(encounter.active().get("level", 1)) if tactical else ""), int(state.player_hp), player_max)
 	_health_bar(health, "EnemyHP", enemy_name, int(state.enemy_hp), enemy_max)
 	if state.phase in ["capture", "captured", "escaped"]:
 		health.hide()
@@ -228,7 +232,11 @@ func _battle() -> void:
 	elif state.phase == "capture":
 		_drop_notice(state.id)
 		var used: int = state.capture.actions.size()
-		column.add_child(_label("Libro inicial · 45%% por intento · quedan %d de 3" % (3 - used), 25))
+		var chance: float = float(state.capture.chance)
+		var book_id: String = state.capture.policy_id
+		var book_name: String = {"book_initial":"Libro inicial", "book_upgrade_1":"Mejora 1", "book_upgrade_2":"Mejora 2"}.get(book_id, book_id)
+		column.add_child(_label("%s · %d%% por intento · quedan %d de 3" % [book_name, roundi(chance * 100), 3 - used], 25))
+		_reward_notice(state.id)
 		column.add_child(_button("Intentar vínculo con el Libro", func(): _act("capture", "", revision)))
 		if App.profile.campaign.get("route", Route.defaults()).current.get("encounter_id") == state.id:
 			column.add_child(_button("Continuar recorrido sin vínculo", func():
@@ -236,6 +244,7 @@ func _battle() -> void:
 	else:
 		var text: String = enemy_name + " capturado y añadido a la colección." if state.phase == "captured" else (enemy_name + " escapó; puedes iniciar otro encuentro." if state.phase == "escaped" else (encounter.ally_name() + " quedó fuera de combate. La próxima prueba comienza recuperado." if state.phase == "defeat" else "Regresaste al valle."))
 		_drop_notice(state.id)
+		_reward_notice(state.id)
 		column.add_child(_label(text, 25))
 		column.add_child(_button("Volver al mapa", func(): navigate.emit("jade_play")))
 		if state.phase in ["captured", "escaped"] and App.profile.campaign.get("route", Route.defaults()).current.get("encounter_id") == state.id:
@@ -373,7 +382,7 @@ func _team_menu() -> void:
 	var state: Dictionary = App.profile.campaign.encounter
 	for member in state.get("members", []):
 		var id: String = member.instance_id
-		content.add_child(_button("%s %d/%d · %s" % [Catalog.species_name(member.species_id), member.hp, int(Catalog.stats(member.species_id).life), "activo" if id == state.ally_id else id], func():
+		content.add_child(_button("%s %d/%d · %s" % [Catalog.species_name(member.species_id), member.hp, int(Tactical.stats_for(member).life), "activo" if id == state.ally_id else id], func():
 			_dismiss("TeamMenu")
 			_confirm("Entrará " + Catalog.species_name(member.species_id) + ". El cambio consume la acción y el rival responderá contra el nuevo activo. Los efectos y recargas permanecen en cada individuo.", func(): _act("switch", id, int(state.revision))), id == state.ally_id or member.hp == 0 or Router.pending(state)))
 
@@ -486,3 +495,19 @@ func _dismiss(id: String) -> void:
 	if dialog != null:
 		dialog.hide()
 		dialog.queue_free()
+
+func _reward_notice(encounter_id: String) -> void:
+	var receipt: Dictionary = App.profile.campaign.get("progression", {}).get("last_reward", {})
+	if receipt.get("encounter_id") != encounter_id: return
+	var lines: Array[String] = []
+	for row in receipt.rows:
+		var caption: String = "Entrenador" if row.id == "trainer" else row.id
+		for member in _roster_for_rewards():
+			if member.instance_id == row.id: caption = Catalog.species_name(member.species_id)
+		lines.append("%s Nv. %d: +%d XP" % [caption, row.level, row.gained])
+	if receipt.region.is_empty(): lines = ["Entrenamiento libre: sin experiencia."]
+	var label := _label(" · ".join(lines), 18)
+	label.name = "ExperienceReward"
+	column.add_child(label)
+func _roster_for_rewards() -> Array:
+	return preload("res://scripts/trial_roster.gd").owned(App.profile.campaign)

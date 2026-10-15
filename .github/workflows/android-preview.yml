@@ -139,6 +139,11 @@ jobs:
           set -o pipefail
           godot --headless --path . --script tests/reduced_motion_tests.gd 2>&1 | tee build/reduced-motion.log
           python3 ci/check_log.py build/reduced-motion.log
+      - name: Validate levels, regional XP, books and shared skill points
+        run: |
+          set -o pipefail
+          godot --headless --path . --script tests/level_progression_tests.gd 2>&1 | tee build/level-progression.log
+          python3 ci/check_log.py build/level-progression.log
       - name: Export playable encounter APK
         run: |
           set -o pipefail
@@ -191,5 +196,5 @@ jobs:
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" "${ASSETS[@]}" --clobber
           else
-            gh release create "$TAG" "${ASSETS[@]}" --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Preview 0.15.0: opción persistente de movimiento reducido para combate y vínculo. Indicadores estáticos y transición suave de captura; conserva sonidos, tiempos, resultados y modo normal. Conserva reglas, progreso y firma de pruebas."
+            gh release create "$TAG" "${ASSETS[@]}" --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Preview 0.16.0: niveles y XP por individuo, tope regional Jade10, estadísticas por nivel y mejoras del Libro por nivel/puntos del árbol. Progreso previo conservado, entrenamiento sin XP y redistribución de resonancias. Conserva reglas, progreso y firma de pruebas."
           fi

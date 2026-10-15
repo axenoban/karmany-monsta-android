@@ -1,5 +1,6 @@
 class_name TrialCampaign
 extends RefCounted
+const Progress = preload("res://scripts/level_progression.gd")
 const Energy = preload("res://scripts/exploration_energy.gd")
 const Route = preload("res://scripts/jade_route.gd")
 const Roster = preload("res://scripts/trial_roster.gd")
@@ -8,7 +9,7 @@ const Catalog = preload("res://scripts/combat_catalog.gd")
 const Encounter = preload("res://scripts/trial_encounter.gd")
 
 static func defaults() -> Dictionary:
-	return {"schema": 1, "intro_seen": false, "sequence": 0, "victories": 0, "collection": [], "encounter": {}, "team": Roster.defaults(), "route": Route.defaults(), "exploration": Energy.defaults()}
+	return {"schema": 1, "intro_seen": false, "sequence": 0, "victories": 0, "collection": [], "encounter": {}, "team": Roster.defaults(), "route": Route.defaults(), "exploration": Energy.defaults(), "progression": Progress.defaults()}
 
 static func valid(data: Variant) -> bool:
 	if not data is Dictionary or data.get("schema") != 1 or not data.get("intro_seen") is bool:
@@ -42,6 +43,7 @@ static func valid(data: Variant) -> bool:
 				if ownership.get(member.instance_id) != member.species_id or team_ids.get(member.instance_id) != member.species_id: return false
 		if data.encounter.phase == "captured" and not ids.has(data.encounter.id):
 			return false
+	if data.has("progression") and not Progress.valid(data.progression, data): return false
 	if data.has("route") and not Route.valid(data.route, data): return false
 	if data.has("exploration") and not Energy.valid(data.exploration, data): return false
 	return true
@@ -78,4 +80,5 @@ static func normalized(data: Dictionary) -> Dictionary:
 			result.encounter.ready[id] = int(result.encounter.ready[id])
 		if not result.encounter.capture.is_empty():
 			result.encounter.capture.schema = 1
+	result.progression = Progress.normalized(result)
 	return result

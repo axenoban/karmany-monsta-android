@@ -2,6 +2,8 @@ extends Node
 
 const EffectAudio = preload("res://scripts/effect_audio.gd")
 var ui_audio: Node
+const Progress = preload("res://scripts/level_progression.gd")
+const ProgressRules = preload("res://scripts/progression_rules.gd")
 signal combat_updated
 const RESPONSE_DELAY := 0.7
 var response_timer: Timer
@@ -59,11 +61,15 @@ func _ready() -> void:
 	_schedule_enemy_response()
 
 func commit_profile(next_profile: Dictionary) -> bool:
-	if not storage.save_profile(next_profile):
+	var candidate := next_profile.duplicate(true)
+	if Store.valid(candidate) and candidate.get("schema") == Store.SCHEMA_VERSION:
+		candidate.skill_tree = TreeModel.normalized(candidate.skill_tree)
+		candidate.campaign = Campaign.normalized(candidate.campaign)
+	if not storage.save_profile(candidate):
 		notice = storage.last_error
 		log_event(notice)
 		return false
-	profile = next_profile.duplicate(true)
+	profile = candidate.duplicate(true)
 	apply_audio_preferences()
 	load_failed = false
 	_schedule_enemy_response()
@@ -195,10 +201,16 @@ func _start_encounter(enemy_species: String, point_id: String = "") -> bool:
 	energy.drop = {}
 	energy.scouting = not point_id.is_empty()
 	next_profile.campaign.exploration = energy
+	if not point_id.is_empty() and not ProgressRules.region_reason(next_profile.skill_tree, "jade").is_empty():
+		notice = ProgressRules.region_reason(next_profile.skill_tree, "jade")
+		return false
+	next_profile.campaign.progression = Progress.normalized(next_profile.campaign)
+	var prepared_team: Dictionary = next_profile.campaign.team.duplicate(true)
+	for member in prepared_team.members: member.level = int(next_profile.campaign.progression.units[member.instance_id].level)
 	var encounter := Tactical.new()
 	next_profile.campaign.sequence += 1
 	var rolls := [randf(), randf(), randf()]
-	if not encounter.begin("jade-%d" % int(next_profile.campaign.sequence), profile.skill_tree, rolls, next_profile.campaign.team, enemy_species):
+	if not encounter.begin("jade-%d" % int(next_profile.campaign.sequence), profile.skill_tree, rolls, prepared_team, enemy_species, ProgressRules.current_book(next_profile.skill_tree)):
 		notice = "No se pudo iniciar el encuentro."
 		return false
 	next_profile.campaign.encounter = encounter.snapshot()
@@ -257,11 +269,11 @@ func trial_action(operation: String, action_id: String = "", expected_revision: 
 		if next_profile.campaign.has("exploration"): next_profile.campaign.exploration = Energy.resolve_drop(next_profile.campaign.exploration, encounter.state.id)
 		if next_profile.campaign.has("route"):
 			next_profile.campaign.route = Route.record_victory(next_profile.campaign.route, encounter.state.id)
-		if tree.state.level < TreeModel.specification().level_cap:
-			tree.gain_level()
+		next_profile.campaign.progression = Progress.award(next_profile.campaign, tree.state, encounter.state)
 	if previous_phase == "capture" and encounter.state.phase == "captured":
 		var captured_species: String = encounter.state.get("enemy_species", "tanugami")
 		next_profile.campaign.collection.append({"id": encounter.state.id, "species": captured_species})
+		next_profile.campaign.progression = Progress.normalized(next_profile.campaign)
 		if not tree.state.captured_species.has(captured_species):
 			tree.record_capture(captured_species)
 	next_profile.skill_tree = tree.snapshot()
@@ -363,3 +375,23 @@ func discover_location(expected_id: String) -> bool:
 	if not commit_profile(next_profile): return false
 	play_sfx("enter")
 	return true
+
+func purchase_unlock(id: String) -> bool:
+	if load_failed: return false
+	if not profile.campaign.encounter.is_empty() and profile.campaign.encounter.phase in ["battle", "replacement", "capture"]:
+		notice = "Termina el encuentro antes de mejorar el Libro."
+		return false
+	var tree := TreeModel.new()
+	if not tree.restore(profile.skill_tree) or not tree.purchase_unlock(id):
+		notice = tree.last_error
+		return false
+	var next_profile := profile.duplicate(true)
+	next_profile.skill_tree = tree.snapshot()
+	if not commit_profile(next_profile): return false
+	play_sfx("item")
+	return true
+func redistribute_resonances() -> bool:
+	if not profile.campaign.encounter.is_empty() and profile.campaign.encounter.phase in ["battle", "replacement", "capture"]:
+		notice = "Termina el encuentro antes de redistribuir."
+		return false
+	return change_tree("reset")

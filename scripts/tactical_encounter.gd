@@ -1,5 +1,6 @@
 class_name TacticalEncounter
 extends RefCounted
+const Books = preload("res://scripts/book_progression.gd")
 const Catalog = preload("res://scripts/combat_catalog.gd")
 const Legacy = preload("res://scripts/trial_encounter.gd")
 const Turn = preload("res://scripts/shared_combat_turn.gd")
@@ -9,10 +10,20 @@ var state: Dictionary = {}
 var last_error := ""
 
 static func unit(member: Dictionary) -> Dictionary:
-	return {"instance_id": member.instance_id, "species_id": member.species_id, "hp": int(Catalog.stats(member.species_id).life), "guard": 0.0, "boost": 0.0, "weaken": 0.0, "ready": {}}
+	var result := {"instance_id": member.instance_id, "species_id": member.species_id, "hp": int(Catalog.stats_at_level(member.species_id, int(member.get("level", 1))).life), "guard": 0.0, "boost": 0.0, "weaken": 0.0, "ready": {}}
+	if member.has("level"): result.level = int(member.level)
+	return result
+static func stats_for(member: Dictionary) -> Dictionary:
+	return Catalog.stats_at_level(member.species_id, int(member.get("level", 1)))
+static func capture_policy(data: Dictionary) -> BookCapturePolicy:
+	var books := Books.new()
+	books.load_file()
+	var id: Variant = data.get("book_id", "book_initial")
+	return books.policy_for(id) if id is String else null
 static func unit_valid(data: Variant) -> bool:
 	if not data is Dictionary or not data.get("instance_id") is String or data.instance_id.is_empty() or not data.get("species_id") is String or Catalog.stats(data.species_id).is_empty(): return false
-	if not Legacy.integer(data.get("hp"), 0, int(Catalog.stats(data.species_id).life)) or not data.get("ready") is Dictionary: return false
+	if data.has("level") and not Legacy.integer(data.level, 1, 1000000): return false
+	if not Legacy.integer(data.get("hp"), 0, int(stats_for(data).life)) or not data.get("ready") is Dictionary: return false
 	for key in ["guard", "boost", "weaken"]:
 		var value: Variant = data.get(key)
 		if not (value is float or value is int) or not is_finite(value) or value < 0 or value > 0.8: return false
@@ -21,6 +32,7 @@ static func unit_valid(data: Variant) -> bool:
 	return true
 static func valid(data: Variant) -> bool:
 	if not data is Dictionary or data.get("schema") != 2 or not data.get("id") is String or data.id.is_empty(): return false
+	if capture_policy(data) == null: return false
 	if data.get("phase") not in ["battle", "replacement", "capture", "captured", "escaped", "defeat", "retreated"] or not data.get("enemy_pending") is bool: return false
 	for key in ["round", "revision"]:
 		if not Legacy.integer(data.get(key), 1 if key == "round" else 0, 1000000): return false
@@ -53,9 +65,9 @@ static func valid(data: Variant) -> bool:
 	if data.phase == "defeat": return living == 0 and data.enemy.hp > 0 and data.capture == {}
 	if data.phase == "retreated": return active.hp > 0 and data.enemy.hp > 0 and data.capture == {}
 	var capture := Capture.new()
-	return active.hp > 0 and data.enemy.hp == 0 and capture.restore(data.get("capture"), Legacy.policy()) and data.capture.encounter_id == data.id and capture.state == ("offered" if data.phase == "capture" else data.phase)
+	return active.hp > 0 and data.enemy.hp == 0 and capture.restore(data.get("capture"), capture_policy(data)) and data.capture.encounter_id == data.id and capture.state == ("offered" if data.phase == "capture" else data.phase)
 
-func begin(id: String, tree: Dictionary, rolls: Array, team: Dictionary, enemy_species: String) -> bool:
+func begin(id: String, tree: Dictionary, rolls: Array, team: Dictionary, enemy_species: String, book_id: String = "book_initial") -> bool:
 	if not state.is_empty() or not TreeModel.valid(tree) or enemy_species == "zephyr" or Catalog.stats(enemy_species).is_empty(): return false
 	var members := []
 	for member in team.members: members.append(unit(member))
@@ -64,6 +76,7 @@ func begin(id: String, tree: Dictionary, rolls: Array, team: Dictionary, enemy_s
 	var turn := Turn.new()
 	turn.begin(id + ":1")
 	state = {"schema": 2, "id": id, "phase": "battle", "round": 1, "revision": 0, "enemy_pending": false, "members": members, "ally_id": team.active_id, "enemy": unit({"instance_id": "rival", "species_id": enemy_species}), "loadout": loadout, "trainer_ready": {}, "rolls": rolls.duplicate(), "last_action": "", "event": {}, "turn": turn.snapshot(), "capture": {}}
+	state.book_id = book_id
 	_sync()
 	if not valid(state):
 		state.clear()
@@ -76,6 +89,7 @@ func restore(data: Variant) -> bool:
 	state = data.duplicate(true)
 	for key in ["schema", "round", "revision"]: state[key] = int(state[key])
 	for member in state.members + [state.enemy]:
+		if member.has("level"): member.level = int(member.level)
 		member.hp = int(member.hp)
 		for key in member.ready: member.ready[key] = int(member.ready[key])
 	for key in ["schema", "sequence"]: state.turn[key] = int(state.turn[key])
@@ -111,14 +125,14 @@ func reason(owner: String, id: String) -> String:
 	if effect.is_empty() or (owner == "trainer" and not state.loadout.has(id)): return "Acción no disponible."
 	var ready: Dictionary = active().ready if owner == "karmany" else state.trainer_ready
 	if int(ready.get(id, 0)) > state.round: return "Disponible en turno %d." % int(ready[id])
-	if effect.has("heal") and active().hp == int(Catalog.stats(state.ally_species).life): return "El activo tiene toda su Vida."
+	if effect.has("heal") and active().hp == int(stats_for(active()).life): return "El activo tiene toda su Vida."
 	return ""
 func _finish_player(turn: SharedCombatTurn) -> void:
 	if turn.state == "open": turn.close_turn()
 	state.turn = turn.snapshot()
 	if state.enemy.hp == 0:
 		var capture := Capture.new()
-		capture.begin(state.id, true, true, "Común", Legacy.policy())
+		capture.begin(state.id, true, true, "Común", capture_policy(state))
 		state.capture = capture.snapshot()
 		state.phase = "capture"
 	else: state.enemy_pending = true
@@ -130,7 +144,7 @@ func _log(text: String, side: String, action: String, species: String) -> void:
 func _apply(source: Dictionary, target: Dictionary, effect: Dictionary, recipient: Dictionary, scale: float = 1.0) -> String:
 	var parts: Array[String] = []
 	if effect.has("power"):
-		var raw := maxi(1, roundi(Catalog.stats(source.species_id).attack * effect.power * (1.0 + source.boost) - Catalog.stats(target.species_id).defense))
+		var raw := maxi(1, roundi(stats_for(source).attack * effect.power * (1.0 + source.boost) - stats_for(target).defense))
 		var damage := maxi(1, roundi(raw * (1.0 - target.guard) * (1.0 - source.weaken)))
 		target.hp = maxi(0, target.hp - damage)
 		target.guard = 0.0
@@ -138,7 +152,7 @@ func _apply(source: Dictionary, target: Dictionary, effect: Dictionary, recipien
 		source.boost = 0.0
 		parts.append("%d de daño" % damage)
 	if effect.has("heal"):
-		var amount := mini(int(Catalog.stats(source.species_id).life) - int(source.hp), roundi(effect.heal * scale))
+		var amount := mini(int(stats_for(source).life) - int(source.hp), roundi(effect.heal * scale))
 		source.hp += amount
 		parts.append("+%d de Vida" % amount)
 	if effect.has("guard"):
@@ -208,7 +222,7 @@ func end_round() -> bool:
 	var source: Dictionary = state.enemy
 	var id := "insignia" if int(source.ready.get("insignia", 0)) <= state.round else "golpe"
 	var effect: Dictionary = Catalog.action(source.species_id, id)
-	if effect.has("heal") and int(Catalog.stats(source.species_id).life) - source.hp < effect.heal:
+	if effect.has("heal") and int(stats_for(source).life) - source.hp < effect.heal:
 		id = "golpe"
 		effect = Catalog.action(source.species_id, id)
 	var result := _apply(source, active(), effect, source)
@@ -235,7 +249,7 @@ func replace_with(id: String) -> bool:
 func attempt_capture() -> bool:
 	if state.get("phase") != "capture": return false
 	var capture := Capture.new()
-	capture.restore(state.capture, Legacy.policy())
+	capture.restore(state.capture, capture_policy(state))
 	var index := capture.attempts_used()
 	capture.attempt("%s:capture:%d" % [state.id, index], state.rolls[index])
 	state.capture = capture.snapshot()
