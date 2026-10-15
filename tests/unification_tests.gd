@@ -78,6 +78,8 @@ func run():
 		elif e.get("phase")=="battle":
 			check(app.trial_action("enemy") if e.enemy_pending else app.trial_action("karmany","golpe"),"continue original live battle")
 			app.response_timer.stop()
+	for malformed in [{"campaign":"invalid"},{"campaign":{"encounter":"invalid","progression":{"bonuses":["jade_point_1@1"]}}},{"campaign":{"encounter":{"regional":"invalid"},"progression":{"bonuses":"invalid"}}}]:
+		check(Migration.convert(malformed)==malformed,"malformed legacy shapes are rejected without coercion")
 	# Real production routes, all twelve points, distinct caps and final reserves.
 	clean()
 	app.profile = Store.defaults()

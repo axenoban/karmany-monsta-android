@@ -66,3 +66,13 @@ Ejecutar también todas las suites de .github/workflows/android-preview.yml. La 
 8. Perder con reserva, elegir reemplazo y comprobar ausencia de ataque extra. Perder el equipo completo, cerrar/reabrir y volver al mapa sin perder avance.
 9. Probar texto grande, movimiento reducido, sonido y Atrás de Android; informar versión del APK y pasos ante cualquier fallo.
 10. Solo después confirmar «prueba correcta» sobre esta candidata. Hasta entonces, no integrar en dev.
+
+### Recuperación reproducible de fixtures
+Los scripts en ci/recovery se ejecutan con Godot4.7.2 sobre el proyecto original descomprimido desde docs/recovery/Preview32_editable_scripts.zip (con sus recursos recuperados), no sobre el motor unificado:
+
+```sh
+godot --headless --path /ruta/preview32-recuperado --script /ruta/repositorio/ci/recovery/generate_campaign_fixtures.gd -- --output=/ruta/fixtures
+godot --headless --path /ruta/preview32-recuperado --script /ruta/repositorio/ci/recovery/generate_edge_fixtures.gd -- --output=/ruta/fixtures
+```
+
+Revisión gráfica local posterior:22pantallas renderizadas con Mesa/Xvfb, texto normal/grande, mapas de ambas regiones y flujos regionales. Se detectó y corrigió un fondo secundario estrecho en la vista previa del Libro: ahora esa vista dibuja solo actores/Libro sobre el escenario continuo. La animación de vínculo a pantalla completa conserva su fondo. Las24simulaciones terminaron en victoria,4–22rondas, sin tocar estadísticas. La aceptación final de ritmo y estética sigue siendo humana.

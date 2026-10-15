@@ -147,6 +147,7 @@ func _ready() -> void :
 			var attempts: int = encounter.capture.actions.size()
 			body.add_child(label("EL LIBRO TE ESPERA" if attempts == 0 else "EL VÍNCULO NO SE COMPLETÓ", 34, Color("efd49b")))
 			var scene:= Binding.new()
+			scene.draw_background = false
 			scene.species = species
 			scene.background_id = Locations.background_for(campaign)
 			scene.custom_minimum_size.y = 230

@@ -10,6 +10,7 @@ const BOOK = preload("res://assets/trial/binding_book.png")
 const DURATION:= 3.6
 var species:= "tanugami"
 var background_id:= "jade"
+var draw_background := true
 var outcome:= "capture"
 var cinematic:= false
 var elapsed:= 0.0
@@ -122,11 +123,12 @@ func _sprite(art: Texture2D, center: Vector2, extent: Vector2, alpha: float = 1.
 	draw_set_transform(Vector2.ZERO)
 
 func _draw() -> void :
-	var bg:= Stage.texture(background_id)
-	var dimensions:= Vector2(bg.get_width(), bg.get_height())
-	var source:= size / maxf(maxf(size.x / dimensions.x, size.y / dimensions.y), 0.001)
-	draw_texture_rect_region(bg, Rect2(Vector2.ZERO, size), Rect2((dimensions - source) * 0.5, source))
-	draw_rect(Rect2(Vector2.ZERO, size), Color(0.015, 0.04, 0.07, 0.6 if cinematic else 0.3))
+	if draw_background:
+		var bg:= Stage.texture(background_id)
+		var dimensions:= Vector2(bg.get_width(), bg.get_height())
+		var source:= size / maxf(maxf(size.x / dimensions.x, size.y / dimensions.y), 0.001)
+		draw_texture_rect_region(bg, Rect2(Vector2.ZERO, size), Rect2((dimensions - source) * 0.5, source))
+		draw_rect(Rect2(Vector2.ZERO, size), Color(0.015, 0.04, 0.07, 0.6 if cinematic else 0.3))
 	if reduced_motion:
 		_draw_reduced()
 		return

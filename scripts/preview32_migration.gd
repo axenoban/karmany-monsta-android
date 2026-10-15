@@ -22,6 +22,7 @@ static func needed(data: Dictionary) -> bool:
 static func convert(data: Dictionary) -> Dictionary:
 	var result := data.duplicate(true)
 	if not needed(result): return result
+	if not result.campaign.get("encounter", {}) is Dictionary or not result.campaign.get("progression", {}) is Dictionary: return data
 	var campaign: Dictionary = result.campaign
 	var encounter: Dictionary = campaign.get("encounter", {})
 	if encounter.get("regional", {}).has("version"):
