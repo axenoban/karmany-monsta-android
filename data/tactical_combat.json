@@ -51,8 +51,9 @@
       "defense": 9,
       "speed": 10,
       "signature": {
-        "power": 1.0,
-        "grant_boost": 0.25,
+        "power": 0.7,
+        "relay_boost": 0.2,
+        "relay_rounds": 2,
         "cooldown": 2
       }
     }
