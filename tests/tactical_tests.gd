@@ -42,24 +42,43 @@ func _run() -> void:
 			check(Stage.pose(species, action, 0).is_zero_approx() and Stage.pose(species, action, 1).is_zero_approx(), "motion returns to origin")
 		check(Stage.pose(species, "golpe", 0.5) != Stage.pose(species, "insignia", 0.5), "normal and signature motion differ")
 	var e := fresh(["sakuromushi", "ushigane", "ushigane"])
-	check(e.act("karmany", "insignia", "unit-2") and e.state.members[2].boost == 0.25 and e.state.members[1].boost == 0, "support targets individual duplicate")
-	check(e.state.ready.insignia == 4, "cooldown two returns turn four")
-	e.end_round()
-	var before_hp: int = e.state.members[1].hp
-	check(e.switch_to("unit-1") and e.state.enemy_pending and not e.switch_to("unit-2"), "switch consumes one action and locks")
-	e.end_round()
-	check(e.state.members[1].hp < before_hp and e.state.members[2].hp == 96 and e.state.members[2].boost == 0.25, "response hits new active; reserve effects stay")
-	check(e.state.members[0].ready.insignia == 4, "cooldown survives rotation")
+	var original_hp: int = e.state.enemy_hp
+	check(not e.act("karmany", "insignia", "unit-0") and e.state.round == 1, "relay forbids choosing active")
+	check(not e.act("karmany", "insignia", "unknown"), "relay rejects unknown recipient")
+	check(e.act("karmany", "insignia", "unit-2") and e.state.ally_id == "unit-2" and e.state.enemy_pending, "one action attacks and switches before enemy response")
+	check(e.state.enemy_hp < original_hp and e.state.members[2].relay_boost == 0.2 and e.state.members[2].relay_until == 3, "relay causes damage and schedules two buffed rounds")
+	check(e.state.members[1].relay_boost == 0.0 and not e.switch_to("unit-1"), "similar species receive no bonus and extra switch is blocked")
+	check(e.state.members[0].ready.insignia == 4, "relay leaves cooldown on its caster")
+	var before_hp: int = e.state.members[2].hp
+	check(e.end_round() and e.state.members[2].hp < before_hp and e.state.round == 2, "single rival response hits new active")
+	var saved := e.snapshot()
+	var restored := Tactical.new()
+	check(restored.restore(JSON.parse_string(JSON.stringify(saved))) and restored.active().relay_until == 3, "relay resumes across JSON checkpoints")
+	var before_enemy_hp: int = e.state.enemy_hp
+	check(e.act("karmany", "golpe") and e.state.enemy_hp < before_enemy_hp, "boosted entrant can attack next round")
+	check(e.end_round() and e.state.round == 3 and e.active().relay_boost == 0.2, "relay bonus continues into second following round")
+	check(e.act("karmany", "guardia") and e.end_round() and e.state.round == 4 and e.active().relay_boost == 0.0, "relay expires on schedule even if ally guards")
+	check(e.state.members[0].ready.insignia == 4, "cooldown remains on swapped-out caster")
 	e.active().hp = 1
 	e._sync()
-	e.act("karmany", "golpe")
+	e.act("karmany", "guardia")
 	e.end_round()
-	check(e.state.phase == "replacement" and not e.state.enemy_pending and Tactical.valid(e.snapshot()), "defeat waits for replacement")
+	check(e.state.phase == "replacement" and not e.state.enemy_pending and Tactical.valid(e.snapshot()), "defeat after relay requires replacement")
 	var checkpoint := Tactical.new()
-	check(checkpoint.restore(e.snapshot()) and not checkpoint.end_round() and not checkpoint.act("trainer", "curacion"), "replacement persists and blocks actions")
+	check(checkpoint.restore(e.snapshot()) and not checkpoint.end_round() and not checkpoint.act("trainer", "curacion"), "replacement survives restore and disallows actions")
 	var old_round: int = checkpoint.state.round
-	check(checkpoint.replace_with("unit-2") and checkpoint.state.round == old_round + 1 and checkpoint.state.player_hp == 96 and not checkpoint.state.enemy_pending, "replacement starts next turn without attack")
-	check(not checkpoint.replace_with("unit-0") and Tactical.valid(checkpoint.snapshot()), "no second replacement")
+	check(checkpoint.replace_with("unit-1") and checkpoint.state.round == old_round + 1 and checkpoint.state.player_hp == 96 and not checkpoint.state.enemy_pending, "replacement starts without extra enemy attack")
+	check(not checkpoint.replace_with("unit-0") and Tactical.valid(checkpoint.snapshot()), "replacement cannot happen twice")
+	var alone := fresh(["sakuromushi"], "kitsunibi")
+	check(not alone.reason("karmany", "insignia").is_empty() and not alone.act("karmany", "insignia", "unit-0"), "solo Sakuromushi cannot relay")
+	var previous := fresh(["sakuromushi", "ushigane"], "kitsunibi")
+	for member in previous.state.members:
+		member.erase("relay_boost")
+		member.erase("relay_until")
+	previous.state.enemy.erase("relay_boost")
+	previous.state.enemy.erase("relay_until")
+	var compatible := Tactical.new()
+	check(Tactical.valid(previous.snapshot()) and compatible.restore(previous.snapshot()), "older snapshots without relay data continue to work")
 	e = fresh(["tanugami"])
 	check(not e.act("karmany", "insignia"), "full life healing blocked")
 	e.active().hp = 75
@@ -160,19 +179,19 @@ func _run() -> void:
 	find_button(main.get_node("Page"), "Ushigane · jade-2").pressed.emit()
 	await process_frame
 	app.response_timer.stop()
-	check(app.profile.campaign.encounter.members[2].boost == 0.25, "UI chooses reserve support beneficiary")
+	check(app.profile.campaign.encounter.ally_id == "jade-2" and app.profile.campaign.encounter.members[2].relay_boost == 0.2, "UI selects reserve and automatically relays")
 	app.trial_action("enemy")
 	main._show("battle")
 	await process_frame
 	find_button(main.get_node("Page"), "Equipo").pressed.emit()
 	await process_frame
-	find_button(main.get_node("Page"), "Ushigane 96/96").pressed.emit()
+	find_button(main.get_node("Page"), "Sakuromushi 76/76").pressed.emit()
 	await process_frame
-	check(not app.profile.campaign.encounter.enemy_pending and app.profile.campaign.team.active_id == "jade-1", "opening switch dialog does not spend action")
+	check(not app.profile.campaign.encounter.enemy_pending and app.profile.campaign.team.active_id == "jade-2", "opening switch dialog does not spend action")
 	find_button(main.get_node("Page"), "Confirmar cambio").pressed.emit()
 	await process_frame
 	app.response_timer.stop()
-	check(app.profile.campaign.team.active_id == "jade-2" and app.profile.campaign.encounter.enemy_pending, "UI confirms switch with one rival response")
+	check(app.profile.campaign.team.active_id == "jade-1" and app.profile.campaign.encounter.enemy_pending, "UI confirms standard switch with one rival response")
 	main.queue_free()
 	await process_frame
 	app.response_timer.stop()
