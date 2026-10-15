@@ -1,0 +1,74 @@
+{
+  "schema": 1,
+  "id": "veil_trial_route",
+  "experimental": true,
+  "points": [
+    {
+      "id": "veil_point_1",
+      "species": "suzumeko",
+      "level": 10,
+      "first_xp": 700,
+      "repeat_xp": 175,
+      "cost": 10,
+      "enemies": [
+        "suzumeko"
+      ]
+    },
+    {
+      "id": "veil_point_2",
+      "species": "kodamashi",
+      "level": 11,
+      "first_xp": 750,
+      "repeat_xp": 210,
+      "cost": 10,
+      "enemies": [
+        "kodamashi"
+      ]
+    },
+    {
+      "id": "veil_point_3",
+      "species": "mujina_kage",
+      "level": 12,
+      "first_xp": 800,
+      "repeat_xp": 240,
+      "cost": 10,
+      "enemies": [
+        "mujina_kage"
+      ]
+    },
+    {
+      "id": "veil_point_4",
+      "species": "tsukimi_usagi",
+      "level": 13,
+      "first_xp": 850,
+      "repeat_xp": 260,
+      "cost": 10,
+      "enemies": [
+        "tsukimi_usagi"
+      ]
+    },
+    {
+      "id": "veil_point_5",
+      "species": "kodama_shin",
+      "level": 14,
+      "first_xp": 900,
+      "repeat_xp": 290,
+      "cost": 10,
+      "enemies": [
+        "kodama_shin"
+      ]
+    },
+    {
+      "id": "veil_point_6",
+      "species": "karasu_origami",
+      "level": 15,
+      "first_xp": 950,
+      "repeat_xp": 325,
+      "cost": 30,
+      "enemies": [
+        "karasu_origami",
+        "mujina_kage"
+      ]
+    }
+  ]
+}

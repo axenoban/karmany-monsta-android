@@ -14,6 +14,7 @@ func check(value: bool, caption: String) -> void:
 		failures += 1
 		push_error("FAIL: " + caption)
 func run() -> void:
+	preload("res://tests/legacy_world_fixture.gd").activate()
 	var app := root.get_node("App")
 	app.response_timer.stop()
 	app.storage = Store.new(PATH)

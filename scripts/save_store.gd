@@ -50,6 +50,7 @@ func _read(path: String) -> Variant:
 	if parser.parse(handle.get_as_text()) != OK:
 		return null
 	var parsed: Variant = parser.data
+	if parsed is Dictionary: parsed = preload("res://scripts/preview32_migration.gd").convert(parsed)
 	if not valid(parsed):
 		return null
 	# Upgrade old APK saves in memory; preserve the original bytes until a real save.
@@ -96,6 +97,15 @@ func save_profile(data: Dictionary) -> bool:
 	if write_error != OK or _read(temp_path) == null:
 		last_error = "No se pudo verificar el guardado temporal."
 		return false
+	# Preserve the exact legacy bytes once, before rotating the ordinary backup.
+	if FileAccess.file_exists(base_path) and not FileAccess.file_exists(base_path + ".pre-unification"):
+		var original_parser := JSON.new()
+		var original: Variant = null
+		if original_parser.parse(FileAccess.get_file_as_string(base_path)) == OK: original = original_parser.data
+		if original is Dictionary and preload("res://scripts/preview32_migration.gd").needed(original):
+			if _read(base_path) == null or DirAccess.copy_absolute(base_path, base_path + ".pre-unification") != OK:
+				last_error = "No se pudo conservar la partida previa a la unificación."
+				return false
 	# Preserve the last valid primary. Never rotate a corrupt primary over a good backup.
 	if _read(base_path) != null:
 		var copy_error := DirAccess.copy_absolute(base_path, base_path + ".bak")

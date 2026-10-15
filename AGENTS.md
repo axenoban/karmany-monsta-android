@@ -23,3 +23,6 @@ ANTES de codificar: leer `docs/AUDITORIA_DOS_LINEAS_2026-10-15.md` además del r
 - Solo cuando el creador valide explícitamente la APK/cambio, el dueño verifica historial, CI y contratos; **integra por fast-forward si es seguro**, verifica `dev/karmany-core`, cierra PR y actualiza ambos documentos de estado en `dev`. Si `dev` avanzó por documentación, incorporar `dev` a la feature de manera trazable antes de intentar FF; no forzar ni reescribir historia.
 - No dar por terminado E1 por la publicación de Preview34: el relevo de Sakuromushi tiene observación humana pendiente. No iniciar implementación E2 sin cerrar ese bloqueo y adjudicar expresamente la escritura.
 
+
+## Escritura vigente de la convergencia
+El15/10/2026 el creador transfirió explícitamente la implementación y compilación a Work en feature/unificacion-jade-bosque; Chat solo analiza/revisa. Esta orden sustituye las esperas E1→E2 históricas para esta convergencia. Preview32 ya tiene recuperación editable trazable; ver docs/UNIFICACION_JADE_BOSQUE.md. No volver a partir de cuatro etapas ni integrar en dev antes de aprobar físicamente la candidata.

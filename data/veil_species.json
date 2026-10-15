@@ -1,0 +1,110 @@
+{
+  "schema": 1,
+  "source": {
+    "filename": "Enciclopedia Oficial de Shisai- Ecosistemas y Best....pdf"
+  },
+  "species": [
+    {
+      "id": "suzumeko",
+      "name": "Suzumeko",
+      "epithet": "El Gorrión de Papel",
+      "biome": "Bosque del Velo",
+      "rarity": "Común",
+      "biology": "Ovíparo (Ave)",
+      "mythology": "El mito de la grulla/gorrión de origami (Orizuru menor).",
+      "physiology": "Gorrión con plumaje de fibras entrelazadas que emula al papel pergamino doblado con patrones geométricos rígidos.",
+      "behavior": "Curioso y activo. Se asienta en los troncos de los cerezos perennes para escuchar los susurros de los viajeros.",
+      "resonance": {
+        "luminous": "Al batir las alas, dispersa esporas luminosas que revelan la posición de enemigos o trampas ocultas en la densa niebla.",
+        "shadow": "Sus plumas se vuelven de color ceniza y ejecutan ataques de papel afilado que causan pequeños pero dolorosos cortes en el rival."
+      },
+      "source_page": 8,
+      "source_entry": 17
+    },
+    {
+      "id": "kodamashi",
+      "name": "Kodamashi",
+      "epithet": "El Reptil de Musgo",
+      "biome": "Bosque del Velo",
+      "rarity": "Común",
+      "biology": "Ovíparo (Lagarto)",
+      "mythology": "Los espíritus del musgo y la vegetación (Kodama).",
+      "physiology": "Lagarto pequeño de piel cubierta de musgo denso y líquenes que cambian de color según la humedad.",
+      "behavior": "Se mimetiza con las rocas y raíces húmedas; es un excelente indicador de la salud del bosque de cerezos.",
+      "resonance": {
+        "luminous": "El musgo de su cuerpo florece, desprendiendo un polen curativo que acelera la regeneración de la piel del entrenador.",
+        "shadow": "El musgo se marchita en un fango negro que exhala un olor pestilente, reduciendo la agilidad de los enemigos cercanos."
+      },
+      "source_page": 9,
+      "source_entry": 19
+    },
+    {
+      "id": "mujina_kage",
+      "name": "Mujina-Kage",
+      "epithet": "El Tejón de Vapor",
+      "biome": "Bosque del Velo",
+      "rarity": "Común",
+      "biology": "Vivíparo (Tejón)",
+      "mythology": "El tejón ilusionista de la niebla (Mujina).",
+      "physiology": "Tejón de pelaje gris cenizo denso. Al madurar, su piel exuda un vapor constante que desdibuja su silueta física.",
+      "behavior": "Cavador experto que habita en los sistemas de raíces del bambú; es sumamente tímido ante la presencia humana.",
+      "resonance": {
+        "luminous": "El vapor que genera limpia las vías respiratorias de su portador del aire viciado de azufre de la montaña.",
+        "shadow": "Se funde por completo con la niebla, permitiéndole atacar por sorpresa y drenar la estamina de su objetivo."
+      },
+      "source_page": 9,
+      "source_entry": 20
+    },
+    {
+      "id": "tsukimi_usagi",
+      "name": "Tsukimi-Usagi",
+      "epithet": "El Conejo de la Luna",
+      "biome": "Bosque del Velo",
+      "rarity": "Común",
+      "biology": "Vivíparo (Lagomorfo)",
+      "mythology": "El conejo lunar de las leyendas del bambú (Tsuki).",
+      "physiology": "Conejo blanco de orejas desproporcionadamente largas y delgadas que captan las fluctuaciones kármicas del aire.",
+      "behavior": "Se alimenta del rocío condensado en los pétalos de los cerezos sagrados durante las noches despejadas.",
+      "resonance": {
+        "luminous": "Sus orejas brillan con una luz plateada pura que revela la ubicación de los flujos de Karma más estables del bioma.",
+        "shadow": "Sus ojos refulgen en un amarillo sulfúrico y emite un chillido que perturba e interrumpe la canalización de los Libros."
+      },
+      "source_page": 9,
+      "source_entry": 21
+    },
+    {
+      "id": "kodama_shin",
+      "name": "Kodama-Shin",
+      "epithet": "El Espíritu Crujiente",
+      "biome": "Bosque del Velo",
+      "rarity": "Común",
+      "biology": "Vivíparo (Espíritu de Madera)",
+      "mythology": "Los duendes del bambú (Kodama menores).",
+      "physiology": "Pequeña criatura humanoide hecha de fibras vegetales y una máscara ósea redonda que simula un nudo de madera seca.",
+      "behavior": "Se oculta dentro de las cañas de bambú huecas; produce pequeños crujidos para alertar de la presencia de intrusos.",
+      "resonance": {
+        "luminous": "Su presencia aumenta de forma pasiva la velocidad de ejecución de la cloromancia de su entrenador.",
+        "shadow": "Produce sonidos desorientadores que causan interferencia en la percepción espacial del rival."
+      },
+      "source_page": 11,
+      "source_entry": 28
+    },
+    {
+      "id": "karasu_origami",
+      "name": "Karasu-Origami",
+      "epithet": "El Cuervo de Luto",
+      "biome": "Bosque del Velo",
+      "rarity": "Común",
+      "biology": "Ovíparo (Ave)",
+      "mythology": "Los cuervos de papel ceremoniales.",
+      "physiology": "Cuervo de plumaje rígido y negro que imita los pliegues del papel doblado con bordes filosos.",
+      "behavior": "Se asienta en las ramas altas de los cerezos para vigilar el avance de los forasteros por el sendero antiguo.",
+      "resonance": {
+        "luminous": "Transporta rápidamente pergaminos de curación menor entre aliados distantes del grupo.",
+        "shadow": "Lanza plumas de papel rígido que causan micro-cortes dolorosos y debilitan la resistencia kármica del rival."
+      },
+      "source_page": 10,
+      "source_entry": 22
+    }
+  ]
+}

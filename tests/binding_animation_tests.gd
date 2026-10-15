@@ -24,6 +24,7 @@ func fixture(app: Node, rolls: Array) -> void:
 	e._sync()
 	app.profile.campaign.encounter = e.snapshot()
 	check(app.trial_action("karmany", "golpe") and app.profile.campaign.encounter.phase == "capture", "prepare real capture transaction")
+	app.consume_transition() # Defeat presentation has its own integration coverage.
 func ui_node() -> Control:
 	var node := load("res://scripts/trial_ui.gd").new() as Control
 	root.add_child(node)

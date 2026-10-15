@@ -22,6 +22,7 @@ func _clean() -> void:
 			DirAccess.remove_absolute(PATH + suffix)
 
 func _run() -> void:
+	preload("res://tests/legacy_world_fixture.gd").activate()
 	var tree := TreeModel.new()
 	_check(TreeModel.valid(tree.snapshot()), "initial state is valid")
 	_check(tree.points_available() == 1 and tree.state.level == 1, "one starting point")

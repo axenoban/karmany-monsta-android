@@ -3,9 +3,72 @@
   "id": "jade_trial_route",
   "experimental": true,
   "points": [
-    {"id": "jade_point_1", "species": "tanugami"},
-    {"id": "jade_point_2", "species": "ushigane"},
-    {"id": "jade_point_3", "species": "kitsunibi"},
-    {"id": "jade_point_4", "species": "sakuromushi"}
+    {
+      "id": "jade_point_1",
+      "species": "tanugami",
+      "level": 1,
+      "first_xp": 400,
+      "repeat_xp": 100,
+      "cost": 10,
+      "enemies": [
+        "tanugami"
+      ]
+    },
+    {
+      "id": "jade_point_2",
+      "species": "ushigane",
+      "level": 3,
+      "first_xp": 500,
+      "repeat_xp": 125,
+      "cost": 10,
+      "enemies": [
+        "ushigane"
+      ]
+    },
+    {
+      "id": "jade_point_3",
+      "species": "kitsunibi",
+      "level": 5,
+      "first_xp": 600,
+      "repeat_xp": 160,
+      "cost": 10,
+      "enemies": [
+        "kitsunibi"
+      ]
+    },
+    {
+      "id": "jade_point_4",
+      "species": "sakuromushi",
+      "level": 7,
+      "first_xp": 650,
+      "repeat_xp": 200,
+      "cost": 10,
+      "enemies": [
+        "sakuromushi"
+      ]
+    },
+    {
+      "id": "jade_point_5",
+      "species": "sakuraneko",
+      "level": 8,
+      "first_xp": 700,
+      "repeat_xp": 240,
+      "cost": 10,
+      "enemies": [
+        "sakuraneko"
+      ]
+    },
+    {
+      "id": "jade_point_6",
+      "species": "inubari",
+      "level": 10,
+      "first_xp": 750,
+      "repeat_xp": 300,
+      "cost": 30,
+      "enemies": [
+        "inubari",
+        "ushigane"
+      ]
+    }
   ]
 }

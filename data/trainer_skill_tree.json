@@ -1,16 +1,84 @@
 {
   "schema": 1,
   "prototype": true,
-  "level_cap": 10,
+  "level_cap": 15,
   "equip_slots": 4,
-  "capture_milestones": [5, 10, 15],
+  "capture_milestones": [
+    5,
+    10,
+    15
+  ],
   "rank_level_step": 2,
   "rank_power_step": 0.1,
   "nodes": [
-    {"id": "curacion", "name": "Curación", "branch": "general", "min_level": 1, "prerequisites": [], "max_rank": 3, "position": [0.19, 0.25], "description": "Rama de recuperación para tus Karmany."},
-    {"id": "proteccion", "name": "Protección", "branch": "general", "min_level": 1, "prerequisites": [], "max_rank": 3, "position": [0.5, 0.25], "description": "Rama de protección del equipo."},
-    {"id": "propia", "name": "Resonancia propia", "branch": "personal", "min_level": 1, "prerequisites": [], "max_rank": 3, "position": [0.81, 0.25], "description": "Ficha provisional para probar el dominio de una resonancia exclusiva. No define el poder canónico de Ezel."},
-    {"id": "potenciacion", "name": "Potenciación", "branch": "general", "min_level": 2, "prerequisites": ["curacion"], "max_rank": 3, "position": [0.19, 0.75], "description": "Rama de apoyo a las capacidades del equipo."},
-    {"id": "control", "name": "Control", "branch": "general", "min_level": 2, "prerequisites": ["proteccion"], "max_rank": 3, "position": [0.5, 0.75], "description": "Rama de interferencia sobre el rival."}
+    {
+      "id": "curacion",
+      "name": "Curación",
+      "branch": "general",
+      "min_level": 1,
+      "prerequisites": [],
+      "max_rank": 3,
+      "position": [
+        0.19,
+        0.25
+      ],
+      "description": "Rama de recuperación para tus Karmany."
+    },
+    {
+      "id": "proteccion",
+      "name": "Protección",
+      "branch": "general",
+      "min_level": 1,
+      "prerequisites": [],
+      "max_rank": 3,
+      "position": [
+        0.5,
+        0.25
+      ],
+      "description": "Rama de protección del equipo."
+    },
+    {
+      "id": "propia",
+      "name": "Resonancia propia",
+      "branch": "personal",
+      "min_level": 1,
+      "prerequisites": [],
+      "max_rank": 3,
+      "position": [
+        0.81,
+        0.25
+      ],
+      "description": "Ficha provisional para probar el dominio de una resonancia exclusiva. No define el poder canónico de Ezel."
+    },
+    {
+      "id": "potenciacion",
+      "name": "Potenciación",
+      "branch": "general",
+      "min_level": 2,
+      "prerequisites": [
+        "curacion"
+      ],
+      "max_rank": 3,
+      "position": [
+        0.19,
+        0.75
+      ],
+      "description": "Rama de apoyo a las capacidades del equipo."
+    },
+    {
+      "id": "control",
+      "name": "Control",
+      "branch": "general",
+      "min_level": 2,
+      "prerequisites": [
+        "proteccion"
+      ],
+      "max_rank": 3,
+      "position": [
+        0.5,
+        0.75
+      ],
+      "description": "Rama de interferencia sobre el rival."
+    }
   ]
 }

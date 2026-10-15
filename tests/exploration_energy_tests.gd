@@ -36,6 +36,7 @@ func winning_checkpoint(app: Node, roll: int) -> void:
 	app.profile.campaign.exploration.drop.roll = roll
 	check(app.commit_profile(app.profile), "pre-victory drop roll saved")
 func _run() -> void:
+	preload("res://tests/legacy_world_fixture.gd").activate()
 	root.size = Vector2i(1280, 720)
 	for i in range(4): check(Route.entry_cost(Route.points()[i].id) == (30 if i == 3 else 10), "approved per-location cost")
 	var original := Energy.defaults()

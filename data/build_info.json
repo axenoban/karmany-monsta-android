@@ -1,1 +1,6 @@
-{"version":"0.18.0","commit":"local","build":0,"stage":"Relevo táctico experimental"}
+{
+  "version": "0.21.0-unification",
+  "commit": "local",
+  "build": 0,
+  "stage": "E2 \u00b7 motor regional"
+}

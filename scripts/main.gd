@@ -2,9 +2,9 @@ extends Control
 
 const Progress = preload("res://scripts/level_progression.gd")
 const ProgressRules = preload("res://scripts/progression_rules.gd")
-const JADE := Color("8ed6b5")
-const INK := Color("0b2325")
-const PAPER := Color("eee9d9")
+const JADE:= Color("8ed6b5")
+const INK:= Color("0b2325")
+const PAPER:= Color("eee9d9")
 const Catalog = preload("res://scripts/species_catalog.gd")
 const Books = preload("res://scripts/book_progression.gd")
 const Structure = preload("res://scripts/combat_structure.gd")
@@ -13,21 +13,21 @@ const Roster = preload("res://scripts/trial_roster.gd")
 const TrialUI = preload("res://scripts/trial_ui.gd")
 const Stage = preload("res://scripts/trial_stage.gd")
 const AdventureTheme = preload("res://scripts/adventure_theme.gd")
-var tree_scroll_position := 0
+var tree_scroll_position:= 0
 const TreeMap = preload("res://scripts/skill_tree_map.gd")
-var catalog := Catalog.new()
-var books := Books.new()
-var structure := Structure.new()
-var catalog_rarity := ""
-var selected_species := ""
-var selected_tree_node := "curacion"
-var page := "home"
+var catalog:= Catalog.new()
+var books:= Books.new()
+var structure:= Structure.new()
+var catalog_rarity:= ""
+var selected_species:= ""
+var selected_tree_node:= "curacion"
+var page:= "home"
 var body: VBoxContainer
 var dialog: ConfirmationDialog
 var export_dialog: FileDialog
 var toast: Label
 
-func _ready() -> void:
+func _ready() -> void :
 	App.combat_updated.connect(_refresh_combat)
 	if not catalog.load_file():
 		App.log_event(catalog.last_error)
@@ -56,27 +56,27 @@ func _ready() -> void:
 	if not App.notice.is_empty():
 		toast.text = App.notice
 
-func _draw() -> void:
+func _draw() -> void :
 	draw_rect(Rect2(Vector2.ZERO, size), INK)
-	# Abstract jade shapes, not an unapproved geographical map.
-	for i in range(7):
-		var center := Vector2(size.x * 0.73 + i * 42, size.y * 0.36 + i * 24)
-		draw_circle(center, 180 - i * 19, Color(0.12, 0.32, 0.29, 0.18))
-	draw_line(Vector2(size.x * 0.60, 0), Vector2(size.x * 0.91, size.y), Color(0.48, 0.78, 0.64, 0.08), 2)
 
-func _safe_margins() -> void:
-	var margin := get_node_or_null("Page") as MarginContainer
+	for i in range(7):
+		var center:= Vector2(size.x * 0.73 + i * 42, size.y * 0.36 + i * 24)
+		draw_circle(center, 180 - i * 19, Color(0.12, 0.32, 0.29, 0.18))
+	draw_line(Vector2(size.x * 0.6, 0), Vector2(size.x * 0.91, size.y), Color(0.48, 0.78, 0.64, 0.08), 2)
+
+func _safe_margins() -> void :
+	var margin:= get_node_or_null("Page") as MarginContainer
 	if margin == null:
 		return
-	var left := 44
-	var right := 44
-	var top := 24
-	var bottom := 24
+	var left:= 44
+	var right:= 44
+	var top:= 24
+	var bottom:= 24
 	if OS.get_name() == "Android":
-		var safe := DisplayServer.get_display_safe_area()
-		var screen := DisplayServer.screen_get_size()
+		var safe:= DisplayServer.get_display_safe_area()
+		var screen:= DisplayServer.screen_get_size()
 		if screen.x > 0 and screen.y > 0 and safe.size.x > 0:
-			var scale := size / Vector2(screen)
+			var scale:= size / Vector2(screen)
 			left += int(maxi(0, safe.position.x) * scale.x)
 			right += int(maxi(0, screen.x - safe.end.x) * scale.x)
 			top += int(maxi(0, safe.position.y) * scale.y)
@@ -87,28 +87,28 @@ func _safe_margins() -> void:
 	margin.add_theme_constant_override("margin_bottom", bottom)
 	queue_redraw()
 
-func _show(next_page: String) -> void:
+func _show(next_page: String) -> void :
 	page = next_page
-	var old := get_node_or_null("Page")
+	var old:= get_node_or_null("Page")
 	if old != null:
 		remove_child(old)
 		old.queue_free()
 	theme.default_font_size = 28 if App.profile.settings.large_text else 24
-	var margin := MarginContainer.new()
+	var margin:= MarginContainer.new()
 	margin.name = "Page"
 	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(margin)
-	var column := VBoxContainer.new()
+	var column:= VBoxContainer.new()
 	column.add_theme_constant_override("separation", 14)
 	margin.add_child(column)
-	var header := HBoxContainer.new()
+	var header:= HBoxContainer.new()
 	column.add_child(header)
-	var brand := _label("KARMANY MONSTA", 22, JADE)
+	var brand:= _label("KARMANY MONSTA", 22, JADE)
 	brand.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(brand)
 	if page != "home":
 		header.add_child(_button("Volver", _back))
-	var scroll := ScrollContainer.new()
+	var scroll:= ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.scroll_deadzone = 18
 	if page == "skill_tree":
@@ -139,40 +139,40 @@ func _show(next_page: String) -> void:
 	if page in ["intro", "jade_play", "battle", "exploration"]:
 		toast.hide()
 	column.add_child(toast)
-	column.add_child(_label("PREVIEW %s · VALLE JADE" % App.build_info.get("version", "0.13.0"), 16, Color("93aaa3")))
+	column.add_child(_label("PREVIEW %s · SHISAI" % App.build_info.get("version", "0.13.0"), 16, Color("93aaa3")))
 	_safe_margins()
 
 func _label(text: String, font_size: int = 24, color: Color = PAPER) -> Label:
-	var label := Label.new()
+	var label:= Label.new()
 	label.text = text
 	label.add_theme_font_size_override("font_size", font_size)
 	label.add_theme_color_override("font_color", color)
 	return label
 
-func _copy(text: String) -> void:
-	var label := _label(text, theme.default_font_size)
+func _copy(text: String) -> void :
+	var label:= _label(text, theme.default_font_size)
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	body.add_child(label)
 
-func _heading(text: String) -> void:
+func _heading(text: String) -> void :
 	body.add_child(_label(text, 46, PAPER))
 
 func _button(text: String, action: Callable) -> Button:
-	var button := Button.new()
+	var button:= Button.new()
 	button.text = text
 	button.custom_minimum_size = Vector2(0, 64)
-	button.pressed.connect(func():
+	button.pressed.connect( func():
 		App.tap()
 		action.call())
 	return button
 
-func _home() -> void:
+func _home() -> void :
 	_heading("Un viaje en Valle Jade")
 	_copy("Ezel y Axe · Karmany Monsta")
-	var row := HBoxContainer.new()
+	var row:= HBoxContainer.new()
 	row.add_theme_constant_override("separation", 14)
 	body.add_child(row)
-	var continue_button := _button("Continuar", func(): _show("map"))
+	var continue_button:= _button("Continuar", func(): _show("map"))
 	continue_button.disabled = not App.profile.journey.started
 	row.add_child(continue_button)
 	row.add_child(_button("Comenzar viaje", _new_journey))
@@ -182,59 +182,59 @@ func _home() -> void:
 	body.add_child(_button("Árbol de resonancias", func(): _show("skill_tree")))
 	_copy("Explora el valle, prepara tus resonancias y prueba el encuentro de Zephyr contra Tanugami.")
 
-func _new_journey() -> void:
+func _new_journey() -> void :
 	if App.profile.journey.started or App.load_failed:
 		dialog.popup_centered(Vector2i(600, 260))
 	else:
 		_start()
 
-func _start() -> void:
+func _start() -> void :
 	if App.start_journey():
 		_show("map")
 	else:
 		toast.text = App.notice
 
-func _map() -> void:
+func _map() -> void :
 	body.add_child(_button("Entrar al valle jugable", func(): _show("jade_play" if App.profile.campaign.intro_seen else "intro")))
-	_heading("Valle Jade")
+	_heading("Shisai · Regiones")
 	_copy("Punto de partida de Ezel y Axe.")
-	var region := ProgressRules.region("jade")
+	var region:= ProgressRules.region("jade")
 	_copy("Acceso: entrenador Nv. %d · XP hasta Nv. %d por individuo" % [region.min_level, region.xp_cap])
-	var button := _button("◆  Valle Jade   ·   " + ("Visitado" if App.profile.journey.visited_jade else "Visitar"), _visit)
+	var button:= _button("◆  Valle Jade   ·   " + ("Visitado" if App.profile.journey.visited_jade else "Visitar"), _visit)
 	body.add_child(button)
 	body.add_child(_button("Consultar el Libro", func(): _show("book")))
-	body.add_child(_button("Bestiario de Valle Jade", func(): _show("bestiary")))
+	body.add_child(_button("Bestiario de Shisai", func(): _show("bestiary")))
 	body.add_child(_button("Entrenadores", func(): _show("trainers")))
 	body.add_child(_button("Árbol de resonancias", func(): _show("skill_tree")))
 	_copy("Puedes repetir las localizaciones desbloqueadas. El entrenamiento libre no concede experiencia.")
 
-func _visit() -> void:
+func _visit() -> void :
 	if App.visit_jade():
 		_show("map")
 		toast.text = "Visita guardada."
 	else:
 		toast.text = App.notice
 
-func _book() -> void:
+func _book() -> void :
 	_heading("El Libro")
-	var tree := _tree_model()
-	var current := ProgressRules.current_book(tree.state)
+	var tree:= _tree_model()
+	var current:= ProgressRules.current_book(tree.state)
 	_copy("Entrenador Nv. %d · %d puntos disponibles" % [tree.state.level, tree.points_available()])
 	_copy("Hasta tres intentos tras derrotar al rival. Las mejoras se aplican al siguiente encuentro.")
 	for level in books.all_levels():
-		var policy := books.policy_for(level.id)
-		var status := " · EQUIPADO" if level.id == current else (" · Adquirido" if level.id == "book_initial" or level.id in tree.state.unlocks else (" · Disponible" if tree.unlock_reason(level.id).is_empty() else " · Bloqueado"))
+		var policy:= books.policy_for(level.id)
+		var status:= " · EQUIPADO" if level.id == current else (" · Adquirido" if level.id == "book_initial" or level.id in tree.state.unlocks else (" · Disponible" if tree.unlock_reason(level.id).is_empty() else " · Bloqueado"))
 		_copy(level.name + status)
 		var chances: Array[String] = []
 		for rarity in ["Común", "Raro", "Épico"]:
 			chances.append(rarity + ": " + ("%d%%" % roundi(policy.chance_for(rarity) * 100) if policy.permits(rarity) else "Bloqueado"))
 		_copy(" · ".join(chances))
-		var requirement := ProgressRules.unlock(level.id)
+		var requirement:= ProgressRules.unlock(level.id)
 		if not requirement.is_empty():
 			_copy("Requiere Nv. %d · Coste %d punto(s)" % [requirement.min_level, requirement.cost])
-			var reason := tree.unlock_reason(level.id)
+			var reason:= tree.unlock_reason(level.id)
 			var id: String = level.id
-			var buy := _button("Adquirir " + level.name, func(): _confirm_book_upgrade(id))
+			var buy:= _button("Adquirir " + level.name, func(): _confirm_book_upgrade(id))
 			buy.disabled = not reason.is_empty() or _encounter_in_progress() or App.load_failed
 			body.add_child(buy)
 			if not reason.is_empty(): _copy(reason)
@@ -242,12 +242,12 @@ func _book() -> void:
 	body.add_child(_button("Redistribuir resonancias", _confirm_redistribute))
 	_copy("Los puntos de libros permanecen gastados al redistribuir. Raros y épicos requieren encuentros de esas rarezas en futuras regiones.")
 
-func _confirm_book_upgrade(id: String) -> void:
-	var definition := ProgressRules.unlock(id)
-	var confirm := ConfirmationDialog.new()
+func _confirm_book_upgrade(id: String) -> void :
+	var definition:= ProgressRules.unlock(id)
+	var confirm:= ConfirmationDialog.new()
 	confirm.dialog_text = "Adquirir %s por %d punto(s). La mejora es permanente y usará puntos compartidos con las resonancias." % [definition.name, definition.cost]
 	add_child(confirm)
-	confirm.confirmed.connect(func():
+	confirm.confirmed.connect( func():
 		if App.purchase_unlock(id):
 			_show("book")
 			toast.text = "Libro mejorado."
@@ -256,11 +256,11 @@ func _confirm_book_upgrade(id: String) -> void:
 	confirm.canceled.connect(confirm.queue_free)
 	confirm.popup_centered(Vector2i(620, 240))
 
-func _confirm_redistribute() -> void:
-	var confirm := ConfirmationDialog.new()
+func _confirm_redistribute() -> void :
+	var confirm:= ConfirmationDialog.new()
 	confirm.dialog_text = "Se devolverán los puntos de resonancias y se vaciarán las equipadas. Libros y otros desbloqueos conservarán su coste."
 	add_child(confirm)
-	confirm.confirmed.connect(func():
+	confirm.confirmed.connect( func():
 		if App.redistribute_resonances():
 			_show("skill_tree")
 			toast.text = "Puntos de resonancias recuperados."
@@ -269,13 +269,13 @@ func _confirm_redistribute() -> void:
 	confirm.canceled.connect(confirm.queue_free)
 	confirm.popup_centered(Vector2i(620, 240))
 
-func _trainers() -> void:
+func _trainers() -> void :
 	_heading("Entrenadores")
 	_copy("Las resonancias son habilidades del entrenador que apoyan a sus Karmany.")
 	if not structure.last_error.is_empty():
 		_copy(structure.last_error)
 		return
-	var rules := structure.rules()
+	var rules:= structure.rules()
 	_copy("Equipo: hasta %d Karmany · %d activo" % [rules.team_capacity, rules.active_per_side])
 	_copy("Cada Karmany tendrá tres habilidades, incluida una insignia, y estadísticas de Vida, Ataque, Defensa y Velocidad.")
 	for role in rules.trainer_roles:
@@ -284,90 +284,90 @@ func _trainers() -> void:
 	body.add_child(_button("Abrir árbol de resonancias", func(): _show("skill_tree")))
 
 func _tree_model() -> TrainerSkillTree:
-	var tree := TreeModel.new()
+	var tree:= TreeModel.new()
 	tree.restore(App.profile.skill_tree)
 	return tree
 
-func _skill_tree() -> void:
-	var tree := _tree_model()
-	var slots := int(TreeModel.specification().equip_slots)
+func _skill_tree() -> void :
+	var tree:= _tree_model()
+	var slots:= int(TreeModel.specification().equip_slots)
 	_heading("Árbol de resonancias")
 	_copy("Nivel %d · %d puntos disponibles · %d/%d equipadas" % [tree.state.level, tree.points_available(), tree.state.equipped.size(), slots])
 	_copy("Equipa hasta cuatro resonancias. El encuentro usa tu selección al comenzar.")
-	var map := TreeMap.new()
+	var map:= TreeMap.new()
 	map.setup(TreeModel.specification(), tree.snapshot(), selected_tree_node, App.profile.settings.large_text)
 	map.node_selected.connect(_select_tree_node)
 	body.add_child(map)
-	var node := TreeModel.node_definition(selected_tree_node)
+	var node:= TreeModel.node_definition(selected_tree_node)
 	var chosen_node: String = selected_tree_node
-	var rank_value := int(tree.state.ranks.get(selected_tree_node, 0))
+	var rank_value:= int(tree.state.ranks.get(selected_tree_node, 0))
 	_copy(node.name + " · " + ("Exclusiva provisional" if node.branch == "personal" else "General"))
 	_copy(node.description)
 	if rank_value > 0:
-		var next_rank := "Rango máximo" if rank_value >= node.max_rank else "Siguiente rango: %d%%" % roundi((1.0 + rank_value * float(TreeModel.specification().rank_power_step)) * 100)
+		var next_rank:= "Rango máximo" if rank_value >= node.max_rank else "Siguiente rango: %d%%" % roundi((1.0 + rank_value * float(TreeModel.specification().rank_power_step)) * 100)
 		_copy("Potencia de rango: %d%% · %s" % [roundi(tree.power_multiplier(selected_tree_node) * 100), next_rank])
-	var reason := tree.purchase_reason(selected_tree_node)
+	var reason:= tree.purchase_reason(selected_tree_node)
 	_copy("Aprender o mejorar cuesta 1 punto." if reason.is_empty() else reason)
-	var actions := HBoxContainer.new()
+	var actions:= HBoxContainer.new()
 	actions.add_theme_constant_override("separation", 12)
-	# Keep the selected-node actions visible while the tree/details scroll.
+
 	get_node("Page").get_child(0).add_child(actions)
-	var purchase := _button(("Aprender " if rank_value == 0 else "Mejorar ") + node.name + " · 1 punto", func(): _tree_action("purchase", chosen_node, "skill_tree", rank_value))
+	var purchase:= _button(("Aprender " if rank_value == 0 else "Mejorar ") + node.name + " · 1 punto", func(): _tree_action("purchase", chosen_node, "skill_tree", rank_value))
 	purchase.disabled = not reason.is_empty() or App.load_failed
 	actions.add_child(purchase)
 	var equipped: bool = tree.state.equipped.has(selected_tree_node)
 	if not equipped and rank_value > 0 and tree.state.equipped.size() >= slots:
 		_copy("Los %d espacios están ocupados. Retira una resonancia para cambiarla." % slots)
-	var equip := _button("Retirar" if equipped else "Equipar", func(): _tree_action("unequip" if equipped else "equip", chosen_node, "skill_tree"))
-	equip.disabled = rank_value == 0 or (not equipped and tree.state.equipped.size() >= slots) or App.load_failed
+	var equip:= _button("Retirar" if equipped else "Equipar", func(): _tree_action("unequip" if equipped else "equip", chosen_node, "skill_tree"))
+	equip.disabled = rank_value == 0 or ( not equipped and tree.state.equipped.size() >= slots) or App.load_failed
 	actions.add_child(equip)
 	actions.add_child(_button("Ver equipadas", func(): _show("loadout")))
 	body.add_child(_button("Redistribuir resonancias", _confirm_redistribute))
 	_copy("Para probar niveles y bonificaciones: Diagnóstico → Laboratorio del árbol.")
 
-func _loadout() -> void:
+func _loadout() -> void :
 	_heading("Resonancias equipadas")
-	var tree := _tree_model()
-	var slots := int(TreeModel.specification().equip_slots)
+	var tree:= _tree_model()
+	var slots:= int(TreeModel.specification().equip_slots)
 	_copy("%d espacios en total. Aprender una resonancia no la equipa automáticamente." % slots)
 	for i in range(slots):
 		if i < tree.state.equipped.size():
 			var node_id: String = tree.state.equipped[i]
-			var definition := TreeModel.node_definition(node_id)
+			var definition:= TreeModel.node_definition(node_id)
 			_copy("%d · %s · Rango %d" % [i + 1, definition.name, int(tree.state.ranks[node_id])])
 			body.add_child(_button("Retirar " + definition.name, func(): _tree_action("unequip", node_id, "loadout")))
 		else:
 			_copy("%d · Espacio libre" % (i + 1))
 
-func _tree_action(operation: String, node_id: String, return_page: String, expected_rank: int = -1) -> void:
+func _tree_action(operation: String, node_id: String, return_page: String, expected_rank: int = -1) -> void :
 	if App.change_tree(operation, node_id, expected_rank):
 		_show(return_page)
 		toast.text = "Árbol guardado."
 	else:
 		toast.text = App.notice
 
-func _tree_lab() -> void:
+func _tree_lab() -> void :
 	_heading("Laboratorio del árbol")
-	var tree := _tree_model()
+	var tree:= _tree_model()
 	_copy("Controles de prueba: simulan progreso del entrenador, sin añadir criaturas a una colección.")
-	_copy("Nivel %d/10 · %d especies simuladas · %d puntos disponibles" % [tree.state.level, tree.state.captured_species.size(), tree.points_available()])
+	_copy("Nivel %d/15 · %d especies simuladas · %d puntos disponibles" % [tree.state.level, tree.state.captured_species.size(), tree.points_available()])
 	_copy("Un punto por nivel. Bonificación de un punto a las 5, 10 y 15 especies distintas; repetir una especie no da puntos.")
 	body.add_child(_button("Simular subida de nivel", func(): _tree_action("level", "", "tree_lab")))
 	body.add_child(_button("Simular captura de otra especie", _simulate_tree_capture))
 	body.add_child(_button("Redistribuir puntos de prueba", func(): _tree_action("reset", "", "tree_lab")))
 	body.add_child(_button("Ir al árbol", func(): _show("skill_tree")))
 
-func _simulate_tree_capture() -> void:
+func _simulate_tree_capture() -> void :
 	for entry in catalog.all_entries():
 		if not App.profile.skill_tree.captured_species.has(entry.id):
 			_tree_action("capture", entry.id, "tree_lab")
 			return
 	toast.text = "Ya simulaste las 15 especies del catálogo."
 
-func _bestiary() -> void:
-	_heading("Bestiario de Valle Jade")
-	_copy("Tierras Bajas de Jade · Registros de la enciclopedia de Shisai")
-	var filters := HBoxContainer.new()
+func _bestiary() -> void :
+	_heading("Bestiario de Shisai")
+	_copy("Valle Jade y Bosque del Velo · Registros de la enciclopedia de Shisai")
+	var filters:= HBoxContainer.new()
 	filters.add_theme_constant_override("separation", 12)
 	body.add_child(filters)
 	for rarity in ["", "Común", "Raro", "Épico"]:
@@ -381,7 +381,7 @@ func _bestiary() -> void:
 	if not catalog.last_error.is_empty():
 		_copy(catalog.last_error)
 		return
-	var entries := catalog.all_entries(catalog_rarity)
+	var entries:= catalog.all_entries(catalog_rarity)
 	_copy("%d especies" % entries.size())
 	for entry in entries:
 		var species_id: String = entry.id
@@ -389,8 +389,8 @@ func _bestiary() -> void:
 			selected_species = species_id
 			_show("species")))
 
-func _species() -> void:
-	var entry := catalog.find_species(selected_species)
+func _species() -> void :
+	var entry:= catalog.find_species(selected_species)
 	if entry.is_empty():
 		_copy("La ficha solicitada no está disponible.")
 		return
@@ -402,17 +402,17 @@ func _species() -> void:
 	_copy("Resonancia lumínica\n" + entry.resonance.luminous)
 	_copy("Resonancia sombría\n" + entry.resonance.shadow)
 
-func _settings() -> void:
+func _settings() -> void :
 	_heading("Ajustes")
 	for key in ["large_text", "haptics", "sound", "reduced_motion"]:
 		var current_key: String = key
 		var title: String = {"large_text": "Texto grande", "haptics": "Vibración al tocar", "sound": "Efectos de sonido", "reduced_motion": "Movimiento reducido"}[key]
 		var enabled: bool = App.profile.settings[key]
-		var button := _button(title + (" · Activado" if enabled else " · Desactivado"), func(): _toggle(current_key))
+		var button:= _button(title + (" · Activado" if enabled else " · Desactivado"), func(): _toggle(current_key))
 		button.disabled = App.load_failed
 		body.add_child(button)
 	_copy("Movimiento reducido mantiene quietos a los personajes y simplifica el vínculo. Conserva sonidos y resultados.")
-	var volume := HSlider.new()
+	var volume:= HSlider.new()
 	volume.name = "EffectsVolume"
 	volume.min_value = 0
 	volume.max_value = 100
@@ -420,31 +420,31 @@ func _settings() -> void:
 	volume.value = App.profile.settings.get("effects_volume", 0.65) * 100
 	volume.custom_minimum_size = Vector2(0, 58)
 	volume.editable = not App.load_failed
-	var caption := _label("Volumen de efectos: %d%%" % volume.value, theme.default_font_size)
+	var caption:= _label("Volumen de efectos: %d%%" % volume.value, theme.default_font_size)
 	body.add_child(caption)
 	body.add_child(volume)
-	volume.value_changed.connect(func(value: float):
+	volume.value_changed.connect( func(value: float):
 		caption.text = "Volumen de efectos: %d%%" % value)
-	volume.drag_ended.connect(func(changed: bool):
+	volume.drag_ended.connect( func(changed: bool):
 		if changed: _save_volume(volume))
-	volume.gui_input.connect(func(event: InputEvent):
+	volume.gui_input.connect( func(event: InputEvent):
 		if event is InputEventKey and event.pressed: _save_volume.call_deferred(volume))
 	_copy("Los ajustes se guardan al cambiarlos.")
 
-func _save_volume(slider: HSlider) -> void:
+func _save_volume(slider: HSlider) -> void :
 	if not is_instance_valid(slider): return
 	if App.set_effect_volume(slider.value / 100.0):
 		App.play_sfx("item")
 	else: toast.text = App.notice
 
-func _toggle(key: String) -> void:
+func _toggle(key: String) -> void :
 	if App.set_preference(key, not App.profile.settings[key]):
 		_show("settings")
 		toast.text = "Ajuste guardado."
 	else:
 		toast.text = App.notice
 
-func _diagnostics() -> void:
+func _diagnostics() -> void :
 	_heading("Diagnóstico")
 	_copy(App.diagnostic_report())
 	body.add_child(_button("Exportar informe", _export_report))
@@ -453,12 +453,12 @@ func _diagnostics() -> void:
 		DisplayServer.clipboard_set(App.diagnostic_report())
 		toast.text = "Informe copiado."))
 
-func _export_report() -> void:
+func _export_report() -> void :
 	export_dialog.current_file = "karmany-diagnostico.txt"
 	export_dialog.popup_centered_ratio(0.8)
 
-func _write_report(path: String) -> void:
-	var handle := FileAccess.open(path, FileAccess.WRITE)
+func _write_report(path: String) -> void :
+	var handle:= FileAccess.open(path, FileAccess.WRITE)
 	if handle == null:
 		toast.text = "No se pudo exportar. Puedes copiar el informe."
 		return
@@ -466,7 +466,19 @@ func _write_report(path: String) -> void:
 	handle.flush()
 	toast.text = "Informe exportado." if handle.get_error() == OK else "No se pudo completar la exportación."
 
-func _back() -> void:
+func _back() -> void :
+	for transition in get_tree().get_nodes_in_group("combat_transition"):
+		if transition.is_visible_in_tree():
+			transition.finish()
+			return
+	for animation in get_tree().get_nodes_in_group("binding_cinematic"):
+		if animation.is_visible_in_tree():
+			animation.finish()
+			return
+	for screen in get_tree().get_nodes_in_group("aftermath_screen"):
+		if screen.is_visible_in_tree():
+			screen.handle_back()
+			return
 	for summary in get_tree().get_nodes_in_group("experience_summary"):
 		if summary.visible:
 			summary._finish()
@@ -495,62 +507,62 @@ func _back() -> void:
 		App.log_event("Salida solicitada.")
 		get_tree().quit()
 
-func _notification(what: int) -> void:
+func _notification(what: int) -> void :
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST or what == NOTIFICATION_WM_CLOSE_REQUEST:
 		_back()
 
-func _unhandled_key_input(event: InputEvent) -> void:
+func _unhandled_key_input(event: InputEvent) -> void :
 	if event.is_action_pressed("ui_cancel"):
 		_back()
 		get_viewport().set_input_as_handled()
 
-func _select_tree_node(node_id: String) -> void:
+func _select_tree_node(node_id: String) -> void :
 	App.tap()
 	selected_tree_node = node_id
-	var scroll := body.get_parent() as ScrollContainer
+	var scroll:= body.get_parent() as ScrollContainer
 	tree_scroll_position = scroll.scroll_vertical
 	_show("skill_tree")
 
-func _playable() -> void:
-	# Use the full content area for combat; controls remain outside the scrolling stage.
-	var scroll := body.get_parent() as ScrollContainer
-	var parent := scroll.get_parent()
+func _playable() -> void :
+
+	var scroll:= body.get_parent() as ScrollContainer
+	var parent:= scroll.get_parent()
 	parent.get_child(0).hide()
 	parent.remove_child(scroll)
 	scroll.queue_free()
-	var trial := TrialUI.new()
+	var trial:= TrialUI.new()
 	trial.mode = "intro" if page == "intro" else ("map" if page == "jade_play" else ("exploration" if page == "exploration" else "battle"))
 	trial.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	trial.custom_minimum_size = Vector2(0, 500)
 	parent.add_child(trial)
 	trial.navigate.connect(_show)
 
-func _collection() -> void:
+func _collection() -> void :
 	_heading("Colección")
 	_copy("Zephyr está vinculado a Ezel desde su nacimiento; no es una captura del Libro.")
-	var stage := Stage.new()
+	var stage:= Stage.new()
 	stage.mode = "collection"
 	if not App.profile.campaign.collection.is_empty(): stage.collection_species = App.profile.campaign.collection.back().species
 	stage.custom_minimum_size = Vector2(0, 260)
 	body.add_child(stage)
-	var in_progress := _encounter_in_progress()
+	var in_progress:= _encounter_in_progress()
 	for member in Roster.owned(App.profile.campaign):
 		var chosen_id: String = member.instance_id
-		var portrait := TextureRect.new()
+		var portrait:= TextureRect.new()
 		portrait.texture = Stage.texture(member.species_id)
 		portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		portrait.custom_minimum_size = Vector2(120, 120)
 		body.add_child(portrait)
 		_copy(Roster.member_name(member))
-		var progress := Progress.record_for(App.profile.campaign, member.instance_id)
+		var progress:= Progress.record_for(App.profile.campaign, member.instance_id)
 		_copy(Progress.summary(App.profile.campaign, member.instance_id))
-		var stats := CombatCatalog.stats_at_level(member.species_id, int(progress.level))
+		var stats:= CombatCatalog.stats_at_level(member.species_id, int(progress.level))
 		_copy("Ensayo · Vida %d · Ataque %d · Defensa %d\nInsignia: %s" % [stats.life, stats.attack, stats.defense, CombatCatalog.action(member.species_id, "insignia").description])
-		var equipped := false
+		var equipped:= false
 		for current in App.profile.campaign.team.members:
 			if current.instance_id == chosen_id: equipped = true
-		var add := _button("Ya está en el equipo" if equipped else "Añadir al equipo", func(): _team_action("add", chosen_id, "collection"))
+		var add:= _button("Ya está en el equipo" if equipped else "Añadir al equipo", func(): _team_action("add", chosen_id, "collection"))
 		add.disabled = equipped or in_progress or App.profile.campaign.team.members.size() >= 3 or App.load_failed
 		body.add_child(add)
 	body.add_child(_button("Preparar equipo", func(): _show("team")))
@@ -560,57 +572,57 @@ func _collection() -> void:
 func _encounter_in_progress() -> bool:
 	return not App.profile.campaign.encounter.is_empty() and App.profile.campaign.encounter.phase in ["battle", "replacement", "capture"]
 
-func _team_action(operation: String, member_id: String, return_page: String = "team") -> void:
+func _team_action(operation: String, member_id: String, return_page: String = "team") -> void :
 	if App.change_team(operation, member_id):
 		_show(return_page)
 		toast.text = "Equipo guardado. Se aplica al siguiente encuentro."
 	else:
 		toast.text = App.notice
 
-func _team() -> void:
+func _team() -> void :
 	var team: Dictionary = App.profile.campaign.team
 	_heading("Equipo · %d / 3" % team.members.size())
 	_copy("Elige el Karmany activo antes del encuentro. Cada individuo capturado puede ocupar un espacio.")
-	var locked := _encounter_in_progress()
+	var locked:= _encounter_in_progress()
 	if locked:
 		_copy("El encuentro está en curso. Termínalo o abandónalo para cambiar el equipo.")
 	for member in team.members:
 		var chosen: String = member.instance_id
-		var row := HBoxContainer.new()
+		var row:= HBoxContainer.new()
 		row.add_theme_constant_override("separation", 18)
 		body.add_child(row)
-		var portrait := TextureRect.new()
+		var portrait:= TextureRect.new()
 		portrait.texture = Stage.texture(member.species_id)
 		portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		portrait.custom_minimum_size = Vector2(120, 120)
 		row.add_child(portrait)
-		var text := VBoxContainer.new()
+		var text:= VBoxContainer.new()
 		text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		row.add_child(text)
 		text.add_child(_label(Roster.member_name(member) + (" · ACTIVO" if chosen == team.active_id else " · RESERVA")))
-		var progress := Progress.record_for(App.profile.campaign, chosen)
-		var stats := CombatCatalog.stats_at_level(member.species_id, int(progress.level))
+		var progress:= Progress.record_for(App.profile.campaign, chosen)
+		var stats:= CombatCatalog.stats_at_level(member.species_id, int(progress.level))
 		text.add_child(_label(Progress.summary(App.profile.campaign, chosen), 22))
 		text.add_child(_label("Vida %d · Ataque %d · Defensa %d" % [stats.life, stats.attack, stats.defense], 22))
-		var xp_bar := ProgressBar.new()
+		var xp_bar:= ProgressBar.new()
 		xp_bar.max_value = Progress.requirement(int(progress.level))
 		xp_bar.value = progress.xp
 		xp_bar.show_percentage = false
 		xp_bar.custom_minimum_size.y = 14
 		text.add_child(xp_bar)
-		var buttons := HBoxContainer.new()
+		var buttons:= HBoxContainer.new()
 		text.add_child(buttons)
-		var active := _button("Elegir activo", func(): _team_action("active", chosen))
+		var active:= _button("Elegir activo", func(): _team_action("active", chosen))
 		active.disabled = chosen == team.active_id or locked or App.load_failed
 		buttons.add_child(active)
-		var remove := _button("Retirar del equipo", func(): _team_action("remove", chosen))
+		var remove:= _button("Retirar del equipo", func(): _team_action("remove", chosen))
 		remove.disabled = locked or team.members.size() == 1 or App.load_failed
 		buttons.add_child(remove)
 	_copy("Solo este equipo gana XP al vencer en localizaciones. Valle Jade deja de dar XP a cada individuo desde Nv. 10. Retirar conserva nivel y experiencia.")
 	body.add_child(_button("Añadir desde la colección", func(): _show("collection")))
 	body.add_child(_button("Volver al valle", func(): _show("jade_play")))
 
-func _refresh_combat() -> void:
+func _refresh_combat() -> void :
 	if page in ["battle", "jade_play", "team", "exploration"]:
 		_show(page)

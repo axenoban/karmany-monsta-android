@@ -63,6 +63,7 @@ func run() -> void:
 			e._sync()
 			app.profile.campaign.encounter = e.snapshot()
 			app.trial_action("karmany", "golpe")
+			app.consume_transition()
 			var ui: Control = load("res://scripts/trial_ui.gd").new()
 			root.add_child(ui)
 			ui._act("capture", "", app.profile.campaign.encounter.revision)

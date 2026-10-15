@@ -11,7 +11,7 @@ Se ha recuperado la **Preview32 v0.20.0** de otra línea local, con **Valle Jade
 
 También existe **E2 ejecutada localmente por Work**: commit `42fed0ce330366de891ad7944e50e6d79f5836d8`, rama local `feature/e2-regional-engine`, APK E2 Preview35 v0.19.0, resultados locales correctos. No se subió a GitHub; está preservada en Library como `Karmany_Monsta_E2_Fuente_y_Pruebas.zip` con `E2_incremental.bundle`. **No confundir** con el release público `android-preview-35`, que es otro artefacto.
 
-**NUEVO DUEÑO DE ESCRITURA SUGERIDO:** Work para recuperar E2 y reconstruir la convergencia en rama `feature/unificacion-jade-bosque`. **Chat:** auditoría/QA/documentación y lectura. En esta etapa de decisión no se autoriza a ningún agente a sobrescribir `dev/karmany-core`, `main` o perder los avances de Preview32. No comenzar nuevas funciones hasta restaurar las dos regiones y migraciones.
+**DUEÑO DE ESCRITURA AUTORIZADO POR EL CREADOR:** Work para recuperar E2 y reconstruir la convergencia en rama `feature/unificacion-jade-bosque`. **Chat:** auditoría/QA/documentación y lectura. En esta etapa de decisión no se autoriza a ningún agente a sobrescribir `dev/karmany-core`, `main` o perder los avances de Preview32. No comenzar nuevas funciones hasta restaurar las dos regiones y migraciones.
 
 **Portón de salida del rescate:** fuente de E2 subida a rama feature, inventario de lo recuperable de Preview32, 12 etapas y 2 regiones reconstruidas y regresiones/migraciones probadas. APK candidata revisada por el creador antes de integrar. El progreso anterior de Preview32 requiere migración específica.
 
@@ -29,7 +29,7 @@ También existe **E2 ejecutada localmente por Work**: commit `42fed0ce330366de89
 | CI E1 | [Ejecución exitosa](https://github.com/axenoban/karmany-monsta-android/actions/runs/38777146974); **no sustituye prueba física** |
 | Propuesta regional de origen | `feature/region-pacing-design`, `docs/PROPUESTA_REGION_21.md` y `docs/COMBATE_REGION_21_PROPUESTA.md` |
 | **Fase de implementación actual** | **R0: recuperar y reconciliar Preview32 (dos regiones), E1 Chat y E2 Work local**; E1 no validada aún |
-| **Dueño del código activo** | **Chat en `feature/e1-jade-relay` hasta cierre/traspaso explícito** |
+| **Dueño del código activo** | **Work en `feature/unificacion-jade-bosque`, traspaso explícito del creador15/10/2026** |
 | **Área permitida a Work ahora** | **Recuperar E2 (fuente de Work) y construir rama de convergencia**, sin escribir sobre E1 ni dev |
 | **Siguiente objetivo habilitado** | **Rescate fuente E2 + conservación Preview32; convergencia 2 regiones sin retroceso** |
 
@@ -52,7 +52,7 @@ Tras la entrega de Preview 34, el creador comentó que veía una potenciación p
 |---|---|---|---|---|
 | E0 · Coordinación y roadmap | **Implementado como documentación** | Chat | No aplica | Mantener docs y responsabilidades actualizadas |
 | E1 · Reglas Jade y relevo de prueba | **Reglas aceptadas; prototipo CI verde; prueba Android pendiente** | Chat | **Chat (rama E1)** | Verificar en Android, corregir si procede y aprobación explícita |
-| E2 · Motor regional | **Implementado localmente por Work; sin publicar en GitHub** | Chat audita archivos de rescate | Work recupera `E2_incremental.bundle` | Rama recuperada + CI GitHub + prueba física antes de integración |
+| E2 · Motor regional | **Recuperado y publicado en feature/e2-regional-engine-recovered; integrado en candidata** | Chat audita archivos de rescate | Work recupera `E2_incremental.bundle` | Rama recuperada + CI GitHub + prueba física antes de integración |
 | E3 · Jade de seis etapas | **En espera** | Chat: canon, assets y QA | Work (Sol Medio) | Campaña corta completa en Android |
 | E4 · Continuidad de batalla/vínculo | **En espera** | Chat: UX/criterios | Work (Sol Medio) | Un fondo continuo, controles compactos, transiciones |
 | E5 · Primera partida autónoma | **En espera** | Chat: microtutorial | Work (Sol Medio) | Tester navega sin ayuda |
@@ -125,3 +125,17 @@ SIGUIENTE RESPONSABLE + PRIMER PASO:
 **Próxima acción concreta (reemplaza la anterior):** **Work** debe rescatar E2 desde el bundle local de Work, obtener el APK Preview32 del Library/rescate, reconstruir su segunda región y conservar sus elementos únicos en rama de convergencia; **Chat** audita diferencias y validación sin reprogramar los mismos scripts. No integrar E1/E2 en dev ni declarar versión superior hasta prueba Android de compatibilidad con partidas Preview32. La observación visual de Sakuromushi sigue pendiente y se comprobará en esa candidata.
 
 - **2026-10-15 (auditoría posterior)** — Recuperados y comparados los APK Preview30/31/32 y el bundle Work E2; confirmada bifurcación real que eliminó contenido de Bosque en las APK de E1/E2. Iniciado plan R0 de rescate y unificación antes de ampliar más el juego. Fuente en AUDITORIA_DOS_LINEAS_2026-10-15.md.
+
+## Checkpoint R0 · Work (15/10/2026)
+- Estado: implementando recuperación en feature/unificacion-jade-bosque; único escritor Work, Chat revisa sin editar.
+- GitHub verificado: dev 2ea590c, main 9ef7af7, E1 00b2769; PR17 permanece abierto. Código E1 1719c68 con CI38777146974 correcta.
+- E2 recuperada desde bundle válido a feature/e2-regional-engine-recovered @ dc4a20a (código42fed0c), integrada con historial completo en esta feature. Único conflicto documental conservado íntegro.
+- APK Preview32 SHA256 3a65d6f760bd881e0fb176220e1c2ae59c25b1e09327d4fa2ed71c36f453f06a y ZIP E2 9ecf0f8064ea71293d4d47d44e1edffced47bd97aaa9a6e76169f6d0c60383af verificados.
+- Pendiente: recuperación editable Preview32, paridad12 etapas, migraciones y CI de unificación. Sin APK candidata; prueba humana pendiente; no integrado en dev.
+
+## Checkpoint de implementación R1/R2 · 15/10/2026
+Work es el único escritor autorizado; rama feature/unificacion-jade-bosque. Se recuperaron39scripts editables de Preview32 y97recursos; las doce imágenes regionales están comoPNG. Se integraron las dos regiones/12etapas,13criaturas de combate/21fichas, finales, UX de derrota/XP/vínculo de Preview32 con contrato/recompensas/persistencia E2 y relevo E1. No se inventaron cifras de Bosque: proceden de losJSON de laAPK.
+
+Migración Preview32 probada con69guardados generados por su motor original, incluido combate abierto, respuesta pendiente, derrota, reemplazo yXPparcial;1846checks de unificación correctos. Respaldo .pre-unification conserva los bytes originales antes de escribir. Certificado Preview32/E2/keystore del repositorio idéntico. E2 publicada como importación fuente 1f65222 en feature/e2-regional-engine-recovered, con bundle original incluido; diff de fuente igual, salvo el bundle adicional.
+
+Las22suites históricas pasan localmente; se añaden pruebas de UI regional y24simulaciones de balance sin cambiar cifras. Importación y3pruebasPython correctas. Compilación/CI y revisión gráfica remotas todavía pendientes en este checkpoint. No hay aprobación física ni integración en dev/main. Detalle de procedencia, comparación y prueba Android: docs/UNIFICACION_JADE_BOSQUE.md. Próximo paso de Work: terminar CI/exportación/firma y entregar laAPK candidata; Chat revisa en solo lectura.

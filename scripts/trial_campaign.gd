@@ -18,9 +18,9 @@ static func valid(data: Variant) -> bool:
 		return false
 	if not data.get("collection") is Array or data.collection.size() > data.victories or not data.get("encounter") is Dictionary:
 		return false
-	var ids := {}
+	var ids:= {}
 	for entry in data.collection:
-		if not entry is Dictionary or entry.get("species") not in ["tanugami", "ushigane", "kitsunibi", "sakuromushi"] or not entry.get("id") is String or entry.id.is_empty() or ids.has(entry.id):
+		if not entry is Dictionary or (entry.get("species") == "zephyr" or Catalog.stats(entry.get("species", "")).is_empty()) or not entry.get("id") is String or entry.id.is_empty() or ids.has(entry.id):
 			return false
 		ids[entry.id] = true
 	if data.has("team") and not Roster.valid(data.team, data):
@@ -28,7 +28,7 @@ static func valid(data: Variant) -> bool:
 	if not data.encounter.is_empty():
 		if not Router.valid(data.encounter) or data.encounter.id != "jade-%d" % int(data.sequence):
 			return false
-		var ownership := {}
+		var ownership:= {}
 		for member in Roster.owned(data): ownership[member.instance_id] = member.species_id
 		var ally_id: String = data.encounter.get("ally_id", Roster.STARTER)
 		if ownership.get(ally_id) != data.encounter.get("ally_species", "zephyr"):
@@ -37,21 +37,22 @@ static func valid(data: Variant) -> bool:
 			return false
 		if data.encounter.get("schema") == 2 and data.encounter.phase in ["battle", "replacement", "capture"]:
 			if data.encounter.members.size() != data.get("team", Roster.defaults()).members.size(): return false
-			var team_ids := {}
+			var team_ids:= {}
 			for member in data.get("team", Roster.defaults()).members: team_ids[member.instance_id] = member.species_id
 			for member in data.encounter.members:
 				if ownership.get(member.instance_id) != member.species_id or team_ids.get(member.instance_id) != member.species_id: return false
 		if data.encounter.phase == "captured" and not ids.has(data.encounter.id):
 			return false
+	if not preload("res://scripts/aftermath_flow.gd").valid(data.get("aftermath", {})): return false
 	if data.has("progression") and not Progress.valid(data.progression, data): return false
 	if data.has("route") and not Route.valid(data.route, data): return false
 	if data.has("exploration") and not Energy.valid(data.exploration, data): return false
 	return true
 
 static func normalized(data: Dictionary) -> Dictionary:
-	var result := data.duplicate(true)
+	var result:= data.duplicate(true)
 	if not result.has("route"): result.route = Route.defaults()
-	result.route.schema = 1
+	result.route = Route.normalized(result.route)
 	if not result.has("exploration"): result.exploration = Energy.defaults()
 	for key in ["schema", "value", "anchor", "items", "revision"]: result.exploration[key] = int(result.exploration[key])
 	if not result.exploration.drop.is_empty(): result.exploration.drop.roll = int(result.exploration.drop.roll)

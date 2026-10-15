@@ -6,15 +6,15 @@ const Catalog = preload("res://scripts/species_catalog.gd")
 static var _cached_spec: Dictionary = {}
 static var _species_ids: Array = []
 var state: Dictionary
-var last_error := ""
+var last_error:= ""
 
 static func specification() -> Dictionary:
 	if _cached_spec.is_empty():
-		var parser := JSON.new()
+		var parser:= JSON.new()
 		if parser.parse(FileAccess.get_file_as_string("res://data/trainer_skill_tree.json")) != OK or not parser.data is Dictionary:
 			return {}
 		_cached_spec = parser.data
-		var catalog := Catalog.new()
+		var catalog:= Catalog.new()
 		if catalog.load_file():
 			for entry in catalog.all_entries():
 				_species_ids.append(entry.id)
@@ -33,25 +33,25 @@ static func node_definition(node_id: String) -> Dictionary:
 	return {}
 
 static func earned_points(data: Dictionary) -> int:
-	var result := int(data.level)
+	var result:= int(data.level)
 	for milestone in specification().capture_milestones:
 		if data.captured_species.size() >= milestone:
 			result += 1
 	return result
 
 static func spent_points(data: Dictionary) -> int:
-	var result := 0
+	var result:= 0
 	for rank_value in data.ranks.values():
 		result += int(rank_value)
 	return result + ProgressRules.unlock_spent(data)
 
 static func valid(data: Variant) -> bool:
-	var spec := specification()
+	var spec:= specification()
 	if spec.is_empty() or not data is Dictionary or data.get("schema") != 1 or not _integer(data.get("level"), 1, int(spec.level_cap)):
 		return false
 	if not data.get("captured_species") is Array or not data.get("ranks") is Dictionary or not data.get("equipped") is Array or data.equipped.size() > spec.equip_slots:
 		return false
-	var seen := {}
+	var seen:= {}
 	for species_id in data.captured_species:
 		if not species_id is String or species_id not in _species_ids or seen.has(species_id):
 			return false
@@ -59,7 +59,7 @@ static func valid(data: Variant) -> bool:
 	for node_id in data.ranks:
 		if not node_id is String:
 			return false
-		var node := node_definition(node_id)
+		var node:= node_definition(node_id)
 		var rank_value: Variant = data.ranks[node_id]
 		if node.is_empty() or not _integer(rank_value, 1, int(node.max_rank)) or data.level < node.min_level + (rank_value - 1) * spec.rank_level_step:
 			return false
@@ -68,11 +68,11 @@ static func valid(data: Variant) -> bool:
 				return false
 	if data.has("unlocks"):
 		if not data.unlocks is Array: return false
-		var purchased := {}
+		var purchased:= {}
 		for id in data.unlocks:
 			if not id is String or purchased.has(id): return false
-			var definition := ProgressRules.unlock(id)
-			if definition.is_empty() or data.level < definition.min_level or (not definition.prerequisite.is_empty() and definition.prerequisite not in purchased): return false
+			var definition:= ProgressRules.unlock(id)
+			if definition.is_empty() or data.level < definition.min_level or ( not definition.prerequisite.is_empty() and definition.prerequisite not in purchased): return false
 			purchased[id] = true
 	if spent_points(data) > earned_points(data):
 		return false
@@ -84,7 +84,7 @@ static func valid(data: Variant) -> bool:
 	return true
 
 static func normalized(data: Dictionary) -> Dictionary:
-	var result := data.duplicate(true)
+	var result:= data.duplicate(true)
 	if not result.has("unlocks"): result.unlocks = []
 	result.schema = 1
 	result.level = int(result.level)
@@ -92,7 +92,7 @@ static func normalized(data: Dictionary) -> Dictionary:
 		result.ranks[node_id] = int(result.ranks[node_id])
 	return result
 
-func _init() -> void:
+func _init() -> void :
 	state = defaults()
 
 func restore(data: Variant) -> bool:
@@ -110,13 +110,13 @@ func points_available() -> int:
 	return earned_points(state) - spent_points(state)
 
 func purchase_reason(node_id: String) -> String:
-	var node := node_definition(node_id)
+	var node:= node_definition(node_id)
 	if node.is_empty():
 		return "Resonancia desconocida."
-	var rank_value := int(state.ranks.get(node_id, 0))
+	var rank_value:= int(state.ranks.get(node_id, 0))
 	if rank_value >= node.max_rank:
 		return "Rango máximo alcanzado."
-	var needed := int(node.min_level + rank_value * specification().rank_level_step)
+	var needed:= int(node.min_level + rank_value * specification().rank_level_step)
 	if state.level < needed:
 		return "Requiere nivel %d." % needed
 	for prerequisite in node.prerequisites:
@@ -158,7 +158,7 @@ func unequip(node_id: String) -> bool:
 func gain_level() -> bool:
 	last_error = ""
 	if state.level >= specification().level_cap:
-		last_error = "Nivel máximo del prototipo: 10."
+		last_error = "Nivel máximo del prototipo: %d." % int(specification().level_cap)
 		return false
 	state.level += 1
 	return true
@@ -175,15 +175,15 @@ func record_capture(species_id: String) -> bool:
 	return true
 
 func power_multiplier(node_id: String) -> float:
-	var rank_value := int(state.ranks.get(node_id, 0))
+	var rank_value:= int(state.ranks.get(node_id, 0))
 	return 0.0 if rank_value == 0 else 1.0 + (rank_value - 1) * float(specification().rank_power_step)
 
-func reset_allocation() -> void:
+func reset_allocation() -> void :
 	state.ranks.clear()
 	state.equipped.clear()
 
 func unlock_reason(id: String) -> String:
-	var definition := ProgressRules.unlock(id)
+	var definition:= ProgressRules.unlock(id)
 	if definition.is_empty(): return "Desbloqueo desconocido."
 	if id in state.unlocks: return "Ya desbloqueado."
 	if state.level < definition.min_level: return "Requiere nivel %d." % int(definition.min_level)

@@ -38,6 +38,7 @@ func button(node: Node, prefix: String) -> Button:
 		if found != null: return found
 	return null
 func run() -> void:
+	preload("res://tests/legacy_world_fixture.gd").activate()
 	var app := root.get_node("App")
 	check(Progress.advance({"level": 1, "xp": 75}, 25, 10) == {"level": 2, "xp": 0}, "100 XP times current level")
 	check(Progress.advance({"level": 9, "xp": 895}, 25, 10) == {"level": 10, "xp": 0}, "regional cap discards surplus")

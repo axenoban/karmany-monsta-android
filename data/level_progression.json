@@ -1,12 +1,40 @@
 {
   "schema": 1,
-  "approved": "2026-10-14",
+  "approved": "2026-10-15",
   "victory_xp": 25,
   "xp_per_level": 100,
   "stat_step": 0.05,
-  "regions": [{"id": "jade", "name": "Valle Jade", "min_level": 1, "cost": 0, "xp_cap": 10}],
+  "regions": [
+    {
+      "id": "jade",
+      "name": "Valle Jade",
+      "min_level": 1,
+      "cost": 0,
+      "xp_cap": 10
+    },
+    {
+      "id": "veil",
+      "name": "Bosque del Velo",
+      "min_level": 10,
+      "cost": 1,
+      "xp_cap": 15,
+      "route_file": "res://data/veil_route.json"
+    }
+  ],
   "unlocks": [
-    {"id": "book_upgrade_1", "name": "Mejora 1", "min_level": 4, "cost": 1, "prerequisite": ""},
-    {"id": "book_upgrade_2", "name": "Mejora 2", "min_level": 8, "cost": 2, "prerequisite": "book_upgrade_1"}
+    {
+      "id": "book_upgrade_1",
+      "name": "Mejora 1",
+      "min_level": 4,
+      "cost": 1,
+      "prerequisite": ""
+    },
+    {
+      "id": "book_upgrade_2",
+      "name": "Mejora 2",
+      "min_level": 8,
+      "cost": 2,
+      "prerequisite": "book_upgrade_1"
+    }
   ]
 }

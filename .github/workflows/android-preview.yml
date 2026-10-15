@@ -149,6 +149,26 @@ jobs:
           set -o pipefail
           godot --headless --path . --script tests/experience_summary_tests.gd 2>&1 | tee build/experience-summary.log
           python3 ci/check_log.py build/experience-summary.log
+      - name: Validate frozen regional contracts, relays and unique rewards
+        run: |
+          set -o pipefail
+          godot --headless --path . --script tests/regional_engine_tests.gd 2>&1 | tee build/regional-engine.log
+          python3 ci/check_log.py build/regional-engine.log
+      - name: Validate twelve-point convergence and Preview32 migrations
+        run: |
+          set -o pipefail
+          godot --headless --path . --script tests/unification_tests.gd 2>&1 | tee build/unification.log
+          python3 ci/check_log.py build/unification.log
+      - name: Validate regional balance and full-screen UI
+        run: |
+          set -o pipefail
+          godot --headless --path . --script tests/regional_balance_tests.gd 2>&1 | tee build/regional-balance.log
+          python3 ci/check_log.py build/regional-balance.log
+          godot --headless --path . --script tests/unification_ui_tests.gd 2>&1 | tee build/unification-ui.log
+          python3 ci/check_log.py build/unification-ui.log
+          if ! command -v xvfb-run >/dev/null; then sudo apt-get update -qq && sudo apt-get install -y xvfb; fi
+          xvfb-run -a godot --rendering-method gl_compatibility --audio-driver Dummy --path . --script tests/unification_ui_tests.gd -- --allow-ui-review 2>&1 | tee build/unification-render.log
+          python3 ci/check_log.py build/unification-render.log
       - name: Export playable encounter APK
         run: |
           set -o pipefail
@@ -201,5 +221,5 @@ jobs:
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" "${ASSETS[@]}" --clobber
           else
-            gh release create "$TAG" "${ASSETS[@]}" --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Preview 0.18.0 experimental (E1): Sakuromushi ataca y releva automáticamente al compañero seleccionado, bonificación de daño durante dos rondas y respuesta contra el entrante. Conserva guardados y demás sistemas. No contiene aún las etapas 5 y 6 de Jade."
+            gh release create "$TAG" "${ASSETS[@]}" --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Candidata 0.21.0: dos regiones y doce etapas recuperadas de Preview32, motor y persistencia E2, relevo Sakuromushi E1 y continuidad visual. Pendiente prueba física; no integrada a dev."
           fi

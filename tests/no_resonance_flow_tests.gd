@@ -71,6 +71,8 @@ func _run() -> void:
 			await app.response_timer.timeout
 		await process_frame
 	_check(app.profile.campaign.encounter.phase == "capture", "UI-only battle without resonances reaches book phase")
+	var transition := _trial(main).find_child("CombatTransition",true,false)
+	if transition != null: transition.finish()
 	var capture := _button(main, "Intentar vínculo")
 	_check(capture != null and not capture.disabled, "book continuation available after victory")
 	capture.pressed.emit()

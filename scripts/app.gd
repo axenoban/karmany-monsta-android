@@ -1,16 +1,19 @@
 extends Node
 
+const CombatTransition = preload("res://scripts/combat_transition.gd")
+var pending_transition: Dictionary = {}
+const Aftermath = preload("res://scripts/aftermath_flow.gd")
 const EffectAudio = preload("res://scripts/effect_audio.gd")
 var ui_audio: Node
 const Progress = preload("res://scripts/level_progression.gd")
 const ProgressRules = preload("res://scripts/progression_rules.gd")
 signal combat_updated
-const RESPONSE_DELAY := 0.7
+const RESPONSE_DELAY:= 0.7
 var response_timer: Timer
-var response_error := ""
-var application_paused := false
-var response_encounter_id := ""
-var response_revision := -1
+var response_error:= ""
+var application_paused:= false
+var response_encounter_id:= ""
+var response_revision:= -1
 
 const Store = preload("res://scripts/save_store.gd")
 const TreeModel = preload("res://scripts/trainer_skill_tree.gd")
@@ -20,28 +23,28 @@ const Roster = preload("res://scripts/trial_roster.gd")
 const Encounter = preload("res://scripts/trial_encounter.gd")
 const Router = preload("res://scripts/encounter_router.gd")
 const Tactical = preload("res://scripts/tactical_encounter.gd")
-var animation_key := ""
-# Ephemeral presentation only: loading a receipt never awards or replays XP.
-var pending_experience_id := ""
+var animation_key:= ""
+
+var pending_experience_id:= ""
 const Campaign = preload("res://scripts/trial_campaign.gd")
-const LOG_PATH := "user://diagnostic.log"
-var storage := Store.new()
+const LOG_PATH:= "user://diagnostic.log"
+var storage:= Store.new()
 var profile: Dictionary
 var build_info: Dictionary = {}
-var notice := ""
-var load_failed := false
+var notice:= ""
+var load_failed:= false
 
-func _ready() -> void:
+func _ready() -> void :
 	response_timer = Timer.new()
 	response_timer.one_shot = true
 	response_timer.timeout.connect(_resolve_enemy_response)
 	add_child(response_timer)
-	var bus := AudioServer.get_bus_index("SFX")
+	var bus:= AudioServer.get_bus_index("SFX")
 	if bus < 0:
 		AudioServer.add_bus()
 		bus = AudioServer.bus_count - 1
 		AudioServer.set_bus_name(bus, "SFX")
-		var limiter := AudioEffectLimiter.new()
+		var limiter:= AudioEffectLimiter.new()
 		limiter.ceiling_db = -1.0
 		limiter.threshold_db = -3.0
 		AudioServer.add_bus_effect(bus, limiter)
@@ -63,7 +66,7 @@ func _ready() -> void:
 	_schedule_enemy_response()
 
 func commit_profile(next_profile: Dictionary) -> bool:
-	var candidate := next_profile.duplicate(true)
+	var candidate:= next_profile.duplicate(true)
 	if Store.valid(candidate) and candidate.get("schema") == Store.SCHEMA_VERSION:
 		candidate.skill_tree = TreeModel.normalized(candidate.skill_tree)
 		candidate.campaign = Campaign.normalized(candidate.campaign)
@@ -78,21 +81,21 @@ func commit_profile(next_profile: Dictionary) -> bool:
 	return true
 
 func start_journey() -> bool:
-	var next_profile := profile.duplicate(true)
+	var next_profile:= profile.duplicate(true)
 	next_profile.journey = {"started": true, "visited_jade": false}
 	next_profile.skill_tree = TreeModel.defaults()
 	next_profile.campaign = Campaign.defaults()
 	return commit_profile(next_profile)
 
 func visit_jade() -> bool:
-	var next_profile := profile.duplicate(true)
+	var next_profile:= profile.duplicate(true)
 	next_profile.journey.visited_jade = true
 	return commit_profile(next_profile)
 
 func set_preference(key: String, enabled: bool) -> bool:
 	if load_failed or not profile.settings.has(key):
 		return false
-	var next_profile := profile.duplicate(true)
+	var next_profile:= profile.duplicate(true)
 	next_profile.settings[key] = enabled
 	return commit_profile(next_profile)
 
@@ -100,14 +103,14 @@ func change_tree(operation: String, node_id: String = "", expected_rank: int = -
 	if load_failed:
 		notice = "Recupera la partida antes de modificar el árbol."
 		return false
-	var tree := TreeModel.new()
+	var tree:= TreeModel.new()
 	if not tree.restore(profile.skill_tree):
 		notice = tree.last_error
 		return false
 	if operation == "purchase" and expected_rank >= 0 and int(tree.state.ranks.get(node_id, 0)) != expected_rank:
 		notice = "El nodo ya cambió. No se gastó otro punto."
 		return false
-	var changed := false
+	var changed:= false
 	match operation:
 		"purchase": changed = tree.purchase(node_id)
 		"equip": changed = tree.equip(node_id)
@@ -120,14 +123,14 @@ func change_tree(operation: String, node_id: String = "", expected_rank: int = -
 	if not changed:
 		notice = tree.last_error if not tree.last_error.is_empty() else "Operación del árbol desconocida."
 		return false
-	var next_profile := profile.duplicate(true)
+	var next_profile:= profile.duplicate(true)
 	next_profile.skill_tree = tree.snapshot()
 	if not commit_profile(next_profile): return false
 	play_sfx("item")
 	return true
 
-func apply_audio_preferences() -> void:
-	var bus := AudioServer.get_bus_index("SFX")
+func apply_audio_preferences() -> void :
+	var bus:= AudioServer.get_bus_index("SFX")
 	if bus < 0: return
 	var settings: Dictionary = profile.get("settings", {})
 	var level: float = float(settings.get("effects_volume", 0.65))
@@ -136,30 +139,30 @@ func apply_audio_preferences() -> void:
 
 func set_effect_volume(level: float) -> bool:
 	if load_failed or not is_finite(level) or level < 0 or level > 1: return false
-	var next := profile.duplicate(true)
+	var next:= profile.duplicate(true)
 	next.settings.effects_volume = level
 	return commit_profile(next)
 
-func play_sfx(id: String) -> void:
+func play_sfx(id: String) -> void :
 	if ui_audio != null: ui_audio.play_cue(id)
 
-func tap() -> void:
+func tap() -> void :
 	play_sfx("tap")
 	if profile.settings.haptics and OS.get_name() == "Android":
 		Input.vibrate_handheld(18)
 
-func log_event(message: String) -> void:
-	var existing := FileAccess.get_file_as_string(LOG_PATH) if FileAccess.file_exists(LOG_PATH) else ""
+func log_event(message: String) -> void :
+	var existing:= FileAccess.get_file_as_string(LOG_PATH) if FileAccess.file_exists(LOG_PATH) else ""
 	if existing.length() > 24000:
 		existing = existing.right(12000)
-	var handle := FileAccess.open(LOG_PATH, FileAccess.WRITE)
+	var handle:= FileAccess.open(LOG_PATH, FileAccess.WRITE)
 	if handle != null:
 		handle.store_string(existing + Time.get_datetime_string_from_system() + " · " + message + "\n")
 
 func diagnostic_report() -> String:
 	return "Karmany Monsta · Diagnóstico\nVersión: %s\nBuild: %s\nCommit: %s\nMotor: %s\nSistema: %s %s\nModelo: %s\nPantalla: %s\nFPS: %.0f\nGuardado iniciado: %s\nValle visitado: %s\nRecuperación: %s\n\n%s" % [build_info.get("version", "?"), build_info.get("build", 0), build_info.get("commit", "local"), Engine.get_version_info().string, OS.get_name(), OS.get_version(), OS.get_model_name(), DisplayServer.screen_get_size(), Engine.get_frames_per_second(), profile.journey.started, profile.journey.visited_jade, storage.recovered_backup, FileAccess.get_file_as_string(LOG_PATH) if FileAccess.file_exists(LOG_PATH) else ""]
 
-func _notification(what: int) -> void:
+func _notification(what: int) -> void :
 	if what == NOTIFICATION_APPLICATION_PAUSED:
 		application_paused = true
 		if response_timer != null: response_timer.stop()
@@ -175,7 +178,7 @@ func start_trial(enemy_species: String = "tanugami") -> bool:
 func start_route(point_id: String) -> bool:
 	if load_failed: return false
 	var route: Dictionary = profile.campaign.get("route", Route.defaults())
-	var selected := Route.point(point_id)
+	var selected:= Route.point(point_id)
 	if selected.is_empty() or not Route.unlocked(route, point_id):
 		notice = "Vence en el punto anterior para desbloquear este encuentro."
 		return false
@@ -183,12 +186,16 @@ func start_route(point_id: String) -> bool:
 		if route.current.get("point_id") == point_id: return true
 		notice = "Retoma y termina el encuentro actual antes de iniciar otro."
 		return false
+	var reason:= ProgressRules.region_reason(profile.skill_tree, Route.region_for(point_id))
+	if not reason.is_empty():
+		notice = reason
+		return false
 	return _start_encounter(selected.species, point_id)
 
 func _start_encounter(enemy_species: String, point_id: String = "") -> bool:
 	if load_failed:
 		return false
-	var next_profile := profile.duplicate(true)
+	var next_profile:= profile.duplicate(true)
 	if not next_profile.campaign.encounter.is_empty() and next_profile.campaign.encounter.phase in ["battle", "replacement", "capture"]:
 		return true
 	if not Roster.valid(next_profile.campaign.team, next_profile.campaign):
@@ -203,18 +210,24 @@ func _start_encounter(enemy_species: String, point_id: String = "") -> bool:
 	energy.drop = {}
 	energy.scouting = not point_id.is_empty()
 	next_profile.campaign.exploration = energy
-	if not point_id.is_empty() and not ProgressRules.region_reason(next_profile.skill_tree, "jade").is_empty():
-		notice = ProgressRules.region_reason(next_profile.skill_tree, "jade")
+	if not point_id.is_empty() and not ProgressRules.region_reason(next_profile.skill_tree, Route.region_for(point_id)).is_empty():
+		notice = ProgressRules.region_reason(next_profile.skill_tree, Route.region_for(point_id))
 		return false
 	next_profile.campaign.progression = Progress.normalized(next_profile.campaign)
 	var prepared_team: Dictionary = next_profile.campaign.team.duplicate(true)
 	for member in prepared_team.members: member.level = int(next_profile.campaign.progression.units[member.instance_id].level)
-	var encounter := Tactical.new()
+	var encounter:= Tactical.new()
+	next_profile.campaign.aftermath = {}
 	next_profile.campaign.sequence += 1
-	var rolls := [randf(), randf(), randf()]
+	var rolls:= [randf(), randf(), randf()]
 	if not encounter.begin("jade-%d" % int(next_profile.campaign.sequence), profile.skill_tree, rolls, prepared_team, enemy_species, ProgressRules.current_book(next_profile.skill_tree)):
-		notice = "No se pudo iniciar el encuentro."
+		notice = encounter.last_error
 		return false
+	if not point_id.is_empty() and Route.point(point_id).has("level"):
+		var contract := preload("res://scripts/regional_policy.gd").freeze(Route.point(point_id), Route.region_for(point_id), next_profile.campaign.progression.bonuses)
+		if not encounter.configure_region(contract):
+			notice = "Configuración regional inválida."
+			return false
 	next_profile.campaign.encounter = encounter.snapshot()
 	if not next_profile.campaign.has("route"): next_profile.campaign.route = Route.defaults()
 	next_profile.campaign.route.current = {} if point_id.is_empty() else {"point_id": point_id, "encounter_id": encounter.state.id}
@@ -229,7 +242,7 @@ func _start_encounter(enemy_species: String, point_id: String = "") -> bool:
 func mark_intro_seen() -> bool:
 	if load_failed:
 		return false
-	var next_profile := profile.duplicate(true)
+	var next_profile:= profile.duplicate(true)
 	next_profile.campaign.intro_seen = true
 	return commit_profile(next_profile)
 
@@ -246,8 +259,9 @@ func trial_action(operation: String, action_id: String = "", expected_revision: 
 	if profile.campaign.get("exploration", Energy.defaults()).scouting and operation != "retreat":
 		notice = "Explora la localización antes de iniciar el combate."
 		return false
+	var previous_state: Dictionary = encounter.snapshot()
 	var previous_phase: String = encounter.state.phase
-	var changed := false
+	var changed:= false
 	match operation:
 		"karmany", "trainer":
 			changed = encounter.act(operation, action_id, target_id) if encounter is Tactical else encounter.act(operation, action_id)
@@ -255,16 +269,17 @@ func trial_action(operation: String, action_id: String = "", expected_revision: 
 		"replace": changed = encounter.replace_with(action_id) if encounter is Tactical else false
 		"enemy": changed = encounter.end_round()
 		"capture": changed = encounter.attempt_capture()
+		"choose_capture": changed = encounter.choose_capture(action_id) if encounter is Tactical else false
 		"retreat": changed = encounter.retreat()
 	if not changed:
 		notice = encounter.last_error
 		return false
-	var next_profile := profile.duplicate(true)
+	var next_profile:= profile.duplicate(true)
 	next_profile.campaign.encounter = encounter.snapshot()
 	if next_profile.campaign.has("exploration"): next_profile.campaign.exploration.scouting = false
 	if encounter is Tactical:
 		next_profile.campaign.team.active_id = encounter.state.ally_id
-	var tree := TreeModel.new()
+	var tree:= TreeModel.new()
 	tree.restore(next_profile.skill_tree)
 	if previous_phase == "battle" and encounter.state.phase == "capture":
 		next_profile.campaign.victories += 1
@@ -272,36 +287,44 @@ func trial_action(operation: String, action_id: String = "", expected_revision: 
 		if next_profile.campaign.has("route"):
 			next_profile.campaign.route = Route.record_victory(next_profile.campaign.route, encounter.state.id)
 		next_profile.campaign.progression = Progress.award(next_profile.campaign, tree.state, encounter.state)
+		next_profile.campaign.aftermath = Aftermath.checkpoint(next_profile.campaign, "victory")
 	if previous_phase == "capture" and encounter.state.phase == "captured":
 		var captured_species: String = encounter.state.get("enemy_species", "tanugami")
 		next_profile.campaign.collection.append({"id": encounter.state.id, "species": captured_species})
 		next_profile.campaign.progression = Progress.normalized(next_profile.campaign)
+		if encounter.state.has("regional"):
+			next_profile.campaign.progression.units[encounter.state.id] = {"level": int(encounter.state.enemy.get("level", 1)), "xp": 0}
 		if not tree.state.captured_species.has(captured_species):
 			tree.record_capture(captured_species)
+	if operation == "choose_capture":
+		next_profile.campaign.aftermath = Aftermath.checkpoint(next_profile.campaign, Aftermath.decision(next_profile.campaign))
+	elif operation == "capture":
+		next_profile.campaign.aftermath = Aftermath.checkpoint(next_profile.campaign, "binding") if encounter.state.phase == "capture" else {}
 	next_profile.skill_tree = tree.snapshot()
 	if not commit_profile(next_profile): return false
+	pending_transition = CombatTransition.between(previous_state, encounter.state, operation, action_id)
 	if previous_phase == "battle" and encounter.state.phase == "capture":
 		pending_experience_id = encounter.state.id
-		play_sfx("victory")
-	elif encounter.state.phase == "defeat" and previous_phase != "defeat": play_sfx("defeat")
+		if pending_transition.is_empty(): play_sfx("victory")
+	elif encounter.state.phase == "defeat" and previous_phase != "defeat" and pending_transition.is_empty(): play_sfx("defeat")
 	elif operation == "retreat": play_sfx("switch")
 	return true
 
 func change_team(operation: String, instance_id: String) -> bool:
 	if load_failed:
 		return false
-	var roster := Roster.new()
-	var next_team := roster.change(profile.campaign, operation, instance_id)
+	var roster:= Roster.new()
+	var next_team:= roster.change(profile.campaign, operation, instance_id)
 	if next_team.is_empty():
 		notice = roster.last_error
 		return false
-	var next_profile := profile.duplicate(true)
+	var next_profile:= profile.duplicate(true)
 	next_profile.campaign.team = next_team
 	if not commit_profile(next_profile): return false
 	play_sfx("switch")
 	return true
 
-func _schedule_enemy_response() -> void:
+func _schedule_enemy_response() -> void :
 	if response_timer == null:
 		return
 	response_timer.stop()
@@ -317,7 +340,7 @@ func _schedule_enemy_response() -> void:
 	response_revision = int(data.revision)
 	response_timer.start(RESPONSE_DELAY)
 
-func _resolve_enemy_response() -> void:
+func _resolve_enemy_response() -> void :
 	if application_paused or profile.campaign.encounter.is_empty():
 		return
 	var data: Dictionary = profile.campaign.encounter
@@ -327,12 +350,12 @@ func _resolve_enemy_response() -> void:
 		response_error = notice
 	combat_updated.emit()
 
-func retry_enemy_response() -> void:
+func retry_enemy_response() -> void :
 	_schedule_enemy_response()
 	combat_updated.emit()
 
 func consume_animation(data: Dictionary) -> bool:
-	var key := "%s:%d" % [data.id, int(data.revision)]
+	var key:= "%s:%d" % [data.id, int(data.revision)]
 	if key == animation_key: return false
 	animation_key = key
 	return not data.get("event", {}).is_empty()
@@ -345,8 +368,9 @@ func continue_route(expected_encounter_id: String, expected_revision: int) -> bo
 	if encounter.is_empty() or encounter.id != expected_encounter_id or int(encounter.revision) != expected_revision or route.current.get("encounter_id") != encounter.id or encounter.phase not in ["capture", "captured", "escaped"] or not Route.completed(route, route.current.get("point_id", "")):
 		notice = "Este resultado ya cambió o el encuentro no terminó en victoria."
 		return false
-	var next_profile := profile.duplicate(true)
+	var next_profile:= profile.duplicate(true)
 	next_profile.campaign.encounter = {}
+	next_profile.campaign.aftermath = {}
 	next_profile.campaign.route.current = {}
 	if next_profile.campaign.has("exploration"):
 		next_profile.campaign.exploration.drop = {}
@@ -362,11 +386,11 @@ func use_recovery_item(expected_revision: int) -> bool:
 	if int(current.revision) != expected_revision:
 		notice = "El inventario ya cambió."
 		return false
-	var next_energy := Energy.consume_item(current, int(Time.get_unix_time_from_system()))
+	var next_energy:= Energy.consume_item(current, int(Time.get_unix_time_from_system()))
 	if next_energy.is_empty():
 		notice = "Necesitas un recuperador y stamina por recuperar."
 		return false
-	var next_profile := profile.duplicate(true)
+	var next_profile:= profile.duplicate(true)
 	next_profile.campaign.exploration = next_energy
 	if not commit_profile(next_profile): return false
 	play_sfx("item")
@@ -374,7 +398,7 @@ func use_recovery_item(expected_revision: int) -> bool:
 
 func discover_location(expected_id: String) -> bool:
 	if load_failed or not profile.campaign.get("exploration", Energy.defaults()).scouting or profile.campaign.encounter.get("id") != expected_id: return false
-	var next_profile := profile.duplicate(true)
+	var next_profile:= profile.duplicate(true)
 	next_profile.campaign.exploration.scouting = false
 	if not commit_profile(next_profile): return false
 	play_sfx("enter")
@@ -385,11 +409,11 @@ func purchase_unlock(id: String) -> bool:
 	if not profile.campaign.encounter.is_empty() and profile.campaign.encounter.phase in ["battle", "replacement", "capture"]:
 		notice = "Termina el encuentro antes de mejorar el Libro."
 		return false
-	var tree := TreeModel.new()
+	var tree:= TreeModel.new()
 	if not tree.restore(profile.skill_tree) or not tree.purchase_unlock(id):
 		notice = tree.last_error
 		return false
-	var next_profile := profile.duplicate(true)
+	var next_profile:= profile.duplicate(true)
 	next_profile.skill_tree = tree.snapshot()
 	if not commit_profile(next_profile): return false
 	play_sfx("item")
@@ -406,3 +430,46 @@ func consume_experience(encounter_id: String) -> Dictionary:
 	var receipt: Dictionary = profile.campaign.get("progression", {}).get("last_reward", {})
 	if receipt.get("encounter_id") != encounter_id or receipt.get("region", "").is_empty(): return {}
 	return receipt.duplicate(true)
+
+func select_region(region_id: String) -> bool:
+	var reason:= ProgressRules.region_reason(profile.skill_tree, region_id)
+	if not reason.is_empty():
+		notice = reason
+		return false
+	if not profile.campaign.encounter.is_empty() and profile.campaign.encounter.phase in ["battle", "replacement", "capture"]:
+		notice = "Termina el encuentro antes de viajar entre regiones."
+		return false
+	var next:= profile.duplicate(true)
+	next.campaign.route = Route.normalized(next.campaign.route)
+	next.campaign.route.selected = region_id
+	return commit_profile(next)
+
+
+func advance_aftermath(encounter_id: String, expected_step: String) -> bool:
+	if load_failed or profile.campaign.encounter.get("id") != encounter_id or Aftermath.step(profile.campaign) != expected_step: return false
+	var next_step:= Aftermath.next(profile.campaign)
+	if next_step.is_empty(): return false
+	var candidate:= profile.duplicate(true)
+	candidate.campaign.aftermath = Aftermath.checkpoint(candidate.campaign, next_step)
+	if not commit_profile(candidate): return false
+	pending_experience_id = ""
+	return true
+
+func finish_aftermath(encounter_id: String, revision: int) -> bool:
+	var encounter: Dictionary = profile.campaign.encounter
+	if load_failed or encounter.get("id") != encounter_id or int(encounter.get("revision", -1)) != revision or encounter.get("phase") not in ["capture", "captured", "escaped", "defeat", "retreated"]: return false
+	if profile.campaign.route.current.get("encounter_id") == encounter_id and encounter.phase in ["capture", "captured", "escaped"]:
+		return continue_route(encounter_id, revision)
+	var candidate:= profile.duplicate(true)
+	candidate.campaign.encounter = {}
+	candidate.campaign.aftermath = {}
+	candidate.campaign.route.current = {}
+	candidate.campaign.exploration.drop = {}
+	candidate.campaign.exploration.scouting = false
+	return commit_profile(candidate)
+
+func consume_transition() -> Dictionary:
+	var receipt:= pending_transition
+	pending_transition = {}
+	if receipt.get("id") != profile.campaign.encounter.get("id") or receipt.get("revision") != profile.campaign.encounter.get("revision"): return {}
+	return receipt

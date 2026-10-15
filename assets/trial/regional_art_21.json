@@ -1,0 +1,78 @@
+{
+  "tool": "built-in image_gen",
+  "direction": "Original hand-painted 2D fantasy, exact canonical anatomy, no text, no modern technology. Full body facing right; backgrounds empty with clear battle ground.",
+  "assets": [
+    {
+      "id": "sakuraneko",
+      "path": "assets/trial/sakuraneko.png",
+      "prompt": "white agile feline, ear tips AND tail made from flexible pink keratin petals, charming but feline, four paws",
+      "transparent": true
+    },
+    {
+      "id": "inubari",
+      "path": "assets/trial/inubari.png",
+      "prompt": "small rodent hedgehog with hardened bamboo cane spines rising vertically along its back, four paws, natural living bamboo, no metal",
+      "transparent": true
+    },
+    {
+      "id": "suzumeko",
+      "path": "assets/trial/suzumeko.png",
+      "prompt": "small curious sparrow with feathers made of interlaced parchmentlike fibers, geometric folded origami feather patterns, two wings and two feet, natural animal proportions",
+      "transparent": true
+    },
+    {
+      "id": "kodamashi",
+      "path": "assets/trial/kodamashi.png",
+      "prompt": "small lizard with skin densely covered in lush moss and pale lichens, four legs and long tapering tail, gentle expressive eyes",
+      "transparent": true
+    },
+    {
+      "id": "mujina_kage",
+      "path": "assets/trial/mujina_kage.png",
+      "prompt": "shy ash-grey thick-furred badger, four paws, subtle translucent wisps of vapor emanating from skin and softening silhouette, face clearly visible",
+      "transparent": true
+    },
+    {
+      "id": "tsukimi_usagi",
+      "path": "assets/trial/tsukimi_usagi.png",
+      "prompt": "white rabbit with disproportionately long thin ears that sense magical currents, four natural rabbit paws, gentle expression, no moon symbols",
+      "transparent": true
+    },
+    {
+      "id": "kodama_shin",
+      "path": "assets/trial/kodama_shin.png",
+      "prompt": "small humanoid creature made of braided plant fibers, round bony mask resembling a knot of dry wood, two arms and two legs, organic bamboo spirit without equipment",
+      "transparent": true
+    },
+    {
+      "id": "karasu_origami",
+      "path": "assets/trial/karasu_origami.png",
+      "prompt": "black crow with rigid feathers imitating sharp folded black paper, detailed geometric pleats, two wings and two feet, readable silhouette",
+      "transparent": true
+    },
+    {
+      "id": "veil_overhead",
+      "path": "assets/trial/veil_overhead.png",
+      "prompt": "Overhead directly top-down regional exploration map, winding ancient stone path through towering bamboo groves, moss-covered rocks, perennial cherry trees and milky fog, broad path snakes through six clearings with generous spacing; no markers no labels no animals no people; ornamental painted fantasy terrain in horizontal16:9 composition.",
+      "transparent": false
+    },
+    {
+      "id": "veil_bamboo",
+      "path": "assets/trial/veil_bamboo.png",
+      "prompt": "Side-on battle arena in a towering bamboo grove, misty ancient cobblestone path, giant bamboo30m tall, damp leaves, pale jade-green light, wide clear ground along entire lower third for two creatures to stand, empty scene, hand-painted fantasy JRPG environment16:9.",
+      "transparent": false
+    },
+    {
+      "id": "veil_roots",
+      "path": "assets/trial/veil_roots.png",
+      "prompt": "Side-on battle arena at ancient cherry roots cracking an old stone path, thick mossy rocks and soft milky forest fog, cherry petals sparsely on damp ground, bamboo in background, wide unobstructed ground along lower third for two creatures, empty painted fantasy JRPG environment16:9.",
+      "transparent": false
+    },
+    {
+      "id": "veil_clearing",
+      "path": "assets/trial/veil_clearing.png",
+      "prompt": "Side-on battle arena in a deep forest clearing surrounded by gigantic bamboo and old cherry trees, pale fog and shafts of soft light, ancient uneven cobbles at the clearing, wide flat readable ground along lower third for two creatures, empty hand-painted fantasy JRPG16:9.",
+      "transparent": false
+    }
+  ]
+}

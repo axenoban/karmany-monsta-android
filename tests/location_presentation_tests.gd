@@ -24,6 +24,7 @@ func stage_in(node: Node) -> Control:
 		if found != null: return found
 	return null
 func _run() -> void:
+	preload("res://tests/legacy_world_fixture.gd").activate()
 	root.size = Vector2i(1280, 720)
 	var app := root.get_node("App")
 	app.storage = Store.new(PATH)

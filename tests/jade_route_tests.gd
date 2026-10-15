@@ -36,6 +36,7 @@ func find_button(node: Node, text: String) -> Button:
 		if found != null: return found
 	return null
 func _run() -> void:
+	preload("res://tests/legacy_world_fixture.gd").activate()
 	root.size = Vector2i(1280, 720)
 	var defaults := Route.defaults()
 	check(Route.next_point(defaults) == "jade_point_1" and Route.unlocked(defaults, "jade_point_1"), "first point unlocked")

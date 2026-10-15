@@ -1,5 +1,5 @@
 {
-  "status": "experimental_approved_2026_10_14",
+  "status": "experimental_approved_2026_10_15",
   "baseline": "67d006dd268f95dc6351b9bc39a9ba42b54a3c2b",
   "species": {
     "zephyr": {
@@ -54,6 +54,93 @@
         "power": 0.7,
         "relay_boost": 0.2,
         "relay_rounds": 2,
+        "cooldown": 2
+      }
+    },
+    "sakuraneko": {
+      "life": 72,
+      "attack": 20,
+      "defense": 7,
+      "speed": 10,
+      "signature": {
+        "heal": 10,
+        "guard": 0.2,
+        "cooldown": 3
+      }
+    },
+    "inubari": {
+      "life": 84,
+      "attack": 18,
+      "defense": 11,
+      "speed": 10,
+      "signature": {
+        "power": 1.1,
+        "guard": 0.3,
+        "cooldown": 2
+      }
+    },
+    "suzumeko": {
+      "life": 64,
+      "attack": 23,
+      "defense": 5,
+      "speed": 10,
+      "signature": {
+        "power": 1.25,
+        "weaken": 0.2,
+        "cooldown": 2
+      }
+    },
+    "kodamashi": {
+      "life": 84,
+      "attack": 17,
+      "defense": 10,
+      "speed": 10,
+      "signature": {
+        "heal": 14,
+        "guard": 0.2,
+        "cooldown": 3
+      }
+    },
+    "mujina_kage": {
+      "life": 76,
+      "attack": 20,
+      "defense": 8,
+      "speed": 10,
+      "signature": {
+        "power": 1.1,
+        "weaken": 0.3,
+        "cooldown": 2
+      }
+    },
+    "tsukimi_usagi": {
+      "life": 72,
+      "attack": 18,
+      "defense": 8,
+      "speed": 10,
+      "signature": {
+        "power": 1.0,
+        "grant_boost": 0.3,
+        "cooldown": 2
+      }
+    },
+    "kodama_shin": {
+      "life": 80,
+      "attack": 18,
+      "defense": 10,
+      "speed": 10,
+      "signature": {
+        "heal": 10,
+        "guard": 0.25,
+        "cooldown": 3
+      }
+    },
+    "karasu_origami": {
+      "life": 68,
+      "attack": 23,
+      "defense": 6,
+      "speed": 10,
+      "signature": {
+        "power": 1.3,
         "cooldown": 2
       }
     }
