@@ -10,6 +10,8 @@ static func effects(unit: Dictionary) -> String:
 		lines.append("Protección %d%%: reduce el próximo ataque recibido." % roundi(unit.guard * 100))
 	if unit.get("boost", 0.0) > 0:
 		lines.append("Potenciación +%d%%: se consume en su próximo ataque." % roundi(unit.boost * 100))
+	if unit.get("relay_boost", 0.0) > 0.0 and int(unit.get("relay_until", 0)) > 0:
+		lines.append("Relevo +%d%% hasta turno %d; no se acumula con otra potenciación." % [roundi(unit.relay_boost * 100), int(unit.relay_until)])
 	if unit.get("weaken", 0.0) > 0:
 		lines.append("Debilitamiento -%d%%: reduce el daño de su próximo ataque." % roundi(unit.weaken * 100))
 	return "\n".join(lines) if not lines.is_empty() else "Sin efectos pendientes."
@@ -22,6 +24,7 @@ static func describe(effect: Dictionary, scale: float = 1.0) -> String:
 	if effect.has("boost"): parts.append("Potenciación +%d%% al próximo ataque del activo." % roundi(effect.boost * scale * 100))
 	if effect.has("weaken"): parts.append("Reduce %d%% el daño del próximo ataque rival." % roundi(minf(0.8, effect.weaken * scale) * 100))
 	if effect.has("grant_boost"): parts.append("Tras atacar, otorga +%d%% al próximo ataque del compañero vivo elegido, incluido él mismo o una reserva." % roundi(effect.grant_boost * 100))
+	if effect.has("relay_boost"): parts.append("Tras atacar, intercambia con una reserva viva. Su ataque aumenta %d%% durante las próximas %d rondas. El rival responde contra quien entra." % [roundi(effect.relay_boost * 100), int(effect.relay_rounds)])
 	return " ".join(parts)
 
 static func _unit(data: Dictionary, tactical: bool, role: String, active_id: String, round_id: int) -> Dictionary:
