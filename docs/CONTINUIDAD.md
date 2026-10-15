@@ -37,3 +37,16 @@ Registrar aprobación e integrar esta rama por fast-forward en dev. Después, de
 
 ## Protocolo al terminar cada actualización
 Actualizar bloque actual, estado probado y pendiente, rama y referencias verificadas, enlace de entrega cuando exista, riesgos reales y siguiente paso tras aprobación. Distinguir siempre CI/local de validación en dispositivo. Usar git log como referencia de commit cuando el documento forma parte del mismo commit, evitando autorreferencias imposibles.
+
+## Bloque20: ventana de experiencia · solicitud actual
+El creador pidió continuar y añadir una ventana con XP adquirida, barra que se llena y actualización de estadísticas al subir. Rama feature/experience-summary, parte de fcb5c28 (bloque19); versión0.17.0. No se ha supuesto validación física nueva de Preview28 ni se ha integrado en dev/main.
+
+Leer docs/PRUEBA_ANDROID_20.md y docs/NIVELES_LIBRO_19.md. experience_summary.gd presenta un recibo de solo lectura tras la victoria de localización: entrenador y equipo principal, retratos, XP aplicada, barra desde el valor anterior, pausa al completar, nivel nuevo y sobrante. Al subir muestra Vida/Ataque/Defensa antes→después con incremento y Velocidad sin cambios. Límite regional usa barra completa y etiqueta explícita. Sin nuevas reglas de XP, economía, especies o regiones.
+
+El recibo incorpora before/after de nivel/XP y especie por integrante dentro de la misma transacción de victoria. Campos opcionales validados/normalizados; recibos de Preview28 siguen compatibles. Una marca temporal en App habilita la ventana solo después de guardar correctamente y se consume una sola vez. Recargar no vuelve a presentar una recompensa nueva; el resumen compacto sigue en la pantalla. La animación no escribe progreso y cerrarla antes de terminar conserva todo lo ganado.
+
+Ventana modal con desplazamiento y Continuar siempre accesible. Atrás de Android cierra el resumen manteniendo el vínculo. Movimiento reducido muestra el resultado inmediatamente; modo normal anima2.4s y reutiliza un aviso sonoro existente al subir, respetando volumen/silencio. Audio y presentación pertenecen a la escena y se detienen al cerrarla. Sin XP/ventana en entrenamiento.
+
+Validación local:1390 comprobaciones Godot (41 nuevas del resumen y una adicional del flujo Jade),3 Python; importación y git diff --check correctos. Revisión visual1280×720 con equipo de3, subida múltiple entre integrantes, límite regional, texto normal/grande, principio/final del desplazamiento. CI y entrega: pendientes en este punto del historial; completar referencias reales al finalizar. No afirmar prueba física.
+
+Siguiente paso si el creador confirma «prueba correcta»: registrar aprobación conjunta de progresión/resumen e integrar por fast-forward en dev; cerrar PR pendientes de ambos bloques. Después definir la siguiente región con el creador (nombre/fuente, nivel de acceso, puntos, topeXP, especies/encuentros y niveles). No inventar contenido ni elevar el máximo actual10 sin esas decisiones.

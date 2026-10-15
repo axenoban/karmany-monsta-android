@@ -467,6 +467,10 @@ func _write_report(path: String) -> void:
 	toast.text = "Informe exportado." if handle.get_error() == OK else "No se pudo completar la exportación."
 
 func _back() -> void:
+	for summary in get_tree().get_nodes_in_group("experience_summary"):
+		if summary.visible:
+			summary._finish()
+			return
 	if export_dialog.visible:
 		export_dialog.hide()
 	elif dialog.visible:

@@ -1,6 +1,7 @@
 extends Control
 
 signal navigate(page: String)
+const ExperienceSummary = preload("res://scripts/experience_summary.gd")
 const Progress = preload("res://scripts/level_progression.gd")
 const ProgressRules = preload("res://scripts/progression_rules.gd")
 const Energy = preload("res://scripts/exploration_energy.gd")
@@ -73,6 +74,7 @@ func _build() -> void:
 	message = _label("", 20)
 	column.add_child(message)
 	message.hide()
+	if mode == "battle": _show_experience.call_deferred()
 
 func _stage(stage_mode: String, dead_player: bool = false, dead_enemy: bool = false) -> void:
 	var stage := Stage.new()
@@ -511,3 +513,11 @@ func _reward_notice(encounter_id: String) -> void:
 	column.add_child(label)
 func _roster_for_rewards() -> Array:
 	return preload("res://scripts/trial_roster.gd").owned(App.profile.campaign)
+
+func _show_experience() -> void:
+	var receipt := App.consume_experience(App.profile.campaign.encounter.get("id", ""))
+	if receipt.is_empty(): return
+	var dialog := ExperienceSummary.new()
+	dialog.receipt = receipt
+	add_child(dialog)
+	dialog.present()

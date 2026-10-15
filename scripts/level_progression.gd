@@ -22,6 +22,11 @@ static func valid(data: Variant, campaign: Dictionary) -> bool:
 		for row in receipt.rows:
 			if not row is Dictionary or not row.get("id") is String or seen.has(row.id) or (row.id != "trainer" and not owned.has(row.id)): return false
 			if not integer(row.get("gained"), 0, int(Rules.rules().victory_xp)) or not integer(row.get("level"), 1, 1000000) or not row.get("capped") is bool: return false
+			if row.has("before") or row.has("after"):
+				if not valid_record(row.get("before")) or not valid_record(row.get("after")): return false
+				if int(row.after.level) != int(row.level) or int(row.after.level) < int(row.before.level) or gained(row.before, row.after) != int(row.gained): return false
+				if int(row.after.level) == int(row.before.level) and int(row.after.xp) < int(row.before.xp): return false
+				if row.id != "trainer" and (not row.get("species_id") is String or row.species_id not in preload("res://scripts/combat_catalog.gd").all_species()): return false
 			seen[row.id] = true
 	return true
 static func normalized(campaign: Dictionary) -> Dictionary:
@@ -37,6 +42,10 @@ static func normalized(campaign: Dictionary) -> Dictionary:
 		for row in result.last_reward.rows:
 			row.gained = int(row.gained)
 			row.level = int(row.level)
+			for key in ["before", "after"]:
+				if row.has(key):
+					row[key].level = int(row[key].level)
+					row[key].xp = int(row[key].xp)
 	return result
 static func record_for(campaign: Dictionary, id: String) -> Dictionary:
 	return normalized(campaign).units.get(id, fresh()).duplicate(true)
@@ -67,14 +76,14 @@ static func award(campaign: Dictionary, tree: Dictionary, encounter: Dictionary)
 	var next_trainer := advance(trainer, amount, cap) if amount > 0 else trainer
 	tree.level = next_trainer.level
 	result.trainer_xp = next_trainer.xp
-	rows.append({"id": "trainer", "gained": gained(trainer, next_trainer), "level": next_trainer.level, "capped": cap > 0 and next_trainer.level >= cap})
+	rows.append({"id": "trainer", "gained": gained(trainer, next_trainer), "level": next_trainer.level, "capped": cap > 0 and next_trainer.level >= cap, "before": trainer.duplicate(true), "after": next_trainer.duplicate(true)})
 	var members: Array = encounter.get("members", campaign.get("team", Roster.defaults()).members)
 	for member in members:
 		var id: String = member.instance_id
 		var before: Dictionary = result.units[id]
 		var after := advance(before, amount, cap) if amount > 0 else before.duplicate(true)
 		result.units[id] = after
-		rows.append({"id": id, "gained": gained(before, after), "level": after.level, "capped": cap > 0 and after.level >= cap})
+		rows.append({"id": id, "gained": gained(before, after), "level": after.level, "capped": cap > 0 and after.level >= cap, "species_id": member.species_id, "before": before.duplicate(true), "after": after.duplicate(true)})
 	result.last_reward = {"encounter_id": encounter.id, "region": region_id, "rows": rows}
 	return result
 static func summary(campaign: Dictionary, id: String) -> String:

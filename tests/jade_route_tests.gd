@@ -202,6 +202,10 @@ func _run() -> void:
 	win(app)
 	main._show("battle")
 	await process_frame
+	var reward_dialog := main.find_child("ExperienceSummary", true, false)
+	check(reward_dialog != null, "victory summary precedes optional binding")
+	reward_dialog.confirmed.emit()
+	await process_frame
 	var snapshot: Dictionary = app.profile.duplicate(true)
 	var continue_button := find_button(main.get_node("Page"), "Continuar recorrido sin vínculo")
 	check(continue_button.get_global_rect().end.y < 690, "optional capture continuation stays visible")

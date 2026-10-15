@@ -21,6 +21,8 @@ const Encounter = preload("res://scripts/trial_encounter.gd")
 const Router = preload("res://scripts/encounter_router.gd")
 const Tactical = preload("res://scripts/tactical_encounter.gd")
 var animation_key := ""
+# Ephemeral presentation only: loading a receipt never awards or replays XP.
+var pending_experience_id := ""
 const Campaign = preload("res://scripts/trial_campaign.gd")
 const LOG_PATH := "user://diagnostic.log"
 var storage := Store.new()
@@ -278,7 +280,9 @@ func trial_action(operation: String, action_id: String = "", expected_revision: 
 			tree.record_capture(captured_species)
 	next_profile.skill_tree = tree.snapshot()
 	if not commit_profile(next_profile): return false
-	if previous_phase == "battle" and encounter.state.phase == "capture": play_sfx("victory")
+	if previous_phase == "battle" and encounter.state.phase == "capture":
+		pending_experience_id = encounter.state.id
+		play_sfx("victory")
 	elif encounter.state.phase == "defeat" and previous_phase != "defeat": play_sfx("defeat")
 	elif operation == "retreat": play_sfx("switch")
 	return true
@@ -395,3 +399,10 @@ func redistribute_resonances() -> bool:
 		notice = "Termina el encuentro antes de redistribuir."
 		return false
 	return change_tree("reset")
+
+func consume_experience(encounter_id: String) -> Dictionary:
+	if pending_experience_id != encounter_id: return {}
+	pending_experience_id = ""
+	var receipt: Dictionary = profile.campaign.get("progression", {}).get("last_reward", {})
+	if receipt.get("encounter_id") != encounter_id or receipt.get("region", "").is_empty(): return {}
+	return receipt.duplicate(true)
