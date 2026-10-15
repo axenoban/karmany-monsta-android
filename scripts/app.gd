@@ -203,8 +203,8 @@ func _start_encounter(enemy_species: String, point_id: String = "") -> bool:
 	energy.drop = {}
 	energy.scouting = not point_id.is_empty()
 	next_profile.campaign.exploration = energy
-	if not point_id.is_empty() and not ProgressRules.region_reason(next_profile.skill_tree, "jade").is_empty():
-		notice = ProgressRules.region_reason(next_profile.skill_tree, "jade")
+	if not point_id.is_empty() and not ProgressRules.region_reason(next_profile.skill_tree, Route.region_for(point_id)).is_empty():
+		notice = ProgressRules.region_reason(next_profile.skill_tree, Route.region_for(point_id))
 		return false
 	next_profile.campaign.progression = Progress.normalized(next_profile.campaign)
 	var prepared_team: Dictionary = next_profile.campaign.team.duplicate(true)
@@ -215,6 +215,11 @@ func _start_encounter(enemy_species: String, point_id: String = "") -> bool:
 	if not encounter.begin("jade-%d" % int(next_profile.campaign.sequence), profile.skill_tree, rolls, prepared_team, enemy_species, ProgressRules.current_book(next_profile.skill_tree)):
 		notice = "No se pudo iniciar el encuentro."
 		return false
+	if not point_id.is_empty() and Route.point(point_id).has("level"):
+		var contract := preload("res://scripts/regional_policy.gd").freeze(Route.point(point_id), Route.region_for(point_id), next_profile.campaign.progression.bonuses)
+		if not encounter.configure_region(contract):
+			notice = "Configuración regional inválida."
+			return false
 	next_profile.campaign.encounter = encounter.snapshot()
 	if not next_profile.campaign.has("route"): next_profile.campaign.route = Route.defaults()
 	next_profile.campaign.route.current = {} if point_id.is_empty() else {"point_id": point_id, "encounter_id": encounter.state.id}
@@ -254,6 +259,7 @@ func trial_action(operation: String, action_id: String = "", expected_revision: 
 		"switch": changed = encounter.switch_to(action_id) if encounter is Tactical else false
 		"replace": changed = encounter.replace_with(action_id) if encounter is Tactical else false
 		"enemy": changed = encounter.end_round()
+		"choose_capture": changed = encounter.choose_capture(action_id) if encounter is Tactical else false
 		"capture": changed = encounter.attempt_capture()
 		"retreat": changed = encounter.retreat()
 	if not changed:
@@ -276,6 +282,8 @@ func trial_action(operation: String, action_id: String = "", expected_revision: 
 		var captured_species: String = encounter.state.get("enemy_species", "tanugami")
 		next_profile.campaign.collection.append({"id": encounter.state.id, "species": captured_species})
 		next_profile.campaign.progression = Progress.normalized(next_profile.campaign)
+		if encounter.state.has("regional"):
+			next_profile.campaign.progression.units[encounter.state.id] = {"level":int(encounter.state.enemy.level),"xp":0}
 		if not tree.state.captured_species.has(captured_species):
 			tree.record_capture(captured_species)
 	next_profile.skill_tree = tree.snapshot()

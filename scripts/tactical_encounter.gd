@@ -1,5 +1,6 @@
 class_name TacticalEncounter
 extends RefCounted
+const Regional = preload("res://scripts/regional_policy.gd")
 const Books = preload("res://scripts/book_progression.gd")
 const Catalog = preload("res://scripts/combat_catalog.gd")
 const Legacy = preload("res://scripts/trial_encounter.gd")
@@ -63,6 +64,7 @@ static func valid(data: Variant) -> bool:
 		if not (roll is float or roll is int) or not is_finite(roll) or roll < 0 or roll >= 1: return false
 	var turn := Turn.new()
 	if not turn.restore(data.get("turn")) or data.turn.turn_id != "%s:%d" % [data.id, int(data.round)]: return false
+	if not regional_state_valid(data): return false
 	if data.phase == "battle":
 		return active.hp > 0 and data.enemy.hp > 0 and data.capture == {} and data.enemy_pending != turn.available("karmany")
 	if data.enemy_pending: return false
@@ -71,6 +73,61 @@ static func valid(data: Variant) -> bool:
 	if data.phase == "retreated": return active.hp > 0 and data.enemy.hp > 0 and data.capture == {}
 	var capture := Capture.new()
 	return active.hp > 0 and data.enemy.hp == 0 and capture.restore(data.get("capture"), capture_policy(data)) and data.capture.encounter_id == data.id and capture.state == ("offered" if data.phase == "capture" else data.phase)
+
+static func regional_state_valid(data: Dictionary) -> bool:
+	if not data.has("regional"):
+		return not data.has("enemy_team") and not data.has("enemy_index") and not data.has("capture_choice")
+	if not Regional.valid(data.regional) or not data.get("enemy_team") is Array: return false
+	if data.enemy_team.size() != data.regional.enemies.size(): return false
+	if not Legacy.integer(data.get("enemy_index"), 0, data.enemy_team.size()-1): return false
+	if not data.get("capture_choice") is String: return false
+	var terminal: bool = data.phase in ["capture", "captured", "escaped"]
+	var selected := int(data.enemy_index)
+	var ids := {}
+	for member in data.members: ids[member.instance_id] = true
+	for i in range(data.enemy_team.size()):
+		var enemy: Variant = data.enemy_team[i]
+		if not unit_valid(enemy) or ids.has(enemy.instance_id): return false
+		ids[enemy.instance_id] = true
+		if enemy.instance_id != "rival-%d" % i or enemy.species_id != data.regional.enemies[i].species_id or enemy.get("level") != data.regional.enemies[i].level: return false
+		if terminal or i < int(data.enemy_index):
+			if enemy.hp != 0: return false
+		elif i > int(data.enemy_index) and enemy.hp <= 0: return false
+		if enemy.instance_id == data.capture_choice: selected = i
+	if terminal:
+		if int(data.enemy_index) != data.enemy_team.size()-1: return false
+		if not data.capture_choice.is_empty() and data.enemy_team[selected].instance_id != data.capture_choice: return false
+		if data.capture_choice.is_empty() and (data.phase != "capture" or not data.capture.get("actions",[]).is_empty()): return false
+	elif not data.capture_choice.is_empty(): return false
+	return data.enemy == data.enemy_team[selected]
+
+func configure_region(contract: Dictionary) -> bool:
+	if state.is_empty() or state.revision != 0 or state.phase != "battle" or state.has("regional") or not Regional.valid(contract): return false
+	if state.enemy.species_id != contract.enemies[0].species_id: return false
+	var previous := snapshot()
+	state.regional = Regional.normalized(contract)
+	state.enemy_team = []
+	for i in range(contract.enemies.size()):
+		var enemy: Dictionary = contract.enemies[i].duplicate(true)
+		enemy.instance_id = "rival-%d" % i
+		state.enemy_team.append(unit(enemy))
+	state.enemy_index = 0
+	state.capture_choice = ""
+	state.enemy = state.enemy_team[0]
+	_sync()
+	if valid(state): return true
+	state = previous
+	return false
+
+func choose_capture(id: String) -> bool:
+	if state.get("phase") != "capture" or not state.has("regional") or not state.capture_choice.is_empty() or not state.capture.actions.is_empty(): return false
+	for enemy in state.enemy_team:
+		if enemy.instance_id == id and enemy.hp == 0:
+			state.capture_choice = id
+			state.enemy = enemy
+			_log("Ezel · Libro · elige " + Catalog.species_name(enemy.species_id) + ".", "trainer", "choose", enemy.species_id)
+			return true
+	return false
 
 func begin(id: String, tree: Dictionary, rolls: Array, team: Dictionary, enemy_species: String, book_id: String = "book_initial") -> bool:
 	if not state.is_empty() or not TreeModel.valid(tree) or enemy_species == "zephyr" or Catalog.stats(enemy_species).is_empty(): return false
@@ -93,7 +150,14 @@ func restore(data: Variant) -> bool:
 		return false
 	state = data.duplicate(true)
 	for key in ["schema", "round", "revision"]: state[key] = int(state[key])
-	for member in state.members + [state.enemy]:
+	if state.has("regional"):
+		state.regional = Regional.normalized(state.regional)
+		state.enemy_index = int(state.enemy_index)
+		var index: int = state.enemy_index
+		for i in range(state.enemy_team.size()):
+			if state.enemy_team[i].instance_id == state.capture_choice: index = i
+		state.enemy = state.enemy_team[index]
+	for member in state.members + (state.enemy_team if state.has("regional") else [state.enemy]):
 		if member.has("level"): member.level = int(member.level)
 		member.hp = int(member.hp)
 		if member.has("relay_until"): member.relay_until = int(member.relay_until)
@@ -142,6 +206,13 @@ func _finish_player(turn: SharedCombatTurn) -> void:
 	if turn.state == "open": turn.close_turn()
 	state.turn = turn.snapshot()
 	if state.enemy.hp == 0:
+		if state.has("regional") and int(state.enemy_index)+1 < state.enemy_team.size():
+			state.enemy_index += 1
+			state.enemy = state.enemy_team[state.enemy_index]
+			state.enemy_pending = false
+			_new_round()
+			return
+		if state.has("regional") and state.enemy_team.size() == 1: state.capture_choice = state.enemy.instance_id
 		var capture := Capture.new()
 		capture.begin(state.id, true, true, "Común", capture_policy(state))
 		state.capture = capture.snapshot()
@@ -276,6 +347,9 @@ func replace_with(id: String) -> bool:
 	return false
 func attempt_capture() -> bool:
 	if state.get("phase") != "capture": return false
+	if state.has("regional") and state.capture_choice.is_empty():
+		last_error = "Elige un rival derrotado para el único vínculo."
+		return false
 	var capture := Capture.new()
 	capture.restore(state.capture, capture_policy(state))
 	var index := capture.attempts_used()

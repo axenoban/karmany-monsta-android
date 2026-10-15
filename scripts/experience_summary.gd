@@ -9,6 +9,7 @@ const DURATION := 2.4
 var receipt: Dictionary = {}
 var cards: Array = []
 var elapsed := 0.0
+var duration := DURATION
 var reduced := false
 var audio: Node
 var level_cue_played := false
@@ -23,6 +24,18 @@ static func frame(row: Dictionary, fraction: float) -> Dictionary:
 	var gained := int(row.gained)
 	if t >= 1.0:
 		return {"level": int(after.level), "xp": float(after.xp), "maximum": Progress.requirement(int(after.level)), "full": bool(row.capped), "done": true}
+	if int(after.level) - level > 1:
+		var hold := maxf(1.0, float(gained) * 0.12)
+		var clock := t * (float(gained) + hold * (int(after.level) - level))
+		while level < int(after.level):
+			var needed := float(Progress.requirement(level)) - xp
+			if clock <= needed: return {"level":level,"xp":xp+clock,"maximum":Progress.requirement(level),"full":false,"done":false}
+			clock -= needed
+			if clock <= hold: return {"level":level,"xp":float(Progress.requirement(level)),"maximum":Progress.requirement(level),"full":false,"done":false}
+			clock -= hold
+			level += 1
+			xp = 0.0
+		return {"level":level,"xp":minf(clock,float(after.xp)),"maximum":Progress.requirement(level),"full":bool(row.capped),"done":false}
 	# Allocate visible time to filling and a pause before the next level begins.
 	var crossing := int(after.level) > level
 	var fill_end := 0.68 if crossing else 1.0
@@ -38,10 +51,10 @@ static func frame(row: Dictionary, fraction: float) -> Dictionary:
 			return {"level": level, "xp": xp, "maximum": Progress.requirement(level), "full": bool(row.capped), "done": false}
 	return {"level": level, "xp": xp + value, "maximum": threshold, "full": bool(row.capped) and not crossing, "done": false}
 
-static func stat_changes(row: Dictionary) -> String:
+static func stat_changes(row: Dictionary, presented_level: int = -1) -> String:
 	if row.id == "trainer" or int(row.after.level) <= int(row.before.level): return ""
 	var before := Catalog.stats_at_level(row.species_id, int(row.before.level))
-	var after := Catalog.stats_at_level(row.species_id, int(row.after.level))
+	var after := Catalog.stats_at_level(row.species_id, int(row.after.level) if presented_level < 0 else presented_level)
 	var lines: Array[String] = []
 	for entry in [["life", "Vida"], ["attack", "Ataque"], ["defense", "Defensa"]]:
 		lines.append("%s  %d → %d  (+%d)" % [entry[1], before[entry[0]], after[entry[0]], after[entry[0]] - before[entry[0]]])
@@ -80,6 +93,7 @@ func _ready() -> void:
 	for row in receipt.get("rows", []):
 		# Old receipts remain valid saves; they have no recoverable animation origin.
 		if not row.has("before") or not row.has("after"): continue
+		duration = maxf(duration, minf(5.0, DURATION + 0.45 * maxi(0,int(row.after.level)-int(row.before.level)-1)))
 		var panel := PanelContainer.new()
 		var style := StyleBoxFlat.new()
 		style.bg_color = Color("183136")
@@ -137,9 +151,9 @@ func _process(delta: float) -> void:
 	if not visible: return
 	var app := get_node_or_null("/root/App")
 	if app != null and app.application_paused: return
-	elapsed = minf(DURATION, elapsed + delta)
-	_update_cards(elapsed / DURATION)
-	if elapsed >= DURATION: set_process(false)
+	elapsed = minf(duration, elapsed + delta)
+	_update_cards(elapsed / duration)
+	if elapsed >= duration: set_process(false)
 
 func _update_cards(fraction: float) -> void:
 	for card in cards:
@@ -149,7 +163,7 @@ func _update_cards(fraction: float) -> void:
 		card.bar.value = sample.maximum if sample.full else sample.xp
 		var up := int(sample.level) > int(row.before.level)
 		card.status.text = "Nv. %d · %s%s" % [sample.level, "Límite regional alcanzado" if sample.full else "%d / %d XP" % [int(sample.xp), sample.maximum], " · ¡Subió de nivel!" if up else ""]
-		card.stats.text = stat_changes(row) if up else ""
+		card.stats.text = stat_changes(row, int(sample.level)) if up else ""
 		if up and not card.announced:
 			card.announced = true
 			if not reduced and not level_cue_played:

@@ -149,6 +149,11 @@ jobs:
           set -o pipefail
           godot --headless --path . --script tests/experience_summary_tests.gd 2>&1 | tee build/experience-summary.log
           python3 ci/check_log.py build/experience-summary.log
+      - name: Validate frozen regional contracts, relays and unique rewards
+        run: |
+          set -o pipefail
+          godot --headless --path . --script tests/regional_engine_tests.gd 2>&1 | tee build/regional-engine.log
+          python3 ci/check_log.py build/regional-engine.log
       - name: Export playable encounter APK
         run: |
           set -o pipefail

@@ -1,11 +1,12 @@
 extends RefCounted
+const Regional = preload("res://scripts/regional_policy.gd")
 const Rules = preload("res://scripts/progression_rules.gd")
 const Roster = preload("res://scripts/trial_roster.gd")
 static func integer(value: Variant, low: int, high: int) -> bool:
 	return (value is int or value is float) and is_finite(float(value)) and value == floor(value) and value >= low and value <= high
 static func requirement(level: int) -> int: return int(Rules.rules().xp_per_level) * level
 static func fresh() -> Dictionary: return {"level": 1, "xp": 0}
-static func defaults() -> Dictionary: return {"schema": 1, "trainer_xp": 0, "units": {Roster.STARTER: fresh()}, "last_reward": {}}
+static func defaults() -> Dictionary: return {"schema": 1, "trainer_xp": 0, "units": {Roster.STARTER: fresh()}, "last_reward": {}, "bonuses": []}
 static func valid_record(data: Variant) -> bool:
 	return data is Dictionary and integer(data.get("level"), 1, 1000000) and integer(data.get("xp"), 0, requirement(int(data.level)) - 1)
 static func valid(data: Variant, campaign: Dictionary) -> bool:
@@ -14,6 +15,12 @@ static func valid(data: Variant, campaign: Dictionary) -> bool:
 	for member in Roster.owned(campaign): owned[member.instance_id] = true
 	for id in data.units:
 		if not owned.has(id) or not valid_record(data.units[id]): return false
+	if data.has("bonuses"):
+		if not data.bonuses is Array: return false
+		var seen_bonuses := {}
+		for key in data.bonuses:
+			if not key is String or key.is_empty() or key.length() > 160 or seen_bonuses.has(key): return false
+			seen_bonuses[key] = true
 	var receipt: Dictionary = data.last_reward
 	if not receipt.is_empty():
 		if not receipt.get("encounter_id") is String or not receipt.get("rows") is Array or not receipt.get("region") is String: return false
@@ -21,7 +28,7 @@ static func valid(data: Variant, campaign: Dictionary) -> bool:
 		var seen := {}
 		for row in receipt.rows:
 			if not row is Dictionary or not row.get("id") is String or seen.has(row.id) or (row.id != "trainer" and not owned.has(row.id)): return false
-			if not integer(row.get("gained"), 0, int(Rules.rules().victory_xp)) or not integer(row.get("level"), 1, 1000000) or not row.get("capped") is bool: return false
+			if not integer(row.get("gained"), 0, Regional.MAX_REWARD) or not integer(row.get("level"), 1, 1000000) or not row.get("capped") is bool: return false
 			if row.has("before") or row.has("after"):
 				if not valid_record(row.get("before")) or not valid_record(row.get("after")): return false
 				if int(row.after.level) != int(row.level) or int(row.after.level) < int(row.before.level) or gained(row.before, row.after) != int(row.gained): return false
@@ -31,6 +38,7 @@ static func valid(data: Variant, campaign: Dictionary) -> bool:
 	return true
 static func normalized(campaign: Dictionary) -> Dictionary:
 	var result: Dictionary = campaign.get("progression", defaults()).duplicate(true)
+	if not result.has("bonuses"): result.bonuses = []
 	result.schema = 1
 	result.trainer_xp = int(result.trainer_xp)
 	for member in Roster.owned(campaign):
@@ -71,6 +79,14 @@ static func award(campaign: Dictionary, tree: Dictionary, encounter: Dictionary)
 	var region := Rules.region(region_id)
 	var cap: int = int(region.get("xp_cap", 0))
 	var amount: int = int(Rules.rules().victory_xp) if cap > 0 else 0
+	if encounter.has("regional"):
+		var contract: Dictionary = encounter.regional
+		region_id = contract.region
+		cap = int(contract.cap)
+		amount = int(contract.repeat_xp)
+		if contract.first and contract.bonus_key not in result.bonuses:
+			amount = int(contract.reward)
+			result.bonuses.append(contract.bonus_key)
 	var rows := []
 	var trainer := {"level": int(tree.level), "xp": int(result.trainer_xp)}
 	var next_trainer := advance(trainer, amount, cap) if amount > 0 else trainer

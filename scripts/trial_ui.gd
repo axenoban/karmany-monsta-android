@@ -239,7 +239,15 @@ func _battle() -> void:
 		var book_name: String = {"book_initial":"Libro inicial", "book_upgrade_1":"Mejora 1", "book_upgrade_2":"Mejora 2"}.get(book_id, book_id)
 		column.add_child(_label("%s · %d%% por intento · quedan %d de 3" % [book_name, roundi(chance * 100), 3 - used], 25))
 		_reward_notice(state.id)
-		column.add_child(_button("Intentar vínculo con el Libro", func(): _act("capture", "", revision)))
+		if state.has("regional") and state.capture_choice.is_empty():
+			column.add_child(_label("Elige un rival: un vínculo, tres intentos.", 22))
+			var choices := HBoxContainer.new()
+			column.add_child(choices)
+			for enemy in state.enemy_team:
+				var id: String = enemy.instance_id
+				choices.add_child(_button("Elegir " + Catalog.species_name(enemy.species_id) + " · Nv. %d" % int(enemy.level), func(): _act("choose_capture", id, revision)))
+		else:
+			column.add_child(_button("Intentar vínculo con el Libro", func(): _act("capture", "", revision)))
 		if App.profile.campaign.get("route", Route.defaults()).current.get("encounter_id") == state.id:
 			column.add_child(_button("Continuar recorrido sin vínculo", func():
 				_confirm("La victoria ya cuenta para el recorrido. Continuar renuncia a los intentos restantes de este encuentro; podrás repetirlo después para intentar el vínculo.", func(): _continue_route(state.id, revision), "Continuar sin vínculo")))
