@@ -8,6 +8,10 @@ Al terminar cada mejora actualizar `docs/CONTINUIDAD.md`: implementación, rama,
 
 Las instrucciones del usuario tienen prioridad. No es necesario recuperar el chat anterior si este documento y el estado real del repositorio proporcionan el contexto suficiente.
 
+## ALERTA DE RAMAS DIVERGENTES (prioridad máxima, 15/10/2026)
+
+ANTES de codificar: leer `docs/AUDITORIA_DOS_LINEAS_2026-10-15.md` además del roadmap vivo. Se verificó por análisis de APK que Preview32 contenía **dos regiones y 12 etapas**, mientras que las APK Chat/E1 y Work/E2 retornaron a 4 etapas de Jade por partir del `dev` previo. **NO dar por terminado el proyecto ni avanzar E2/E3 aisladamente:** primero rescatar la fuente E2 en Library (`Karmany_Monsta_E2_Fuente_y_Pruebas.zip`) y preservar los elementos de Preview32 (`Karmany_Monsta_Preview32.apk`) mediante una rama de convergencia. Solo Work escribe motor/arte durante ese rescate; Chat audita. No presentar `.gdc` como fuente editable. No migrar perfiles de Preview32 sin pruebas. No tocar `dev`/ `main` salvo documentación verificada y futuras aprobaciones explícitas.
+
 ## Roadmap vivo y reparto Chat / Work (lectura obligatoria)
 
 **Antes de cualquier acción**, desde Chat, Work u otro agente, leer desde la rama actual `docs/ROADMAP_ESTADO.md` (estado vigente/propietario), `docs/ROADMAP_CHAT_WORK.md` (etapas E0–E10, roles, prompts y puertas) y `docs/CONTINUIDAD.md` (historial técnico). Verificar después los HEAD/commits reales de `dev/karmany-core`, `feature/*`, PR abiertos, checks y últimas APK. Un texto con SHA antiguo o un comentario de chat nunca sustituye a GitHub.

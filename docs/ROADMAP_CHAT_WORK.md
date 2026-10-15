@@ -6,6 +6,10 @@
 
 > **Regla principal:** ambos agentes pueden leer e investigar en paralelo; solo uno debe escribir o integrar un bloque funcional sobre el baseline común. Chat reduce trabajo preparatorio y de revisión; Work ejecuta implementaciones acotadas, exportación y regresiones.
 
+## AVISO DE ACTUALIZACIÓN: FUENTE MÁS AVANZADA RECUPERADA
+
+**Antes de aplicar estas etapas: consultar [AUDITORIA_DOS_LINEAS_2026-10-15.md](AUDITORIA_DOS_LINEAS_2026-10-15.md) y [ROADMAP_ESTADO.md](ROADMAP_ESTADO.md).** Posteriormente a la redacción original se localizó una APK Preview32 con dos regiones/12 etapas y una rama Work E2 local no publicada en GitHub. La secuencia ordinaria E1→E2→E3 queda temporalmente subordinada a **R0 rescate → convergencia de Preview32 + E1 + E2 → pruebas de partidas anteriores**. Bosque del Velo no se considera nuevo contenido por inventar: existía en esa APK, y se debe preservar. Para lo que no se conserve como código fuente editable, reconstruirlo verificablemente en lugar de afirmar que está listo. Los roles exclusivos y controles de validación originales siguen vigentes.
+
 ## 1. Fotografía histórica del punto de partida
 
 - **Repositorio:** `axenoban/karmany-monsta-android` (Godot 4.7.2, GDScript, 2D, Android).

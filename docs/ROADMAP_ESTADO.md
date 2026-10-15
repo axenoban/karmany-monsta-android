@@ -3,6 +3,18 @@
 **Control de planificación:** 2026-10-15, zona America/La_Paz. **Versión del estado:** 1.0.  
 **Regla:** este archivo es el tablero operativo que ambos agentes deben consultar y actualizar. La planificación completa y los prompts están en [ROADMAP_CHAT_WORK.md](ROADMAP_CHAT_WORK.md). El historial técnico está en [CONTINUIDAD.md](CONTINUIDAD.md). Se debe comprobar el GitHub real antes de confiar en cualquier SHA anotado.
 
+## 0. ALERTA DE NO REGRESIÓN (actualizada tras auditoría de dos líneas)
+
+**PRIORIDAD MÁXIMA — fase R0 «RECUPERACIÓN / CONVERGENCIA»**, por encima de continuar E1/E2/E3 sin unificar. [Auditoría y plan de integración](AUDITORIA_DOS_LINEAS_2026-10-15.md).
+
+Se ha recuperado la **Preview32 v0.20.0** de otra línea local, con **Valle Jade 6 etapas + Bosque del Velo 6 etapas**, ocho criaturas adicionales, doce recursos CTEX regionales y pantallas de derrota/transición. El código fuente editable de Preview32 **no está en GitHub**; solo la APK (GDScript compilado) y sus datos/arte empaquetados. La rama GitHub E1/Preview34 solo tiene cuatro etapas de Jade. **Esto es una divergencia real, no una zona simplemente oculta**.
+
+También existe **E2 ejecutada localmente por Work**: commit `42fed0ce330366de891ad7944e50e6d79f5836d8`, rama local `feature/e2-regional-engine`, APK E2 Preview35 v0.19.0, resultados locales correctos. No se subió a GitHub; está preservada en Library como `Karmany_Monsta_E2_Fuente_y_Pruebas.zip` con `E2_incremental.bundle`. **No confundir** con el release público `android-preview-35`, que es otro artefacto.
+
+**NUEVO DUEÑO DE ESCRITURA SUGERIDO:** Work para recuperar E2 y reconstruir la convergencia en rama `feature/unificacion-jade-bosque`. **Chat:** auditoría/QA/documentación y lectura. En esta etapa de decisión no se autoriza a ningún agente a sobrescribir `dev/karmany-core`, `main` o perder los avances de Preview32. No comenzar nuevas funciones hasta restaurar las dos regiones y migraciones.
+
+**Portón de salida del rescate:** fuente de E2 subida a rama feature, inventario de lo recuperable de Preview32, 12 etapas y 2 regiones reconstruidas y regresiones/migraciones probadas. APK candidata revisada por el creador antes de integrar. El progreso anterior de Preview32 requiere migración específica.
+
 ## 1. Estado confirmado al crear este tablero
 
 | Elemento | Situación |
@@ -16,10 +28,10 @@
 | APK E1 para prueba | [Preview 34, v0.18.0 experimental](https://github.com/axenoban/karmany-monsta-android/releases/tag/android-preview-34) |
 | CI E1 | [Ejecución exitosa](https://github.com/axenoban/karmany-monsta-android/actions/runs/38777146974); **no sustituye prueba física** |
 | Propuesta regional de origen | `feature/region-pacing-design`, `docs/PROPUESTA_REGION_21.md` y `docs/COMBATE_REGION_21_PROPUESTA.md` |
-| **Fase de implementación actual** | **E1: ensayo de Insignia con relevo, esperando verificación física** |
+| **Fase de implementación actual** | **R0: recuperar y reconciliar Preview32 (dos regiones), E1 Chat y E2 Work local**; E1 no validada aún |
 | **Dueño del código activo** | **Chat en `feature/e1-jade-relay` hasta cierre/traspaso explícito** |
-| **Área permitida a Work ahora** | Leer/auditar y preparar criterios de E2 **sin editar** los scripts E1 |
-| **Siguiente objetivo habilitado** | Validar o corregir E1; **E2 aún NO está autorizado para escritura simultánea** |
+| **Área permitida a Work ahora** | **Recuperar E2 (fuente de Work) y construir rama de convergencia**, sin escribir sobre E1 ni dev |
+| **Siguiente objetivo habilitado** | **Rescate fuente E2 + conservación Preview32; convergencia 2 regiones sin retroceso** |
 
 ### Última observación del creador — **no dar E1 por validada**
 Tras la entrega de Preview 34, el creador comentó que veía una potenciación pero no percibía el cambio de Karmany. En otra respuesta se explicó que **solo la Insignia de Sakuromushi** produce el relevo automático, y se preguntó qué versión utilizó. No hay confirmación posterior de versión, reproducción ni «prueba correcta». **Estado exacto: comentario de validación abierto, diagnóstico pendiente.** No marcarlo como fallo técnico demostrado, pero tampoco como resuelto. El código/CI cambian el activo; se requiere confirmar el comportamiento visible en Android.
@@ -40,17 +52,17 @@ Tras la entrega de Preview 34, el creador comentó que veía una potenciación p
 |---|---|---|---|---|
 | E0 · Coordinación y roadmap | **Implementado como documentación** | Chat | No aplica | Mantener docs y responsabilidades actualizadas |
 | E1 · Reglas Jade y relevo de prueba | **Reglas aceptadas; prototipo CI verde; prueba Android pendiente** | Chat | **Chat (rama E1)** | Verificar en Android, corregir si procede y aprobación explícita |
-| E2 · Motor regional | **En espera / no iniciado** | Chat prepara pruebas sin tocar E1 | **Work (Sol Medio)** cuando libre | CI + migración y final por relevos probados |
+| E2 · Motor regional | **Implementado localmente por Work; sin publicar en GitHub** | Chat audita archivos de rescate | Work recupera `E2_incremental.bundle` | Rama recuperada + CI GitHub + prueba física antes de integración |
 | E3 · Jade de seis etapas | **En espera** | Chat: canon, assets y QA | Work (Sol Medio) | Campaña corta completa en Android |
 | E4 · Continuidad de batalla/vínculo | **En espera** | Chat: UX/criterios | Work (Sol Medio) | Un fondo continuo, controles compactos, transiciones |
 | E5 · Primera partida autónoma | **En espera** | Chat: microtutorial | Work (Sol Medio) | Tester navega sin ayuda |
 | E6 · Alfa y playtest | **En espera** | Chat: QA, 5–10 testers | Work: corrección de P0/P1 | APK alfa con recorrido Jade testeado |
-| E7 · Bosque del Velo | **Después de alfa** | Chat: balance/canon | Work | Segunda región con nivel 10–15 aprobado |
+| E7 · Bosque del Velo | **Contenido anterior existente en Preview32; RESCATE prioritario** | Chat compara catálogo y reglas | Work reconstruye código/arte de Preview32 en convergencia | Recuperar sus 6 etapas sin perder funcionalidades |
 | E8 · Profundidad y pulido | **Después de feedback** | Chat: priorizar | Work | Mejoras justificadas y probadas |
 | E9 · Beta | **En espera** | Chat: pruebas extendidas | Work | Beta estable |
 | E10 · Publicación | **En espera, sujeto a autorización** | Chat: requisitos/editorial | Work | Go/no-go y release aprobado |
 
-**Prioridad vigente:** terminar E1 y pasar a E2 → E3 → E4 → E5 → E6. **No trabajar simultáneamente en Bosque, tienda, multijugador o publicación.**
+**Prioridad vigente actualizada:** R0 rescate Preview32 + fuente Work E2 → rama de convergencia → 2 regiones/12 etapas + relevo E1 + motor E2 + UX → validar APK con partidas antiguas → retomar roadmap alfa. No desarrollar contenido adicional hasta lograr paridad con Preview32.
 
 ## 3. Contrato de continuidad («continúa»)
 
@@ -110,4 +122,6 @@ SIGUIENTE RESPONSABLE + PRIMER PASO:
 - **2026-10-15** — El creador indicó no haber visto el relevo, únicamente bonus; se solicitó confirmar Preview34. **No consta aprobación ni reproducción definitiva de fallo.**
 - **2026-10-15** — Roadmap integral Chat/Work importado al repositorio con lectura obligatoria por `AGENTS.md`, tablero presente; implementación de juego sin cambios.
 
-**Próxima acción concreta:** **Chat** debe resolver la observación de E1 contra APK34 y comprobar qué Karmany estaba activo, si se ejecutó Insignia de Sakuromushi y si el cambio persiste visualmente. Si se reproduce un defecto, corregirlo en la única rama E1; si se confirma prueba correcta, cerrar/validar E1 e iniciar Work E2. No comenzar E2 mientras E1 siga abierto.
+**Próxima acción concreta (reemplaza la anterior):** **Work** debe rescatar E2 desde el bundle local de Work, obtener el APK Preview32 del Library/rescate, reconstruir su segunda región y conservar sus elementos únicos en rama de convergencia; **Chat** audita diferencias y validación sin reprogramar los mismos scripts. No integrar E1/E2 en dev ni declarar versión superior hasta prueba Android de compatibilidad con partidas Preview32. La observación visual de Sakuromushi sigue pendiente y se comprobará en esa candidata.
+
+- **2026-10-15 (auditoría posterior)** — Recuperados y comparados los APK Preview30/31/32 y el bundle Work E2; confirmada bifurcación real que eliminó contenido de Bosque en las APK de E1/E2. Iniciado plan R0 de rescate y unificación antes de ampliar más el juego. Fuente en AUDITORIA_DOS_LINEAS_2026-10-15.md.
