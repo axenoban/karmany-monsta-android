@@ -1,0 +1,13 @@
+{
+  "build": {
+    "version": "0.21.0-unification",
+    "commit": "f0266badaa7851da3de2bcc08a65752b6409360b",
+    "build": 38,
+    "stage": "R0 · unificación Preview32 + Chat E1 + Work E2"
+  },
+  "sha256": "16a66fc970346981eb628f7ac4a04a7633eac8ff08b93a735d723c7bb37c08ac",
+  "size_bytes": 83365989,
+  "certificate_sha256": "756c8c1a8136ae2e80987c540d805641d7bfd2d5b657d1f04584f0074ac61bf8",
+  "ci": "https://github.com/axenoban/karmany-monsta-android/actions/runs/38824304295",
+  "apk": "https://github.com/axenoban/karmany-monsta-android/releases/download/android-preview-38/karmany-monsta-preview.apk"
+}

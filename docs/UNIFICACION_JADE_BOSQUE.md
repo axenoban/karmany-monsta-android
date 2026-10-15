@@ -1,6 +1,6 @@
 # Candidata de unificación · Preview32 + E1 + E2
 
-Estado: implementación en feature/unificacion-jade-bosque. Único escritor Work; Chat revisa. No integrada en dev/main; aprobación física pendiente.
+Estado: candidata Preview38 lista en feature/unificacion-jade-bosque. CódigoAPKf0266badaa7851da3de2bcc08a65752b6409360b; CI38824304295 correcta. Único escritor Work; Chat revisa. No integrada en dev/main; aprobación física pendiente.
 
 ## Procedencia y recuperación
 
@@ -79,3 +79,10 @@ Revisión gráfica local posterior:22pantallas renderizadas con Mesa/Xvfb, texto
 
 ### Compatibilidad directa de la fuente E2
 Además de las regresiones del motor, tests/e2_source_compatibility_tests.gd carga diez guardados generados ejecutando dc4a20a original: encuentros heredados y regionales, respuesta pendiente, relevo aliado E1, relevo rival, victoria, elección, intento, captura y mapa. Comprueba130condiciones de conservación/recarga. Los JSON están en tests/fixtures/e2; generador ci/recovery/generate_e2_fixtures.gd, ejecutable sobre el worktree original con --output=/ruta/fixtures. La formación sintética del generador ejercita el contrato preparado en E2 y no añade contenido al juego.
+
+## Resultado final de esta entrega
+[Descargar Preview38 / v0.21.0-unification](https://github.com/axenoban/karmany-monsta-android/releases/download/android-preview-38/karmany-monsta-preview.apk). [CI correcta](https://github.com/axenoban/karmany-monsta-android/actions/runs/38824304295). [PR18 borrador](https://github.com/axenoban/karmany-monsta-android/pull/18).
+
+4409checks únicos Godot/26suites y3Python correctos; la suite UI se repite además al renderizar22pantallas. Todas las24simulaciones finalizaron con victoria en4–22rondas. No implica aprobación humana del balance. SHA256APK16a66fc970346981eb628f7ac4a04a7633eac8ff08b93a735d723c7bb37c08ac;83365989bytes. Código fuente, dosregiones y ausencia de tests/ci/docs verificados dentro delAPK descargado. Firma v2/v3 correcta y certificado igual al de Preview32/E2. Conservar partida mediante actualización sin desinstalar; ante rechazo de instalación, reportar el mensaje conservando los datos.
+
+Limitaciones explícitas: no se ha ejecutado en el dispositivo físico del creador; el historial Git y los comentarios originales de Preview32 no pueden recuperarse de laAPK; las imágenes se recuperan de sus recursos ya comprimidos. La procedencia editable, las mecánicas y los formatos de partidas sí se implementaron y probaron. No se afirma equivalencia visual física definitiva ni balance final aprobado. Esperar prueba del creador antes de integrar.

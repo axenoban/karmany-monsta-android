@@ -1,5 +1,9 @@
 # ESTADO VIVO · Roadmap de Karmany Monsta (Chat + Work)
 
+> **ESTADO VIGENTE · 15/10/2026:** candidata **Preview38 / v0.21.0-unification**, código `f0266badaa7851da3de2bcc08a65752b6409360b`, rama `feature/unificacion-jade-bosque`. [CI38824304295 correcta](https://github.com/axenoban/karmany-monsta-android/actions/runs/38824304295), [APK candidata](https://github.com/axenoban/karmany-monsta-android/releases/download/android-preview-38/karmany-monsta-preview.apk), [PR18 borrador](https://github.com/axenoban/karmany-monsta-android/pull/18). **Work conserva escritura; Chat revisa en solo lectura. Prueba física pendiente; no integrada en dev/main.**
+>
+> Recuperadas dos regiones/12etapas,13criaturas de combate/21fichas y flujos Preview32, con relevo E1 y motor/persistencia E2. **4409checks únicos en26suitesGodot y3Python correctos**,69guardados Preview32 +10E2,24simulaciones y22pantallas renderizadas. Firma v2/v3, paquete, certificado de actualización y SHA256 verificados. Procedencia y prueba física: [UNIFICACION_JADE_BOSQUE.md](UNIFICACION_JADE_BOSQUE.md).
+
 **Control de planificación:** 2026-10-15, zona America/La_Paz. **Versión del estado:** 1.0.  
 **Regla:** este archivo es el tablero operativo que ambos agentes deben consultar y actualizar. La planificación completa y los prompts están en [ROADMAP_CHAT_WORK.md](ROADMAP_CHAT_WORK.md). El historial técnico está en [CONTINUIDAD.md](CONTINUIDAD.md). Se debe comprobar el GitHub real antes de confiar en cualquier SHA anotado.
 
@@ -7,13 +11,13 @@
 
 **PRIORIDAD MÁXIMA — fase R0 «RECUPERACIÓN / CONVERGENCIA»**, por encima de continuar E1/E2/E3 sin unificar. [Auditoría y plan de integración](AUDITORIA_DOS_LINEAS_2026-10-15.md).
 
-Se ha recuperado la **Preview32 v0.20.0** de otra línea local, con **Valle Jade 6 etapas + Bosque del Velo 6 etapas**, ocho criaturas adicionales, doce recursos CTEX regionales y pantallas de derrota/transición. El código fuente editable de Preview32 **no está en GitHub**; solo la APK (GDScript compilado) y sus datos/arte empaquetados. La rama GitHub E1/Preview34 solo tiene cuatro etapas de Jade. **Esto es una divergencia real, no una zona simplemente oculta**.
+Se ha recuperado la **Preview32 v0.20.0** de otra línea local, con **Valle Jade 6 etapas + Bosque del Velo 6 etapas**, ocho criaturas adicionales, doce recursos CTEX regionales y pantallas de derrota/transición. La divergencia original era real; ahora el código editable de Preview32 fue recuperado con GDRE y sus datos/arte están incorporados a la rama de unificación. E1/Preview34 conserva su línea histórica de cuatro etapas. No confundir esas APK anteriores con la candidata38.
 
-También existe **E2 ejecutada localmente por Work**: commit `42fed0ce330366de891ad7944e50e6d79f5836d8`, rama local `feature/e2-regional-engine`, APK E2 Preview35 v0.19.0, resultados locales correctos. No se subió a GitHub; está preservada en Library como `Karmany_Monsta_E2_Fuente_y_Pruebas.zip` con `E2_incremental.bundle`. **No confundir** con el release público `android-preview-35`, que es otro artefacto.
+También existe **E2 ejecutada localmente por Work**: commit `42fed0ce330366de891ad7944e50e6d79f5836d8`, rama local `feature/e2-regional-engine`, APK E2 Preview35 v0.19.0, resultados locales correctos. La fuente se recuperó y publicó en `feature/e2-regional-engine-recovered`, con el bundle exacto preservado en `docs/recovery/E2_incremental.bundle`; el respaldo original sigue identificado como `Karmany_Monsta_E2_Fuente_y_Pruebas.zip` con `E2_incremental.bundle`. **No confundir** con el release público `android-preview-35`, que es otro artefacto.
 
 **DUEÑO DE ESCRITURA AUTORIZADO POR EL CREADOR:** Work para recuperar E2 y reconstruir la convergencia en rama `feature/unificacion-jade-bosque`. **Chat:** auditoría/QA/documentación y lectura. En esta etapa de decisión no se autoriza a ningún agente a sobrescribir `dev/karmany-core`, `main` o perder los avances de Preview32. No comenzar nuevas funciones hasta restaurar las dos regiones y migraciones.
 
-**Portón de salida del rescate:** fuente de E2 subida a rama feature, inventario de lo recuperable de Preview32, 12 etapas y 2 regiones reconstruidas y regresiones/migraciones probadas. APK candidata revisada por el creador antes de integrar. El progreso anterior de Preview32 requiere migración específica.
+**Portón técnico del rescate cumplido:** E2 recuperada, inventario y fuentes editables Preview32, dos regiones/12 etapas y migraciones/regresiones/CI verificadas. **Portón humano pendiente:** probar Preview38 en Android y aprobar explícitamente antes de integrar. El migrador Preview32 está implementado y probado con69guardados originales, sin sustituir todavía la prueba física.
 
 ## 1. Estado confirmado al crear este tablero
 
@@ -53,11 +57,11 @@ Tras la entrega de Preview 34, el creador comentó que veía una potenciación p
 | E0 · Coordinación y roadmap | **Implementado como documentación** | Chat | No aplica | Mantener docs y responsabilidades actualizadas |
 | E1 · Reglas Jade y relevo de prueba | **Reglas aceptadas; prototipo CI verde; prueba Android pendiente** | Chat | **Chat (rama E1)** | Verificar en Android, corregir si procede y aprobación explícita |
 | E2 · Motor regional | **Recuperado y publicado en feature/e2-regional-engine-recovered; integrado en candidata** | Chat audita archivos de rescate | Work recupera `E2_incremental.bundle` | Rama recuperada + CI GitHub + prueba física antes de integración |
-| E3 · Jade de seis etapas | **En espera** | Chat: canon, assets y QA | Work (Sol Medio) | Campaña corta completa en Android |
-| E4 · Continuidad de batalla/vínculo | **En espera** | Chat: UX/criterios | Work (Sol Medio) | Un fondo continuo, controles compactos, transiciones |
+| E3 · Jade de seis etapas | **Implementada en candidata38; pendiente prueba física** | Chat: canon, assets y QA | Work (Sol Medio) | Campaña corta completa en Android |
+| E4 · Continuidad de batalla/vínculo | **Implementada en candidata38; pendiente prueba física** | Chat: UX/criterios | Work (Sol Medio) | Un fondo continuo, controles compactos, transiciones |
 | E5 · Primera partida autónoma | **En espera** | Chat: microtutorial | Work (Sol Medio) | Tester navega sin ayuda |
 | E6 · Alfa y playtest | **En espera** | Chat: QA, 5–10 testers | Work: corrección de P0/P1 | APK alfa con recorrido Jade testeado |
-| E7 · Bosque del Velo | **Contenido anterior existente en Preview32; RESCATE prioritario** | Chat compara catálogo y reglas | Work reconstruye código/arte de Preview32 en convergencia | Recuperar sus 6 etapas sin perder funcionalidades |
+| E7 · Bosque del Velo | **Seis etapas recuperadas en candidata38; pendiente prueba física** | Chat compara catálogo y reglas | Work reconstruye código/arte de Preview32 en convergencia | Recuperar sus 6 etapas sin perder funcionalidades |
 | E8 · Profundidad y pulido | **Después de feedback** | Chat: priorizar | Work | Mejoras justificadas y probadas |
 | E9 · Beta | **En espera** | Chat: pruebas extendidas | Work | Beta estable |
 | E10 · Publicación | **En espera, sujeto a autorización** | Chat: requisitos/editorial | Work | Go/no-go y release aprobado |
@@ -147,3 +151,11 @@ Rama remota feature/unificacion-jade-bosque @55dc205, PR18 borrador contra dev; 
 CI38823832205 sobre código0e79ce486ed7c49521c15428aa40df8b1e8eb720 terminó correctamente:4279checksGodot únicos,3Python,22pantallas renderizadas, exportaciónAndroid, firma v2/v3 y auditoría. Se descargó y verificó Preview37/v0.21.0-unification, SHA256b0b3a3c774cf5ed44df67455ab74d40ba5a61355eb8ae9cb145920ff4b88c4b6; dosJSON regionales de6puntos presentes y tests/docs/ci excluidos delAPK. main9ef7af7 y dev2ea590c se mantienen intactos.
 
 Verificación adicional: diez guardados generados ejecutando la fuente E2 original dc4a20a pasan130checks de conservación/recarga, incluidos contrato, ambos relevos y captura parcial; fixtures y generador quedan preservados y añadidos a CI. Se corrigió la etiqueta diagnóstica de build_info heredada como «E2 motor regional» para identificar correctamente la unificación; requiere una nueva compilación que será la candidata definitiva de esta entrega. No cambian reglas ni motor. Pendiente CI del último metadato/test, APK final y prueba física del creador. Work conserva escritura; Chat solo revisa.
+
+## Entrega candidata38 · cierre técnico de R0, pendiente validación humana
+- Código APK: f0266badaa7851da3de2bcc08a65752b6409360b. Documentación posterior no modifica laAPK.
+- CI: https://github.com/axenoban/karmany-monsta-android/actions/runs/38824304295 — correcta, incluida exportación, firma v2/v3 y publicación de preview.
+- APK: https://github.com/axenoban/karmany-monsta-android/releases/download/android-preview-38/karmany-monsta-preview.apk — 83365989bytes; SHA25616a66fc970346981eb628f7ac4a04a7633eac8ff08b93a735d723c7bb37c08ac.
+- Verificados tras descargar: versión0.21.0-unification, build38, identificación R0 correcta, seis etapas de cada región y13especies, paquete com.axenoban.karmanymonsta.preview y certificado idéntico a Preview32/E2; no contiene tests/docs/ci.
+- Prueba física: pendiente. No se interpreta CI verde como aprobación de E1 ni de la unificación. dev2ea590c y main9ef7af7 intactos.
+- Siguiente acción: el creador instala Preview38 encima de su partida, sigue la prueba de docs/UNIFICACION_JADE_BOSQUE.md e informa resultado. Chat audita PR18 en solo lectura. Work corrige cualquier reproducción en esta rama; no inicia nuevo contenido ni integra hasta aprobación física explícita.

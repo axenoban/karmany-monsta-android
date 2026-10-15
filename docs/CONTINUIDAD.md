@@ -1,9 +1,13 @@
 # Continuidad de Karmany Monsta
 
+> **ESTADO VIGENTE · 15/10/2026:** candidata **Preview38 / v0.21.0-unification**, código `f0266badaa7851da3de2bcc08a65752b6409360b`, rama `feature/unificacion-jade-bosque`. [CI38824304295 correcta](https://github.com/axenoban/karmany-monsta-android/actions/runs/38824304295), [APK candidata](https://github.com/axenoban/karmany-monsta-android/releases/download/android-preview-38/karmany-monsta-preview.apk), [PR18 borrador](https://github.com/axenoban/karmany-monsta-android/pull/18). **Work conserva escritura; Chat revisa en solo lectura. Prueba física pendiente; no integrada en dev/main.**
+>
+> Recuperadas dos regiones/12etapas,13criaturas de combate/21fichas y flujos Preview32, con relevo E1 y motor/persistencia E2. **4409checks únicos en26suitesGodot y3Python correctos**,69guardados Preview32 +10E2,24simulaciones y22pantallas renderizadas. Firma v2/v3, paquete, certificado de actualización y SHA256 verificados. Procedencia y prueba física: [UNIFICACION_JADE_BOSQUE.md](UNIFICACION_JADE_BOSQUE.md).
+
 ## Lectura inicial obligatoria
 Leer este documento antes de cada proceso; `AGENTS.md` en la raíz establece esta instrucción para agentes compatibles. No depende del historial del chat. Un agente debe confirmar el estado real con git/CI y leer el código afectado; el documento no sustituye esa verificación.
 
-## Proyecto y contrato
+## Proyecto y contrato del baseline Preview29 (histórico)
 - Repositorio: axenoban/karmany-monsta-android. Godot 4.7.2, Android.
 - main: publicación. dev/karmany-core: base validada. feature/*: mejoras pendientes.
 - No force push, no pérdida de guardados, no cambios de reglas o canon sin aprobación.
@@ -101,3 +105,10 @@ Rama remota feature/unificacion-jade-bosque @55dc205, PR18 borrador contra dev; 
 CI38823832205 sobre código0e79ce486ed7c49521c15428aa40df8b1e8eb720 terminó correctamente:4279checksGodot únicos,3Python,22pantallas renderizadas, exportaciónAndroid, firma v2/v3 y auditoría. Se descargó y verificó Preview37/v0.21.0-unification, SHA256b0b3a3c774cf5ed44df67455ab74d40ba5a61355eb8ae9cb145920ff4b88c4b6; dosJSON regionales de6puntos presentes y tests/docs/ci excluidos delAPK. main9ef7af7 y dev2ea590c se mantienen intactos.
 
 Verificación adicional: diez guardados generados ejecutando la fuente E2 original dc4a20a pasan130checks de conservación/recarga, incluidos contrato, ambos relevos y captura parcial; fixtures y generador quedan preservados y añadidos a CI. Se corrigió la etiqueta diagnóstica de build_info heredada como «E2 motor regional» para identificar correctamente la unificación; requiere una nueva compilación que será la candidata definitiva de esta entrega. No cambian reglas ni motor. Pendiente CI del último metadato/test, APK final y prueba física del creador. Work conserva escritura; Chat solo revisa.
+
+## Cierre técnico R0 · candidata38 disponible (15/10/2026)
+La implementación autorizada está terminada como candidata en feature/unificacion-jade-bosque, códigoAPKf0266badaa7851da3de2bcc08a65752b6409360b. CI38824304295 correcta:4409comprobaciones únicas Godot en26suites,3Python, importación,22pantallas renderizadas, exportaciónAndroid y firma v2/v3. Compatibilidad probada con69guardados generados por el motor recuperado Preview32 y10por la fuente E2 original;24simulaciones concluyen en4–22rondas. Se inspeccionaron adicionalmente las tarjetas de experiencia con equipo de tres y doble subida, normal/grande; las estadísticas usan desplazamiento y el botón Continuar permanece accesible.
+
+APK Preview38/v0.21.0-unification descargada y verificada:83365989bytes, SHA25616a66fc970346981eb628f7ac4a04a7633eac8ff08b93a735d723c7bb37c08ac. Fuente, identificaciónR0, dosrutas/seispuntos cadauna,13especies y ausencia de archivos de prueba confirmadas dentro delAPK. Certificado de actualización igual a Preview32/E2 y alkeystore; instalar sin desinstalar. Evidencia estructurada: docs/recovery/CANDIDATA_38_VERIFICACION.json. Procedencia, comparativa y nueve pasos de prueba: docs/UNIFICACION_JADE_BOSQUE.md.
+
+PR18 permanece borrador; no se cierra PR17 ni se eliminan ramas. No se han integrado cambios funcionales a dev/main: dev2ea590c y main9ef7af7 verificados. Falta exclusivamente revisión de Chat y prueba física del creador. Próximo paso: validar Preview38 conservando partida, dosregiones, Insignia/relevo, final secuencial, XP/vínculo, derrota/reemplazo y cerrar/reabrir. Work mantiene escritura para corregir incidencias. Solo tras aprobación explícita se verificará GitHub y se planteará la integración segura; no se declara la versión validada ahora.
