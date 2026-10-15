@@ -76,3 +76,6 @@ godot --headless --path /ruta/preview32-recuperado --script /ruta/repositorio/ci
 ```
 
 Revisión gráfica local posterior:22pantallas renderizadas con Mesa/Xvfb, texto normal/grande, mapas de ambas regiones y flujos regionales. Se detectó y corrigió un fondo secundario estrecho en la vista previa del Libro: ahora esa vista dibuja solo actores/Libro sobre el escenario continuo. La animación de vínculo a pantalla completa conserva su fondo. Las24simulaciones terminaron en victoria,4–22rondas, sin tocar estadísticas. La aceptación final de ritmo y estética sigue siendo humana.
+
+### Compatibilidad directa de la fuente E2
+Además de las regresiones del motor, tests/e2_source_compatibility_tests.gd carga diez guardados generados ejecutando dc4a20a original: encuentros heredados y regionales, respuesta pendiente, relevo aliado E1, relevo rival, victoria, elección, intento, captura y mapa. Comprueba130condiciones de conservación/recarga. Los JSON están en tests/fixtures/e2; generador ci/recovery/generate_e2_fixtures.gd, ejecutable sobre el worktree original con --output=/ruta/fixtures. La formación sintética del generador ejercita el contrato preparado en E2 y no añade contenido al juego.

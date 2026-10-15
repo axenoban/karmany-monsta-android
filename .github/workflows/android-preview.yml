@@ -159,6 +159,8 @@ jobs:
           set -o pipefail
           godot --headless --path . --script tests/unification_tests.gd 2>&1 | tee build/unification.log
           python3 ci/check_log.py build/unification.log
+          godot --headless --path . --script tests/e2_source_compatibility_tests.gd 2>&1 | tee build/e2-source-compatibility.log
+          python3 ci/check_log.py build/e2-source-compatibility.log
       - name: Validate regional balance and full-screen UI
         run: |
           set -o pipefail
