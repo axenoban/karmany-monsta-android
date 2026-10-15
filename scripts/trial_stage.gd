@@ -111,7 +111,7 @@ func _draw() -> void:
 		# The committed state already contains the incoming ally. For a relay event,
 		# show the outgoing attacker first, then crossfade to the new active.
 		var outgoing: String = event.get("species", "")
-		var relaying := elapsed < DURATION and event.get("side") == "ally" and event.get("action") == "insignia" and outgoing == "sakuromushi" and outgoing != ally_species
+		var relaying: bool = elapsed < DURATION and event.get("side") == "ally" and event.get("action") == "insignia" and outgoing == "sakuromushi" and outgoing != ally_species
 		if relaying:
 			var fade := clampf((elapsed / DURATION - 0.46) / 0.26, 0.0, 1.0)
 			if fade < 1.0: _actor(outgoing, 0.34, 0.86, 1.0 - fade, mirror_for(outgoing, true))
