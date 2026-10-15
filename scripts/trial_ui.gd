@@ -287,11 +287,11 @@ func _confirm(text: String, action: Callable, confirmation: String = "Confirmar 
 
 func _support(state: Dictionary, revision: int) -> void:
 	var dialog := AcceptDialog.new()
-	dialog.title = "Insignia · elige quién recibe +25% al próximo golpe"
+	dialog.title = "Insignia · ataque y relevo (+20%, 2 rondas)"
 	var choices := VBoxContainer.new()
 	dialog.add_child(choices)
 	for member in state.members:
-		if member.hp <= 0: continue
+		if member.hp <= 0 or member.instance_id == state.ally_id: continue
 		var recipient: String = member.instance_id
 		choices.add_child(_button(Catalog.species_name(member.species_id) + " · " + recipient, func():
 			_act("karmany", "insignia", revision, recipient)
