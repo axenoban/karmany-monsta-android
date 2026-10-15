@@ -39,10 +39,10 @@ func _run() -> void:
 	var r := Readout.build(before)
 	check(e.snapshot() == before, "readout does not mutate model")
 	check(r.team[1].hp == 45 and r.team[1].max_hp == 96 and r.team[1].id == "second", "individual life and species maximum")
-	check(r.team[2].effects.contains("+25%") and not r.team[1].effects.contains("+25%"), "duplicate species effects remain separate")
+	check(r.team[2].effects.contains("Relevo +20%") and not r.team[1].effects.contains("Relevo +20%"), "relay belongs only to chosen individual")
 	check(r.team[1].effects.contains("Protección 50%") and r.team[1].effects.contains("Debilitamiento -30%"), "effects have correct owner and direction")
-	check(r.active.signature_ready.contains("turno 4") and r.skills[2].ready_turn == 4, "individual cooldown deadline shown")
-	check(r.skills[2].description.contains("compañero vivo elegido") and r.skills[2].description.contains("reserva"), "support beneficiary explained")
+	check(r.team[0].signature_ready.contains("turno 4") and r.skills[2].ready_turn == 0, "support caster cooldown persists after switch")
+	check(Readout.describe(preload("res://scripts/combat_catalog.gd").action("sakuromushi", "insignia")).contains("intercambia con una reserva viva"), "relay target and timing explained")
 	check(r.skills[0].status.contains("respuesta") and r.phase.contains("pendiente"), "blocked action reason during rival phase")
 	check(r.resonances[2].ready_turn == 4, "trainer cooldown deadline remains separate")
 	var mutated: Dictionary = r.team[0]
