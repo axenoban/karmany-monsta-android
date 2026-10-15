@@ -108,7 +108,16 @@ func _draw() -> void:
 	else:
 		_actor("ezel", 0.12, 0.80)
 		_actor("axe", 0.88, 0.75)
-		_actor(ally_species, 0.34, 0.86, 0.45 if player_defeated else 1.0, mirror_for(ally_species, true))
+		# The committed state already contains the incoming ally. For a relay event,
+		# show the outgoing attacker first, then crossfade to the new active.
+		var outgoing: String = event.get("species", "")
+		var relaying := elapsed < DURATION and event.get("side") == "ally" and event.get("action") == "insignia" and outgoing == "sakuromushi" and outgoing != ally_species
+		if relaying:
+			var fade := clampf((elapsed / DURATION - 0.46) / 0.26, 0.0, 1.0)
+			if fade < 1.0: _actor(outgoing, 0.34, 0.86, 1.0 - fade, mirror_for(outgoing, true))
+			if fade > 0.0: _actor(ally_species, 0.34, 0.86, fade, mirror_for(ally_species, true))
+		else:
+			_actor(ally_species, 0.34, 0.86, 0.45 if player_defeated else 1.0, mirror_for(ally_species, true))
 		_actor(enemy_species, 0.66, 0.82, 0.50 if enemy_defeated else 1.0, mirror_for(enemy_species, false))
 		if elapsed < DURATION: _effects()
 
