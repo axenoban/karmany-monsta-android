@@ -51,9 +51,9 @@ func _run() -> void:
 	check(e.state.members[0].ready.insignia == 4, "relay leaves cooldown on its caster")
 	var before_hp: int = e.state.members[2].hp
 	check(e.end_round() and e.state.members[2].hp < before_hp and e.state.round == 2, "single rival response hits new active")
-	var saved := e.snapshot()
+	var relay_saved := e.snapshot()
 	var restored := Tactical.new()
-	check(restored.restore(JSON.parse_string(JSON.stringify(saved))) and restored.active().relay_until == 3, "relay resumes across JSON checkpoints")
+	check(restored.restore(JSON.parse_string(JSON.stringify(relay_saved))) and restored.active().relay_until == 3, "relay resumes across JSON checkpoints")
 	var before_enemy_hp: int = e.state.enemy_hp
 	check(e.act("karmany", "golpe") and e.state.enemy_hp < before_enemy_hp, "boosted entrant can attack next round")
 	check(e.end_round() and e.state.round == 3 and e.active().relay_boost == 0.2, "relay bonus continues into second following round")
