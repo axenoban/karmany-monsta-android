@@ -1,28 +1,101 @@
 {
-  "status": "proposal_not_implemented",
+  "status": "curve_authorized_content_pending",
   "xp_per_level": 100,
   "regions": [
     {
-      "id": "jade", "entry_level": 1, "cap": 10,
+      "id": "jade",
+      "entry_level": 1,
+      "cap": 10,
       "stages": [
-        {"primary": "tanugami", "enemy_level": 1, "first_xp": 400, "repeat_xp": 100},
-        {"primary": "ushigane", "enemy_level": 3, "first_xp": 500, "repeat_xp": 125},
-        {"primary": "kitsunibi", "enemy_level": 5, "first_xp": 650, "repeat_xp": 160},
-        {"primary": "sakuromushi", "enemy_level": 7, "first_xp": 800, "repeat_xp": 200},
-        {"primary": "sakuraneko", "enemy_level": 8, "first_xp": 950, "repeat_xp": 240},
-        {"primary": "inubari", "enemy_level": 10, "first_xp": 1200, "repeat_xp": 300, "final_roster": ["inubari", "ushigane"]}
+        {
+          "primary": "tanugami",
+          "enemy_level": 1,
+          "first_xp": 400,
+          "repeat_xp": 100
+        },
+        {
+          "primary": "ushigane",
+          "enemy_level": 3,
+          "first_xp": 500,
+          "repeat_xp": 125
+        },
+        {
+          "primary": "kitsunibi",
+          "enemy_level": 5,
+          "first_xp": 600,
+          "repeat_xp": 160
+        },
+        {
+          "primary": "sakuromushi",
+          "enemy_level": 7,
+          "first_xp": 650,
+          "repeat_xp": 200
+        },
+        {
+          "primary": "sakuraneko",
+          "enemy_level": 8,
+          "first_xp": 700,
+          "repeat_xp": 240
+        },
+        {
+          "primary": "inubari",
+          "enemy_level": 10,
+          "first_xp": 750,
+          "repeat_xp": 300,
+          "final_roster": [
+            "inubari",
+            "ushigane"
+          ]
+        }
       ]
     },
     {
-      "id": "veil", "entry_level": 10, "cap": 15,
+      "id": "veil",
+      "entry_level": 10,
+      "cap": 15,
       "stages": [
-        {"primary": "suzumeko", "enemy_level": 10, "first_xp": 700, "repeat_xp": 175},
-        {"primary": "kodamashi", "enemy_level": 11, "first_xp": 850, "repeat_xp": 210},
-        {"primary": "mujina_kage", "enemy_level": 12, "first_xp": 950, "repeat_xp": 240},
-        {"primary": "tsukimi_usagi", "enemy_level": 13, "first_xp": 1050, "repeat_xp": 260},
-        {"primary": "kodama_shin", "enemy_level": 14, "first_xp": 1150, "repeat_xp": 290},
-        {"primary": "karasu_origami", "enemy_level": 15, "first_xp": 1300, "repeat_xp": 325, "final_roster": ["karasu_origami", "mujina_kage"]}
+        {
+          "primary": "suzumeko",
+          "enemy_level": 10,
+          "first_xp": 700,
+          "repeat_xp": 175
+        },
+        {
+          "primary": "kodamashi",
+          "enemy_level": 11,
+          "first_xp": 750,
+          "repeat_xp": 210
+        },
+        {
+          "primary": "mujina_kage",
+          "enemy_level": 12,
+          "first_xp": 800,
+          "repeat_xp": 240
+        },
+        {
+          "primary": "tsukimi_usagi",
+          "enemy_level": 13,
+          "first_xp": 850,
+          "repeat_xp": 260
+        },
+        {
+          "primary": "kodama_shin",
+          "enemy_level": 14,
+          "first_xp": 900,
+          "repeat_xp": 290
+        },
+        {
+          "primary": "karasu_origami",
+          "enemy_level": 15,
+          "first_xp": 950,
+          "repeat_xp": 325,
+          "final_roster": [
+            "karasu_origami",
+            "mujina_kage"
+          ]
+        }
       ]
     }
-  ]
+  ],
+  "curve_note": "Requisitos100×nivel conservados. Recompensas moderadas hacia el final; repetición aumenta gradualmente. Ajuste autorizado15/10/2026."
 }

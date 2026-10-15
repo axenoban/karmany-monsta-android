@@ -1,0 +1,14 @@
+{
+  "status": "experimental_proposal_pending_creator",
+  "note": "Cifras jugables propuestas, no datos canónicos ni configuración del juego. Velocidad10 conserva el modelo actual; no define iniciativa nueva.",
+  "species": {
+    "sakuraneko": {"life":72,"attack":20,"defense":7,"speed":10,"signature":{"heal":10,"guard":0.20,"cooldown":3}},
+    "inubari": {"life":84,"attack":18,"defense":11,"speed":10,"signature":{"power":1.10,"guard":0.30,"cooldown":2}},
+    "suzumeko": {"life":64,"attack":23,"defense":5,"speed":10,"signature":{"power":1.25,"weaken":0.20,"cooldown":2}},
+    "kodamashi": {"life":84,"attack":17,"defense":10,"speed":10,"signature":{"heal":14,"guard":0.20,"cooldown":3}},
+    "mujina_kage": {"life":76,"attack":20,"defense":8,"speed":10,"signature":{"power":1.10,"weaken":0.30,"cooldown":2}},
+    "tsukimi_usagi": {"life":72,"attack":18,"defense":8,"speed":10,"signature":{"power":1.00,"grant_boost":0.30,"cooldown":2}},
+    "kodama_shin": {"life":80,"attack":18,"defense":10,"speed":10,"signature":{"heal":10,"guard":0.25,"cooldown":3}},
+    "karasu_origami": {"life":68,"attack":23,"defense":6,"speed":10,"signature":{"power":1.30,"cooldown":2}}
+  }
+}
