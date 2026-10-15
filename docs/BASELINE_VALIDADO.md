@@ -125,3 +125,12 @@ No cambiar motor, paquete, firma de preview ni esquema de guardado sin justifica
 - CI38655224968:1174 Godot y3 Python, firma/auditoría correctas.
 - Integrado por fast-forward desdea62ecb3 a10e3886, PR14 cerrada.
 - Próximo paso: decidir progresión del Libro mediante docs/PROPUESTA_LIBRO_19.md; todavía no hay reglas nuevas aprobadas.
+
+## Bloques19 y20 · Progresión, Libro y ventana de XP
+
+- Aprobación del creador: «pruebas correctas, procede con la siguiente etapa»,14/10/2026 (America/La_Paz).
+- Preview29,0.17.0/versionCode1029. Código a3d5dfffb93dd00242004295dd853f077875ec1a; documentación d6e960ab4bb480879ba2201f73113649f17a053c. Incluye Preview28/progresión df44144.
+- CI38666473622 verificada nuevamente:1390 comprobaciones Godot y3 Python, exportación, firma v2/v3 y privacidad correctas.
+- Integrados por fast-forward desde cb98974 a d6e960a en dev/karmany-core. main permanece9ef7af7. PR15/16 se cierran tras integración por avance directo, sin commit de merge.
+- Incluye XP individual/equipo, tope Jade10, estadísticas por nivel, mejoras secuenciales del Libro con puntos, migración compatible y resumen animado de victoria de solo lectura.
+- Próxima etapa: decisión de región y balance mediante docs/PROPUESTA_REGION_21.md. El cierre no autoriza valores nuevos.
