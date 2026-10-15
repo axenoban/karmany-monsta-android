@@ -10,7 +10,7 @@ var state: Dictionary = {}
 var last_error := ""
 
 static func unit(member: Dictionary) -> Dictionary:
-	var result := {"instance_id": member.instance_id, "species_id": member.species_id, "hp": int(Catalog.stats_at_level(member.species_id, int(member.get("level", 1))).life), "guard": 0.0, "boost": 0.0, "weaken": 0.0, "ready": {}}
+	var result := {"instance_id": member.instance_id, "species_id": member.species_id, "hp": int(Catalog.stats_at_level(member.species_id, int(member.get("level", 1))).life), "guard": 0.0, "boost": 0.0, "weaken": 0.0, "relay_boost": 0.0, "relay_until": 0, "ready": {}}
 	if member.has("level"): result.level = int(member.level)
 	return result
 static func stats_for(member: Dictionary) -> Dictionary:
@@ -27,6 +27,11 @@ static func unit_valid(data: Variant) -> bool:
 	for key in ["guard", "boost", "weaken"]:
 		var value: Variant = data.get(key)
 		if not (value is float or value is int) or not is_finite(value) or value < 0 or value > 0.8: return false
+	# Relay fields are optional to support save files made with older previews.
+	if data.has("relay_boost"):
+		var bonus: Variant = data.relay_boost
+		if not (bonus is float or bonus is int) or not is_finite(float(bonus)) or bonus < 0 or bonus > 0.8: return false
+	if data.has("relay_until") and not Legacy.integer(data.relay_until, 0, 1000000): return false
 	for key in data.ready:
 		if key not in ["golpe", "guardia", "insignia"] or not Legacy.integer(data.ready[key], 0, 1000000): return false
 	return true
@@ -91,6 +96,7 @@ func restore(data: Variant) -> bool:
 	for member in state.members + [state.enemy]:
 		if member.has("level"): member.level = int(member.level)
 		member.hp = int(member.hp)
+		if member.has("relay_until"): member.relay_until = int(member.relay_until)
 		for key in member.ready: member.ready[key] = int(member.ready[key])
 	for key in ["schema", "sequence"]: state.turn[key] = int(state.turn[key])
 	for key in state.loadout: state.loadout[key] = int(state.loadout[key])
@@ -126,6 +132,11 @@ func reason(owner: String, id: String) -> String:
 	var ready: Dictionary = active().ready if owner == "karmany" else state.trainer_ready
 	if int(ready.get(id, 0)) > state.round: return "Disponible en turno %d." % int(ready[id])
 	if effect.has("heal") and active().hp == int(stats_for(active()).life): return "El activo tiene toda su Vida."
+	if owner == "karmany" and effect.has("relay_boost"):
+		var has_reserve := false
+		for member in state.members:
+			if member.instance_id != state.ally_id and member.hp > 0: has_reserve = true
+		if not has_reserve: return "Necesitas una reserva viva para esta Insignia."
 	return ""
 func _finish_player(turn: SharedCombatTurn) -> void:
 	if turn.state == "open": turn.close_turn()
@@ -144,7 +155,9 @@ func _log(text: String, side: String, action: String, species: String) -> void:
 func _apply(source: Dictionary, target: Dictionary, effect: Dictionary, recipient: Dictionary, scale: float = 1.0) -> String:
 	var parts: Array[String] = []
 	if effect.has("power"):
-		var raw := maxi(1, roundi(stats_for(source).attack * effect.power * (1.0 + source.boost) - stats_for(target).defense))
+		var timed_bonus := float(source.get("relay_boost", 0.0)) if int(source.get("relay_until", 0)) >= int(state.round) else 0.0
+		var bonus := maxf(float(source.boost), timed_bonus)
+		var raw := maxi(1, roundi(stats_for(source).attack * effect.power * (1.0 + bonus) - stats_for(target).defense))
 		var damage := maxi(1, roundi(raw * (1.0 - target.guard) * (1.0 - source.weaken)))
 		target.hp = maxi(0, target.hp - damage)
 		target.guard = 0.0
@@ -174,24 +187,31 @@ func act(owner: String, id: String, target_id: String = "") -> bool:
 	var source := active()
 	var recipient := source
 	var effect: Dictionary = Catalog.action(source.species_id, id) if owner == "karmany" else Legacy.rules().resonances[id]
-	if effect.has("grant_boost"):
+	if effect.has("grant_boost") or effect.has("relay_boost"):
+		if effect.has("relay_boost"): recipient = {}
 		if not target_id.is_empty():
 			recipient = {}
 			for member in state.members:
-				if member.instance_id == target_id and member.hp > 0: recipient = member
+				if member.instance_id == target_id and member.hp > 0 and (not effect.has("relay_boost") or member.instance_id != state.ally_id): recipient = member
 		if recipient.is_empty():
-			last_error = "Elige un compañero vivo."
+			last_error = "Elige una reserva viva distinta." if effect.has("relay_boost") else "Elige un compañero vivo."
 			return false
 	var turn := _turn()
 	var ticket := turn.reserve(owner, "%s:%d:%s" % [state.id, state.round, owner])
 	var result := _apply(source, state.enemy, effect, recipient, 1.0 if owner == "karmany" else 1.0 + (int(state.loadout[id]) - 1) * 0.1)
+	if effect.has("relay_boost"):
+		# One atomic action: attack, then relay before the only enemy response.
+		recipient.relay_boost = maxf(float(recipient.get("relay_boost", 0.0)), float(effect.relay_boost))
+		recipient.relay_until = maxi(int(recipient.get("relay_until", 0)), int(state.round) + int(effect.relay_rounds))
+		state.ally_id = recipient.instance_id
+		result += "; relevo a %s (+%d%% hasta turno %d)" % [Catalog.species_name(recipient.species_id), roundi(recipient.relay_boost * 100), recipient.relay_until]
 	if effect.cooldown > 0:
 		var ready: Dictionary = source.ready if owner == "karmany" else state.trainer_ready
 		ready[id] = state.round + int(effect.cooldown) + 1
 	turn.commit_action(ticket)
 	state.turn = turn.snapshot()
 	if owner == "karmany": _finish_player(turn)
-	_log("%s · %s · %s." % [ally_name() if owner == "karmany" else "Ezel", effect.name, result], "ally" if owner == "karmany" else "trainer", id, source.species_id)
+	_log("%s · %s · %s." % [Catalog.species_name(source.species_id) if owner == "karmany" else "Ezel", effect.name, result], "ally" if owner == "karmany" else "trainer", id, source.species_id)
 	return true
 func switch_to(id: String) -> bool:
 	if state.get("phase") != "battle" or state.enemy_pending or not _turn().available("karmany"):
@@ -212,6 +232,10 @@ func switch_to(id: String) -> bool:
 	return true
 func _new_round() -> void:
 	state.round += 1
+	for member in state.members:
+		if int(member.get("relay_until", 0)) < int(state.round):
+			member.relay_boost = 0.0
+			member.relay_until = 0
 	var turn := Turn.new()
 	turn.begin("%s:%d" % [state.id, state.round])
 	state.turn = turn.snapshot()
@@ -222,6 +246,10 @@ func end_round() -> bool:
 	var source: Dictionary = state.enemy
 	var id := "insignia" if int(source.ready.get("insignia", 0)) <= state.round else "golpe"
 	var effect: Dictionary = Catalog.action(source.species_id, id)
+	# Single-enemy encounters cannot relay into an absent rival reserve.
+	if effect.has("relay_boost"):
+		id = "golpe"
+		effect = Catalog.action(source.species_id, id)
 	if effect.has("heal") and int(stats_for(source).life) - source.hp < effect.heal:
 		id = "golpe"
 		effect = Catalog.action(source.species_id, id)
