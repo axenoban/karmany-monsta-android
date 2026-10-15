@@ -20,7 +20,7 @@ static func action(species: String, id: String) -> Dictionary:
 		"tanugami": "Recupera 12 de Vida y protege 25% del próximo ataque. Sin daño.",
 		"ushigane": "Ataque de potencia 125% y protección propia del 25%.",
 		"kitsunibi": "Ataque de potencia 120%; reduce 30% el próximo daño rival.",
-		"sakuromushi": "Ataque de potencia 100%; potencia 25% el próximo golpe del compañero elegido."
+		"sakuromushi": "Ataque de potencia 70%; tras golpear, releva a una reserva viva y potencia 20% su daño durante 2 rondas. El rival responde contra el nuevo activo."
 	}.get(species, "")
 	return effect
 
