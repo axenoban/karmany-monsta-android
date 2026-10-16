@@ -4,7 +4,7 @@
 
 Base remota verificada `ce6917a61ab4dadd9e06296854361d9b9a56f22c`; sin PR abiertos ni otra implementación R1. Rama única `feature/r1-navegacion-identidad` creada desde ese HEAD. main `9ef7af7` intacta, código baseline Preview40 `0c356db`, CI38833949394 correcta. Diferencias del baseline a dev exclusivamente documentales.
 
-Primera implementación R1-01…05: prólogo opcional/transaccional de cinco viñetas; navegación regional y continuación; Bestiario ilustrado con propiedad real; perfil Ezel; zona de arrastre del árbol. Arte/datos/reglas preservados. Pruebas nuevas y regresiones en curso; todavía sin CI ni APK R1 publicada ni aprobación física. El SHA de este avance será el commit que contenga este registro.
+Primera implementación R1-01…05: prólogo opcional/transaccional de cinco viñetas; navegación regional y continuación; Bestiario ilustrado con propiedad real; perfil Ezel; zona de arrastre del árbol. Arte/datos/reglas preservados. Validación local completa:5.560 checks Godot/29 suites +3 Python;26 renders R1. Código inicial74ca7ea, PR20 borrador abierto. CI38888946147 iniciada; se corrige identificación de las notas de release heredadas de E5 y se espera nueva ejecución. Sin APK R1 entregada ni aprobación física. El SHA de este avance será el commit que contenga este registro.
 
 SIGUIENTE PASO: terminar pruebas, revisión visual, PR/CI y APK candidata R1. RESPONSABLE: WORK. INSTRUCCIÓN PARA CONTINUAR: comprobar feature/r1-navegacion-identidad y contrato R1, corregir el primer fallo real, completar regresiones y entregar APK identificada; no integrar dev/main ni iniciar E6/R2–R4 antes de autorización.
 

@@ -241,5 +241,5 @@ jobs:
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" "${ASSETS[@]}" --clobber
           else
-            gh release create "$TAG" "${ASSETS[@]}" --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Candidata E5 0.22.1: cierre de Ayuda no bloqueante ante fallo de guardado, persistencia protegida y regresiones completas. Pendiente prueba física; no integrada a dev."
+            gh release create "$TAG" "${ASSETS[@]}" --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Candidata R1 0.23.0: prólogo Ezel/Axe/Zephyr, navegación regional, Bestiario visual, perfil y árbol táctil. Guardados compatibles y regresiones completas. Pendiente prueba física; no integrada a dev."
           fi
