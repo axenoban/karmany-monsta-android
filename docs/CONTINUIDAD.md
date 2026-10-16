@@ -1,5 +1,18 @@
 # Continuidad de Karmany Monsta
 
+## R1 AUTORIZADA PARA WORK · ejecución pendiente de confirmación técnica (15/10/2026)
+
+- **Aprobación explícita del creador:** «sí, autorizo a work para que comienze con la implementacion». Corresponde únicamente al contrato cerrado [docs/R1_NAVEGACION_IDENTIDAD.md](R1_NAVEGACION_IDENTIDAD.md) y a sus cinco módulos R1-01…05: prólogo cinematográfico Axe/Ezel; navegación; Bestiario visual; perfil Ezel; árbol táctil.
+- **Responsable exclusivo de escribir código: WORK.** Chat no desarrollará la misma rama y auditará solo en lectura. La autorización **no equivale** a que Work ya haya iniciado, creado rama, ejecutado CI o publicado APK; Work debe verificar el estado remoto antes de actuar.
+- **Baseline funcional conservado:** Preview40 aprobada, código `0c356db`, CI38833949394, PR19 integrado. `dev/karmany-core` avanza únicamente por documentación de autorización, no por nueva funcionalidad. Comprobar HEAD real antes de crear rama.
+- **Exclusiones:** no comenzar R2, R3, R4, alfa E6 ni implementar PS persistentes, curación, cambio de reglas, balance, canon o regiones; no tocar `main`. Conservar guardados Preview32/E2/38/40, E5 y dos regiones.
+- **Puerta de integración:** Work debe entregar PR/CI/APK con commit y SHA verificables; revisión Chat y «prueba correcta» explícita de esa APK por el creador antes de integrar en dev.
+
+**SIGUIENTE PASO:** Work comprueba HEAD/PR/CI, crea (si no hay otra activa) `feature/r1-navegacion-identidad`, implementa el contrato en su totalidad, prueba, publica PR y APK candidata y solicita validación física.
+**RESPONSABLE:** WORK (único escritor R1).
+**INSTRUCCIÓN PARA CONTINUAR:** «En axenoban/karmany-monsta-android, el creador autorizó implementar R1. Verifica HEAD actual de dev, ramas y PR, lee AGENTS, ROADMAP_ESTADO, ROADMAP_CHAT_WORK, CONTINUIDAD y docs/R1_NAVEGACION_IDENTIDAD.md. Ejecuta exclusivamente R1-01…05; añade regresiones/CI/APK candidata; no integres sin aprobación física, no toques main y no inicies E6 ni R2–R4. Devuelve PR, commit, CI, SHA APK y pruebas».
+
+
 ## Diseño R1 cerrado · prólogo cinematográfico Ezel/Axe · 15/10/2026
 
 - Decisión humana: **Ezel** es protagonista controlado; **Axe** es su mentor. El creador aprobó **introducción cinematográfica** antes de explorar (no combate guiado) y pidió cerrar la especificación.
