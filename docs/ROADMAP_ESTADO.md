@@ -1,5 +1,24 @@
 # ESTADO VIVO · Roadmap de Karmany Monsta (Chat + Work)
 
+## Estado vigente MÁS RECIENTE · E5 autorizada y transferida a Work (15/10/2026)
+
+**Autorización humana:** creador aprueba de forma expresa la especificación E5, sus 12 intervenciones, microcopias y criterios de aceptación y las cuatro opciones: tarjetas contextuales pequeñas descartables; una vez solo en partida nueva sin forzar partidas antiguas; opción **Ayuda** para repetir; resumen breve siempre en derrota/progreso y explicación detallada cuando corresponda.
+
+**Contrato de implementación obligatorio:** [E5_PRIMERA_SESION.md](E5_PRIMERA_SESION.md). Aprobado para programar; **ningún código E5 implementado ni validado físicamente** en este checkpoint.
+
+- **Responsable escritor del siguiente bloque: WORK** (no Chat). Rama aún no creada: `feature/e5-primera-sesion`, partiendo de HEAD actualizado de `dev/karmany-core`. Base documental examinada al comenzar E5: `76a7347f60605cc28259b0a087f4654b69a89164`; Work debe verificar su sucesor documental real.
+- **Baseline funcional protegido:** Preview38, código `f0266badaa7851da3de2bcc08a65752b6409360b`. PR18 merged; PR17 incorporado por ascendencia. Sin PR funcional E5 ni APK E5 al aprobar.
+- **CI:** [38824304295](https://github.com/axenoban/karmany-monsta-android/actions/runs/38824304295) es la CI de Preview38, NO prueba nueva de E5. Estas ediciones son solo documentos.
+- **No modificación funcional:** R0, E1–E4, E7 recuperada, 2 regiones/12 puntos, 13 combatientes, guardados, XP, stamina, reglas, arte y motor E2 siguen estables. `main` no se toca.
+- **Puerta E5:** Work entrega feature + PR + CI completa + APK candidata; revisión independiente y prueba Android del creador. Integrar en dev únicamente tras «prueba correcta» del APK/SHA.
+
+**SIGUIENTE PASO:** implementar E5 aprobada en una rama feature exclusiva y presentar APK revisable.
+**RESPONSABLE:** WORK.
+**INSTRUCCIÓN PARA CONTINUAR:** verificar `dev/karmany-core`, leer `AGENTS.md`, este tablero, `ROADMAP_CHAT_WORK.md`, `CONTINUIDAD.md` y `E5_PRIMERA_SESION.md`; trabajar solo el contrato E5, conservar Preview38 y sus migraciones, ejecutar regresiones/CI, entregar PR + APK para validación humana, sin integrar ni tocar `main`.
+
+El apartado siguiente **«Estado vigente · cierre aprobado de R0»** y sus instrucciones de solicitar diseño a Chat quedan como registro histórico previo a esta aprobación; no son la instrucción operativa actual.
+
+
 ## Estado vigente · cierre aprobado de R0 (15/10/2026, America/La_Paz)
 
 La **Preview 38 / v0.21.0-unification**, código `f0266badaa7851da3de2bcc08a65752b6409360b`, ha sido **probada físicamente y aprobada por el creador**: «Confirmo que probé físicamente la Preview 38 (v0.21.0-unification) y la considero correcta y aceptable. Apruebo esta versión».
@@ -85,7 +104,7 @@ Tras la entrega de Preview 34, el creador comentó que veía una potenciación p
 | E2 · Motor regional | Incorporada y aprobada dentro de Preview38 | Preservar contratos y migraciones |
 | E3 · Jade de seis etapas | Completada dentro de R0 | Preservar contenido validado |
 | E4 · Continuidad visual | Completada dentro de R0 | Preservar flujos validados |
-| **E5 · Primera sesión autónoma** | **Pendiente de diseño/especificación; implementación no iniciada** | **Chat primero; Work después de criterios/decisiones aprobados** |
+| **E5 · Primera sesión autónoma** | **Diseño, microcopias y criterios aprobados el 15/10; implementación no iniciada** | **Work escritor exclusivo; PR/CI/APK y prueba física pendientes** |
 | E6 · Alfa / playtest | Pendiente, después de E5 | Chat prepara QA; Work corrige cuando corresponda |
 | E7 · Bosque del Velo | Sus seis etapas ya recuperadas y aprobadas en R0 | No reconstruir ni añadir región nueva |
 | E8–E10 | Pendientes | Según feedback y autorizaciones futuras |
