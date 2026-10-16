@@ -1,6 +1,15 @@
 # KARMANY MONSTA · ANDROID
 ## Roadmap coordinado de Chat + Work
 
+## Prioridad operativa vigente · E5 aprobada para ejecución por Work (15/10/2026)
+
+El creador aprobó explícitamente el contrato E5 y sus cuatro decisiones de UX. **Fuente vinculante: [E5_PRIMERA_SESION.md](E5_PRIMERA_SESION.md).** El diseño no está pendiente: **Work** debe implementar las 12 intervenciones contextuales en una sola feature desde `dev/karmany-core` verificado. Sin nueva narrativa, reglas, balance ni modificaciones a sistemas de Preview38. Requiere pruebas automáticas, guardados existentes, CI, APK candidata y validación física antes de integración.
+
+Los apartados de abajo que dicen «Chat diseña E5» o «no iniciar E5» pertenecen a la etapa histórica de cierre R0, superada por esta autorización; mantienen valor como antecedentes, no bloquean a Work. `main` permanece protegida.
+
+**SIGUIENTE PASO:** Work inicia bloque E5 autorizado. **RESPONSABLE:** WORK. **INSTRUCCIÓN PARA CONTINUAR:** consultar `AGENTS.md`, `ROADMAP_ESTADO.md`, `CONTINUIDAD.md` y `E5_PRIMERA_SESION.md`; comprobar HEAD y PR, crear `feature/e5-primera-sesion`, implementar únicamente E5 con tests/regresiones y APK, sin integrar antes de «prueba correcta».
+
+
 ## Estado vigente · cierre aprobado de R0 (15/10/2026, America/La_Paz)
 
 La **Preview 38 / v0.21.0-unification**, código `f0266badaa7851da3de2bcc08a65752b6409360b`, ha sido **probada físicamente y aprobada por el creador**: «Confirmo que probé físicamente la Preview 38 (v0.21.0-unification) y la considero correcta y aceptable. Apruebo esta versión».
