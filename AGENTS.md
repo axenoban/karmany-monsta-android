@@ -6,7 +6,7 @@ Antes de actuar, leer `docs/ROADMAP_ESTADO.md`, `docs/ROADMAP_CHAT_WORK.md` y `d
 
 Preview 38 / v0.21.0-unification, código `f0266badaa7851da3de2bcc08a65752b6409360b`, aprobada físicamente por el creador el 15/10/2026. R0 unifica Preview32 + Chat E1 + Work E2 y queda completada. PR #18 integrado por fast-forward verificado en dev @525acef829ba934ddce3bb84ed08edc194c2640e. GitHub cerró PR #17 por ascendencia, sin una segunda fusión. Los commits documentales posteriores conservan el mismo código aprobado.
 
-E5 es la siguiente etapa pendiente: **Chat prepara primero diseño, especificación y criterios de aceptación**. **Work espera lo aprobado** y solo después implementará en una nueva feature desde dev validado. Esta intervención únicamente cierra R0; no inicia E5.
+**E5 · Primera sesión autónoma: especificación, microcopias, doce intervenciones y criterios aprobados expresamente por el creador el 15/10/2026.** Contrato obligatorio: [`docs/E5_PRIMERA_SESION.md`](docs/E5_PRIMERA_SESION.md). **El único escritor autorizado de E5 es WORK**, que creará `feature/e5-primera-sesion` desde el HEAD real y validado de `dev/karmany-core`, implementará solo lo aprobado y entregará PR/CI/APK para prueba humana. La autorización de especificación NO equivale a `prueba correcta` de la implementación; no integrar a `dev` ni modificar `main` hasta la validación física.
 
 ## Ramas, validación y protección
 
