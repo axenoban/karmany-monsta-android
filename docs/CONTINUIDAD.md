@@ -1,5 +1,27 @@
 # Continuidad de Karmany Monsta
 
+## Checkpoint ACTUAL · E5 aprobada y traspasada a Work (15/10/2026)
+
+El creador aprobó la especificación de «primera sesión autónoma, tutorial contextual y claridad de derrota/progresión» presentada por Chat, incluidos alcance, exclusiones, 12 intervenciones E5-01…E5-12, microcopias, criterios AC-01…AC-12 y regresiones. Ratificó cuatro decisiones:
+
+1. Tarjetas pequeñas contextuales y descartables.
+2. Tutorial automático una sola vez en partidas nuevas; guardados anteriores no forzados.
+3. Opción `Ayuda` para repetir explicaciones cuando el jugador lo solicite.
+4. Resumen breve siempre en derrota/progresión; detalles solo cuando correspondan.
+
+**Contrato congelado:** [docs/E5_PRIMERA_SESION.md](E5_PRIMERA_SESION.md). **Próximo responsable/escritor exclusivo:** WORK. **Baseline de lectura verificado antes de redactar:** dev @ `76a7347f60605cc28259b0a087f4654b69a89164`, código aprobado Preview38 `f0266badaa7851da3de2bcc08a65752b6409360b`, PR abiertos: cero. Los nuevos commits de traspaso son exclusivamente documentales. Ninguna implementación, compilación, CI E5 ni prueba física E5 se afirma en este checkpoint.
+
+**Proteger:** dos regiones/12 etapas, 13 criaturas de combate, E1, motor E2, continuidad E4, arte y compatibilidad de partidas Preview32/E2/Preview38. No reabrir balance/canon. `main` inalterada.
+
+**SIGUIENTE PASO:** Work inspecciona HEAD real, crea `feature/e5-primera-sesion` desde la última dev validada, implementa solo el contrato y entrega PR/CI/APK con prueba local; E5 no se integra sin validación física.
+
+**RESPONSABLE:** WORK.
+
+**INSTRUCCIÓN PARA CONTINUAR:** «En `axenoban/karmany-monsta-android`, verifica HEAD, historia, PR y CI de `dev/karmany-core`. Lee `AGENTS.md`, `ROADMAP_ESTADO.md`, `ROADMAP_CHAT_WORK.md`, `CONTINUIDAD.md` y `E5_PRIMERA_SESION.md`. Ejecuta exclusivamente E5 aprobada en `feature/e5-primera-sesion`; integra 12 ayudas contextuales sin cambiar reglas ni sistemas estables, añade pruebas y regresiones Android/guardados, produce APK candidata/PR con CI. Actualiza registros en la feature y espera «prueba correcta» antes de integrar en dev. No tocar main.»
+
+El historial de cierre R0 que aparece a continuación (solicitando especificación por Chat) es **anterior a esta aprobación**.
+
+
 ## Estado vigente · cierre aprobado de R0 (15/10/2026, America/La_Paz)
 
 La **Preview 38 / v0.21.0-unification**, código `f0266badaa7851da3de2bcc08a65752b6409360b`, ha sido **probada físicamente y aprobada por el creador**: «Confirmo que probé físicamente la Preview 38 (v0.21.0-unification) y la considero correcta y aceptable. Apruebo esta versión».
