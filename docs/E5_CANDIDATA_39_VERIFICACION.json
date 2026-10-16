@@ -1,0 +1,47 @@
+{
+  "stage": "E5 primera sesión autónoma",
+  "status": "candidata; prueba física pendiente",
+  "source_commit": "e9795fc20198c34bfe27b2126ed2b31ec4ee1a0c",
+  "ci_run": 38829976270,
+  "preview": 39,
+  "version": "0.22.0-e5",
+  "version_code": 1039,
+  "package": "com.axenoban.karmanymonsta.preview",
+  "apk_size": 83374501,
+  "sha256": "41578be4373256e46b7f26644be26a85ec15fe92c1fda08baf9382ce9a070bc7",
+  "certificate_sha256": "756c8c1a8136ae2e80987c540d805641d7bfd2d5b657d1f04584f0074ac61bf8",
+  "region_points": {
+    "jade_route.json": 6,
+    "veil_route.json": 6
+  },
+  "compiled_help_assets": [
+    "assets/scripts/context_help.gdc",
+    "assets/scripts/first_session.gdc",
+    "assets/scripts/context_help.gd.remap",
+    "assets/scripts/first_session.gd.remap"
+  ],
+  "url": "https://github.com/axenoban/karmany-monsta-android/releases/download/android-preview-39/karmany-monsta-preview.apk",
+  "signature_verification": "CI apksigner: v2=true, v3=true",
+  "automated_checks": {
+    "godot_unique": 5046,
+    "godot_suites": 27,
+    "python": 3,
+    "e5": 601,
+    "rendered_e5_screens": 12,
+    "rendered_regional_screens": 22,
+    "physical_android": "pendiente"
+  },
+  "approved_data_files_equal_to_f0266ba": [
+    "data/book_levels.json",
+    "data/combat_structure.json",
+    "data/exploration_rules.json",
+    "data/jade_route.json",
+    "data/jade_species.json",
+    "data/level_progression.json",
+    "data/tactical_combat.json",
+    "data/trainer_skill_tree.json",
+    "data/trial_combat.json",
+    "data/veil_route.json",
+    "data/veil_species.json"
+  ]
+}

@@ -1,5 +1,23 @@
 # Continuidad de Karmany Monsta
 
+## Entrega técnica E5 · Preview39 candidata · 15/10/2026
+
+- **HECHO:** doce intervenciones aprobadas implementadas; tarjetas pequeñas descartables, Ayuda contextual, tutorial solo nuevo perfil/viaje confirmado y resumen permanente de derrota/XP. No E6 ni reglas nuevas.
+- **RAMA / CÓDIGO APK:** `feature/e5-primera-sesion` @ `e9795fc20198c34bfe27b2126ed2b31ec4ee1a0c`, [PR19](https://github.com/axenoban/karmany-monsta-android/pull/19). Árbol `6207ae4570ef8648726a0b7af7b79efdb4d9b1cc`, idéntico al probado localmente. El commit que contiene este checkpoint solo añade evidencia/documentación; no cambia código ni APK.
+- **CI:** [38829976270 / Preview39](https://github.com/axenoban/karmany-monsta-android/actions/runs/38829976270) completada, build y publicación correctos. 5.046 checks únicos Godot /27 suites +3 Python; 601 E5. Renders repiten comprobaciones sin contarlas dos veces. Exportación, firma v2/v3 y auditoría correctas.
+- **APK:** [Preview39 · v0.22.0-e5 · versionCode1039](https://github.com/axenoban/karmany-monsta-android/releases/download/android-preview-39/karmany-monsta-preview.apk), 83.374.501 bytes; SHA256 `41578be4373256e46b7f26644be26a85ec15fe92c1fda08baf9382ce9a070bc7`.
+- **Verificación descargada:** SHA coincide con CI, paquete `com.axenoban.karmanymonsta.preview`, build39/source e9795fc, helpers compilados presentes, seis puntos Jade +seis Bosque, tests/docs/ci excluidos. Certificado SHA256 `756c8c1a8136ae2e80987c540d805641d7bfd2d5b657d1f04584f0074ac61bf8`, igual a Preview32/E2/38. Evidencia: [E5_CANDIDATA_39_VERIFICACION.json](E5_CANDIDATA_39_VERIFICACION.json).
+- **PRUEBAS:** suite completa local final correcta también sobre el árbol publicado. 69 Preview32 +10 E2 +7 perfiles cargados por fuente exacta Preview38; ninguna carga fuerza tutorial ni cambia bytes originales. Recompensa/bono únicos, stamina, reemplazo/derrota, XP parcial, vínculo y reanudación cubiertos por regresiones. 12 renders E5 normal/grande +22 regionales; Atrás, pausa, modo reducido, sonido y exclusión de animaciones comprobados técnicamente.
+- **RESULTADO ESPERADO:** nueva partida comprende selección/coste/búsqueda/combate/resultado/vínculo/retomar; partida previa continúa sin tutorial automático y conserva acceso a Ayuda.
+- **RIESGOS / PUERTA:** comprensión de una persona novata y Android físico siguen pendientes. No se atribuyen pruebas humanas. Instalar sin desinstalar; no usar Nuevo viaje sobre la partida que se quiera conservar. Prueba de máximo10 pasos en [E5_IMPLEMENTACION.md](E5_IMPLEMENTACION.md).
+- **Protección:** dev conserva `08ed2e70b35bfd1489fd9d88a5cdff52e9447dc2`; main `9ef7af778ee59a47f62bdfbfd5eb0786ce787213`. PR19 abierto sin integración; Work conserva escritura para incidencias E5, Chat revisa en solo lectura.
+
+**SIGUIENTE PASO:** revisión independiente de PR19 y validación física de Preview39 por el creador; sin E6.
+**RESPONSABLE:** CHAT (revisión; Work corrige solo incidencias asignadas).
+**INSTRUCCIÓN PARA CONTINUAR:** En axenoban/karmany-monsta-android verifica dev, HEAD real de feature/e5-primera-sesion, PR19, CI38829976270 y docs E5. Revisa solo en lectura las doce intervenciones contra E5_PRIMERA_SESION.md y la candidata39/código e9795fc. Emite APTO/APTO CON CONDICIONES/NO APTO con incidencias reproducibles; acompaña la prueba de máximo10 pasos de E5_IMPLEMENTACION.md y solicita al creador validación física de APK/SHA identificados. No hagas commits, merges ni E6. Solo «prueba correcta» explícita permite que Work verifique después una integración segura.
+
+Los checkpoints que siguen son históricos; su CI/APK pendiente quedó resuelta por esta entrega técnica, no la aprobación humana.
+
 ## Checkpoint operativo E5 · Work · 15/10/2026
 
 - Base real verificada: dev `08ed2e70b35bfd1489fd9d88a5cdff52e9447dc2`; solo cambios documentales desde Preview38 `f0266ba`. Sin PR abiertos ni otra rama E5 al comenzar. main `9ef7af7` protegida.

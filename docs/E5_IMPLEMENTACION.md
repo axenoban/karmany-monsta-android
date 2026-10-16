@@ -31,7 +31,7 @@ La extensión opcional de perfil `first_session: {version: 1, seen: [...]}` solo
 - Suite histórica también comprueba recompensa/bono únicos, reemplazo, derrota, XP parcial, finales, vínculo, turnos automáticos, sonido y movimiento reducido. Las 24 simulaciones de balance permanecen sin cambios.
 - 12 pantallas E5 renderizadas normal/grande y 22 regionales de regresión; botones no recortados y objetivos táctiles comprobados. La suite E5 comprueba una tarjeta, entrada/retomar sin gasto duplicado, menús opcionales, Atrás, pausa/reanudar y exclusión de animaciones.
 - Se corrigió primero el fallo real del contrato de defaults de instalación trasladando el opt-in a App; no se modificaron tests históricos ni watchdogs.
-- CI, APK/SHA y revisión final: consultar checkpoint más reciente en ROADMAP_ESTADO y CONTINUIDAD. Los renders y logs se adjuntan al artefacto de CI. No confundirlos con prueba física Android.
+- CI38829976270 correcta; Preview39 v0.22.0-e5, código e9795fc, SHA25641578be4373256e46b7f26644be26a85ec15fe92c1fda08baf9382ce9a070bc7. Evidencia en E5_CANDIDATA_39_VERIFICACION.json; consultar checkpoint más reciente en ROADMAP_ESTADO y CONTINUIDAD. Los renders y logs se adjuntan al artefacto de CI. No confundirlos con prueba física Android.
 
 ## Prueba física propuesta · máximo 10 pasos
 
