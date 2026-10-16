@@ -114,6 +114,8 @@ func _ready() -> void :
 		"experience":
 			body.alignment = BoxContainer.ALIGNMENT_BEGIN
 			body.add_child(label("EXPERIENCIA ADQUIRIDA", 34, Color("efd49b")))
+			for entry in preload("res://scripts/first_session.gd").topics(app.profile, "experience"):
+				body.add_child(label(entry.text, 20))
 			xp_panel = ExperiencePanel.new()
 			xp_panel.receipt = Flow.receipt(campaign).duplicate(true)
 			xp_panel.large = app.profile.settings.large_text
@@ -170,8 +172,9 @@ func _ready() -> void :
 		"defeat", "retreated":
 			body.add_child(label("UN MOMENTO PARA RECUPERARSE" if stage == "defeat" else "DE VUELTA AL CAMINO", 34, Color("efd49b")))
 			body.add_child(portrait(encounter.get("ally_species", "zephyr"), 220))
-			body.add_child(label("Tu equipo volverá recuperado al próximo encuentro." if stage == "defeat" else "Puedes preparar tu equipo antes de volver.", 24))
+			body.add_child(label(preload("res://scripts/first_session.gd").COPY.defeat if stage == "defeat" else "Puedes preparar tu equipo antes de volver.", 24))
 			footer.add_child(action("Volver al mapa", finish))
+	if stage != "victory": host._help_in(footer, stage)
 	_update(0.0)
 func _process(delta: float) -> void :
 	if app.application_paused or not is_visible_in_tree() or (host.binding_busy or host.combat_busy): return

@@ -50,7 +50,9 @@ func _ready() -> void :
 		AudioServer.add_bus_effect(bus, limiter)
 	ui_audio = EffectAudio.new()
 	add_child(ui_audio)
+	var first_install := not FileAccess.file_exists(storage.base_path) and not FileAccess.file_exists(storage.base_path + ".bak")
 	profile = storage.load_profile()
+	if first_install and storage.last_error.is_empty(): profile.first_session = preload("res://scripts/first_session.gd").fresh()
 	apply_audio_preferences()
 	load_failed = not storage.last_error.is_empty()
 	if load_failed:
@@ -82,6 +84,7 @@ func commit_profile(next_profile: Dictionary) -> bool:
 
 func start_journey() -> bool:
 	var next_profile:= profile.duplicate(true)
+	next_profile.first_session = preload("res://scripts/first_session.gd").fresh()
 	next_profile.journey = {"started": true, "visited_jade": false}
 	next_profile.skill_tree = TreeModel.defaults()
 	next_profile.campaign = Campaign.defaults()
@@ -473,3 +476,10 @@ func consume_transition() -> Dictionary:
 	pending_transition = {}
 	if receipt.get("id") != profile.campaign.encounter.get("id") or receipt.get("revision") != profile.campaign.encounter.get("revision"): return {}
 	return receipt
+
+func dismiss_first_session(id: String) -> bool:
+	var session = preload("res://scripts/first_session.gd")
+	if load_failed or not session.automatic(profile, id): return false
+	var next := profile.duplicate(true)
+	next.first_session.seen.append(id)
+	return commit_profile(next)

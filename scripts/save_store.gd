@@ -17,6 +17,7 @@ static func defaults() -> Dictionary:
 static func valid(data: Variant) -> bool:
 	if not data is Dictionary or (data.get("schema") != 1 and data.get("schema") != 2 and data.get("schema") != SCHEMA_VERSION):
 		return false
+	if data.has("first_session") and not preload("res://scripts/first_session.gd").valid(data.first_session): return false
 	if not data.get("settings") is Dictionary or not data.get("journey") is Dictionary:
 		return false
 	for key in ["large_text", "haptics"]:

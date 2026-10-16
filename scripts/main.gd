@@ -475,6 +475,8 @@ func _back() -> void :
 		if animation.is_visible_in_tree():
 			animation.finish()
 			return
+	for help in get_tree().get_nodes_in_group("context_help"):
+		if help.is_visible_in_tree() and help.handle_back(): return
 	for screen in get_tree().get_nodes_in_group("aftermath_screen"):
 		if screen.is_visible_in_tree():
 			screen.handle_back()

@@ -171,6 +171,13 @@ jobs:
           if ! command -v xvfb-run >/dev/null; then sudo apt-get update -qq && sudo apt-get install -y xvfb; fi
           xvfb-run -a godot --rendering-method gl_compatibility --audio-driver Dummy --path . --script tests/unification_ui_tests.gd -- --allow-ui-review 2>&1 | tee build/unification-render.log
           python3 ci/check_log.py build/unification-render.log
+      - name: Validate E5 first session and contextual help
+        run: |
+          set -o pipefail
+          godot --headless --path . --script tests/first_session_tests.gd 2>&1 | tee build/first-session.log
+          python3 ci/check_log.py build/first-session.log
+          xvfb-run -a godot --rendering-method gl_compatibility --audio-driver Dummy --path . --script tests/first_session_tests.gd -- --allow-ui-review 2>&1 | tee build/first-session-render.log
+          python3 ci/check_log.py build/first-session-render.log
       - name: Export playable encounter APK
         run: |
           set -o pipefail
@@ -223,5 +230,5 @@ jobs:
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" "${ASSETS[@]}" --clobber
           else
-            gh release create "$TAG" "${ASSETS[@]}" --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Candidata 0.21.0: dos regiones y doce etapas recuperadas de Preview32, motor y persistencia E2, relevo Sakuromushi E1 y continuidad visual. Pendiente prueba física; no integrada a dev."
+            gh release create "$TAG" "${ASSETS[@]}" --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Candidata E5 0.22.0: primera sesión autónoma, tarjetas contextuales y Ayuda, preservando Preview38. Pendiente prueba física; no integrada a dev."
           fi

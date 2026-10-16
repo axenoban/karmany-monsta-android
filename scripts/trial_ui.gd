@@ -30,6 +30,12 @@ var selected_location:= ""
 var location_energy_label: Label
 var location_enter_button: Button
 
+func _help_in(parent: Node, context: String, point_id: String = "") -> Control:
+	var help := preload("res://scripts/context_help.gd").new()
+	parent.add_child(help)
+	help.setup(self, context, point_id)
+	return help
+
 func _ready() -> void :
 	_build()
 	if mode == "battle": _present_transition()
@@ -93,6 +99,7 @@ func _build() -> void :
 	elif mode == "map": header.add_child(_button("Opciones", _map_options))
 	else: header.add_child(_button("Mapa", func(): navigate.emit("jade_play")))
 	header.get_child(1).size_flags_horizontal = Control.SIZE_SHRINK_END
+	if mode != "intro": _help_in(column, mode)
 	if mode in ["intro", "map", "exploration"]:
 		_world()
 	else:
@@ -252,7 +259,7 @@ func _battle() -> void :
 		if state.enemy_pending and not App.response_error.is_empty():
 			secondary.add_child(_button("Reintentar respuesta", App.retry_enemy_response))
 	elif state.phase == "replacement":
-		column.add_child(_label("Elige un reemplazo. El rival no atacará otra vez por este cambio.", 22))
+		column.add_child(_label(preload("res://scripts/first_session.gd").COPY.replacement, 22))
 		var replacements:= HBoxContainer.new()
 		column.add_child(replacements)
 		for member in state.members:
@@ -283,6 +290,7 @@ func _battle() -> void :
 		var text: String = enemy_name + " capturado y añadido a la colección." if state.phase == "captured" else (enemy_name + " escapó; puedes iniciar otro encuentro." if state.phase == "escaped" else (encounter.ally_name() + " quedó fuera de combate. La próxima prueba comienza recuperado." if state.phase == "defeat" else "Regresaste al valle."))
 		_drop_notice(state.id)
 		_reward_notice(state.id)
+		if state.phase == "defeat": text = preload("res://scripts/first_session.gd").COPY.defeat
 		column.add_child(_label(text, 25))
 		column.add_child(_button("Volver al mapa", func(): navigate.emit("jade_play")))
 		if state.phase in ["captured", "escaped"] and App.profile.campaign.get("route", Route.defaults()).current.get("encounter_id") == state.id:
@@ -406,6 +414,7 @@ func _options_menu() -> void :
 func _trainer_menu() -> void :
 	var content:= _popup("TrainerMenu", "Entrenador · resonancia opcional")
 	if content == null: return
+	_help_in(content, "trainer")
 	var model = Router.create(App.profile.campaign.encounter)
 	if not model.restore(App.profile.campaign.encounter): return
 	var state: Dictionary = model.state
@@ -422,6 +431,7 @@ func _trainer_menu() -> void :
 func _team_menu() -> void :
 	var content:= _popup("TeamMenu", "Equipo · cambiar consume la acción")
 	if content == null: return
+	_help_in(content, "team")
 	var state: Dictionary = App.profile.campaign.encounter
 	for member in state.get("members", []):
 		var id: String = member.instance_id
@@ -479,6 +489,7 @@ func _location_details(point_id: String) -> void :
 	image_view.custom_minimum_size = Vector2(0, 80)
 	content.add_child(image_view)
 	content.add_child(_label(info.description, 22))
+	_help_in(content, "entry", point_id)
 	var point:= Route.point(point_id)
 	if point.has("level"):
 		content.add_child(_label("Nv. %d · %d rivales · XP inicial %d / repetición %d" % [int(point.level), point.enemies.size(), int(point.first_xp), int(point.repeat_xp)], 20))

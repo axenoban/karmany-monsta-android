@@ -1,5 +1,20 @@
 # Continuidad de Karmany Monsta
 
+## Checkpoint operativo E5 · Work · 15/10/2026
+
+- Base real verificada: dev `08ed2e70b35bfd1489fd9d88a5cdff52e9447dc2`; solo cambios documentales desde Preview38 `f0266ba`. Sin PR abiertos ni otra rama E5 al comenzar. main `9ef7af7` protegida.
+- Rama única creada: `feature/e5-primera-sesion`. Work escritor exclusivo; Chat revisión sin escrituras. Contrato `E5_PRIMERA_SESION.md` respetado, E6 no iniciada.
+- Implementadas ayudas inline E5-01…12, campo opcional `first_session` solo al iniciar partida nueva/instalación sin perfil, Ayuda manual, textos reales y resumen permanente derrota/XP. Motores, datos regionales, migraciones y reglas intactos.
+- Primera suite completa local correcta: 26 suites históricas + E5, 3 Python; import Godot 4.7.2 sin errores. Ampliación E5: 601 checks, incluyendo 69 Preview32, 10 E2 y 7 perfiles cargados por fuente Preview38 aprobada. Revisión visual, CI/exportación y APK todavía pendientes en este checkpoint.
+- Se corrigió incompatibilidad con el test de defaults de instalación preservando el contrato de SaveStore y moviendo la activación E5 a App; no se cambió ni debilitó el test histórico.
+- SHA de este avance: commit que contiene esta sección, consultar git log. Sin integración a dev/main ni validación física E5.
+
+**SIGUIENTE PASO:** terminar revisión visual, CI y exportación de candidata E5.
+**RESPONSABLE:** WORK.
+**INSTRUCCIÓN PARA CONTINUAR:** verificar HEAD de feature/e5-primera-sesion y dev; completar pruebas, revisión visual y CI/APK de E5, publicar PR contra dev y entregar validación física pendiente, sin integrar ni iniciar E6.
+
+Lo que sigue conserva los checkpoints documentales anteriores.
+
 ## Checkpoint ACTUAL · E5 aprobada y traspasada a Work (15/10/2026)
 
 El creador aprobó la especificación de «primera sesión autónoma, tutorial contextual y claridad de derrota/progresión» presentada por Chat, incluidos alcance, exclusiones, 12 intervenciones E5-01…E5-12, microcopias, criterios AC-01…AC-12 y regresiones. Ratificó cuatro decisiones:
