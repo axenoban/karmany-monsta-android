@@ -1,5 +1,10 @@
 # Instrucciones de desarrollo de Karmany Monsta
 
+## Estado vigente · R1.1 autorizada (16/10/2026)
+
+El creador aprobó expresamente implementar **R1.1 — NAV-01/Atrás contextual y QA-01/laboratorio aislado**. Contrato obligatorio: `docs/R1_1_NAVEGACION_LABORATORIO_QA.md`. **Work es único escritor de código** y debe iniciar rama `feature/r1-1-navegacion-qa` desde HEAD vigente de dev tras verificar Git/PR/CI. El laboratorio jamás toca `user://profile.json` ni sus respaldos: niveles1–15, equipos1–3, 12 puntos, perfil QA separado. **Solo contrato/documentos creados por Chat hasta ahora; ninguna APK/CI/PR funcional de R1.1 confirmada.** Baseline aprobado R1/Preview42 código `293ac5e`, CI38889069848, PR20 integrado; dev anterior `672684b`. Sin E6, R2, R3, R4, reglas, balance ni cambios en main/dev antes de validación física. Tras este encabezado, los apartados de R1 «no iniciar nuevas funcionalidades» son históricos y no invalidan la autorización explícita de R1.1. Más detalles de responsable/instrucción en docs/ROADMAP_ESTADO.md.
+
+
 Antes de actuar, leer `docs/ROADMAP_ESTADO.md`, `docs/ROADMAP_CHAT_WORK.md` y `docs/CONTINUIDAD.md`; verificar HEAD, historia, PR, diferencias y CI reales. Los documentos históricos no sustituyen GitHub ni las instrucciones actuales del creador.
 
 ## Estado vigente R1
