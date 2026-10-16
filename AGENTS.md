@@ -4,7 +4,7 @@ Antes de actuar, leer `docs/ROADMAP_ESTADO.md`, `docs/ROADMAP_CHAT_WORK.md` y `d
 
 ## Baseline y etapa vigentes
 
-Preview 38 / v0.21.0-unification, código `f0266badaa7851da3de2bcc08a65752b6409360b`, aprobada físicamente por el creador el 15/10/2026. R0 unifica Preview32 + Chat E1 + Work E2 y queda completada. El cierre integra el PR #18 en dev por fast-forward autorizado. El PR #17 anterior se considera absorbido; comprobar su ascendencia antes de cerrarlo sin fusionarlo de nuevo.
+Preview 38 / v0.21.0-unification, código `f0266badaa7851da3de2bcc08a65752b6409360b`, aprobada físicamente por el creador el 15/10/2026. R0 unifica Preview32 + Chat E1 + Work E2 y queda completada. PR #18 integrado por fast-forward verificado en dev @525acef829ba934ddce3bb84ed08edc194c2640e. GitHub cerró PR #17 por ascendencia, sin una segunda fusión. Los commits documentales posteriores conservan el mismo código aprobado.
 
 E5 es la siguiente etapa pendiente: **Chat prepara primero diseño, especificación y criterios de aceptación**. **Work espera lo aprobado** y solo después implementará en una nueva feature desde dev validado. Esta intervención únicamente cierra R0; no inicia E5.
 

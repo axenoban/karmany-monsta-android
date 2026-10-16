@@ -7,7 +7,8 @@ La **Preview 38 / v0.21.0-unification**, código `f0266badaa7851da3de2bcc08a6575
 Referencia adicional: [validación registrada por Chat en PR #18](https://github.com/axenoban/karmany-monsta-android/pull/18#issuecomment-6204818029). Es aprobación general de la versión; no se atribuyen pruebas específicas no detalladas por el usuario.
 
 - **Unificación completada y aprobada.** Valle Jade y Bosque del Velo (6 + 6 etapas), contenido recuperado de Preview32 y mejoras E1/E2 constituyen el baseline estable.
-- **Integración autorizada:** fast-forward de `dev/karmany-core` desde `2ea590cff0b0e1cb1c6b33318bf156901efb681e` al commit documental de este cierre, descendiente de `892a109e8db48f25c30d81fa3c74aefdf0d7d414`. El SHA exacto de cierre es el commit que contiene esta sección y debe comprobarse en GitHub.
+- **Integración realizada y verificada:** fast-forward de `dev/karmany-core` desde `2ea590cff0b0e1cb1c6b33318bf156901efb681e` a `525acef829ba934ddce3bb84ed08edc194c2640e`. El commit de cierre posterior solo documenta esta verificación; código de juego aprobado `f0266ba`.
+
 - Código aprobado idéntico: desde `f0266ba` hasta `892a109` solo cambiaron cuatro archivos en `docs/`; este cierre solo modifica instrucciones/documentación.
 - [CI 38824304295 correcta](https://github.com/axenoban/karmany-monsta-android/actions/runs/38824304295): 4.409 checks Godot en 26 suites, 3 Python, exportación, firma v2/v3 y auditoría. No se atribuye una ejecución nueva a este cierre documental.
 - [APK aprobada Preview 38](https://github.com/axenoban/karmany-monsta-android/releases/download/android-preview-38/karmany-monsta-preview.apk), SHA-256 `16a66fc970346981eb628f7ac4a04a7633eac8ff08b93a735d723c7bb37c08ac`; evidencia en `docs/recovery/CANDIDATA_38_VERIFICACION.json`.
@@ -151,3 +152,19 @@ No cambiar motor, paquete, firma de preview ni esquema de guardado sin justifica
 - Integrados por fast-forward desde cb98974 a d6e960a en dev/karmany-core. main permanece9ef7af7. PR15/16 se cierran tras integración por avance directo, sin commit de merge.
 - Incluye XP individual/equipo, tope Jade10, estadísticas por nivel, mejoras secuenciales del Libro con puntos, migración compatible y resumen animado de victoria de solo lectura.
 - Próxima etapa: decisión de región y balance mediante docs/PROPUESTA_REGION_21.md. El cierre no autoriza valores nuevos.
+
+## Verificación final de integración · 15/10/2026
+
+- Fast-forward confirmado: dev y feature idénticos en `525acef829ba934ddce3bb84ed08edc194c2640e`, cero archivos diferentes.
+- GitHub: PR #18 **closed / merged=true**. PR #17 **closed / merged=true** automáticamente al incluir su historia en dev; no se llamó a ninguna operación de merge para PR #17.
+- Ascendencia de E1 confirmada: `00b2769` es merge-base de E1 contra dev, behind=0. Todo el bloque aprobado `f0266ba` sigue incluido; diferencias posteriores limitadas a AGENTS/documentación.
+- main verificada sin cambios en `9ef7af778ee59a47f62bdfbfd5eb0786ce787213`.
+- No se han ejecutado tests ni compilación nuevos para cambios exclusivamente documentales; se conserva la CI exitosa y APK Preview38 aprobadas.
+- La nueva regla de cierre/traspaso está en AGENTS y ROADMAP_ESTADO y aplica a todas las entregas de Chat y Work.
+- **SIGUIENTE PASO:** especificar E5 sin iniciar su implementación.
+- **RESPONSABLE:** CHAT.
+- **INSTRUCCIÓN PARA CONTINUAR:**
+
+```text
+Continúa Karmany Monsta Android en axenoban/karmany-monsta-android. Verifica el HEAD real de dev/karmany-core y lee AGENTS.md, docs/ROADMAP_ESTADO.md, docs/ROADMAP_CHAT_WORK.md y docs/CONTINUIDAD.md. La Preview 38 (v0.21.0-unification, código f0266ba) está aprobada físicamente y la unificación está cerrada. Prepara únicamente el diseño y la especificación de E5: primera sesión autónoma, tutorial contextual y claridad de derrota/progresión. Define alcance, exclusiones, microcopias, criterios de aceptación, regresiones de guardado/UI y un bloque acotado con instrucción lista para Work. No programes ni modifiques reglas, balance, canon o sistemas estables. Distingue decisiones pendientes y espera su aprobación antes de autorizar implementación. Termina con SIGUIENTE PASO, RESPONSABLE (CHAT O WORK) e INSTRUCCIÓN PARA CONTINUAR.
+```
