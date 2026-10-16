@@ -1,5 +1,20 @@
 # ESTADO VIVO · Roadmap de Karmany Monsta (Chat + Work)
 
+## R1.1 AUTORIZADA · contrato implementable registrado · 16/10/2026
+
+- **Nueva autorización del creador:** «Sí, autorizo» para **R1.1 — NAV-01 + QA-01**. La autorización corresponde a la solución descrita por Chat: Atrás contextual, y laboratorio configurable de niveles, equipos y 12 etapas sin alterar el guardado real. **No requiere otra ronda de diseño ni autorización adicional para que Work programe estos dos módulos.**
+- **Contrato ejecutivo:** [docs/R1_1_NAVEGACION_LABORATORIO_QA.md](R1_1_NAVEGACION_LABORATORIO_QA.md). **NAV-01:** conservar procedencia entre pantallas y no apilar redibujos. **QA-01:** perfiles QA en almacenamiento separado (sin tocar `user://profile.json` ni sus copias), presets de entrenador y Karmany Nv.1–15, equipo1–3, puntos1–6 de Jade y Velo, stamina y reinicio QA, solo builds de prueba. Validación rigurosa con modelos existentes; no debilitar reglas.
+- **Baseline funcional:** R1/Preview42 aprobada e integrada, PR20 cerrado; código `293ac5efb1b781258065171384db58db47b77aec`, CI `38889069848`, SHA APK `f63f31c12b2588bf7b65dd13f390d4ceb7b8ad9af18abe104960e4d1a81f84f1`. Dev antes de documentación R1.1: `672684b6167cc1537f8cf6bafd6831fc9de889fb`. El HEAD actual incluye solamente el nuevo contrato/documentos, no código nuevo. Verificar HEAD real al iniciar Work.
+- **Responsable funcional exclusivo: WORK**, autorizado a comenzar implementación después de verificar HEAD/ramas/PR y leer contrato; nueva rama `feature/r1-1-navegacion-qa` desde dev real. No existe todavía PR, CI o APK de R1.1; Chat registra diseño/estado sin tocar scripts.
+- **Exclusiones:** No iniciar E6, R2–R4, cambios de PS, curación, balance, canon, contenido, regiones ni otras funciones. No tocar `main`; no integrar `dev` hasta prueba física explícita de APK candidata R1.1.
+- **Verificaciones obligatorias:** CI y pruebas con bytes idénticos de guardados reales antes/después de QA, navegación originaria y escenarios QA, cierre/reapertura, firma/actualización, pruebas físicas de creador.
+- Las entradas inferiores sobre R1.1 «pendiente de autorización» y PR20 «abierto» son **históricas**; no prevalecen sobre este checkpoint.
+
+**SIGUIENTE PASO:** Work implementa NAV-01 y QA-01 en rama independiente y entrega PR + CI + APK candidata (numeración verificada).
+**RESPONSABLE:** WORK (único escritor de código, al ejecutar el encargo en Work); CHAT audita resultados.
+**INSTRUCCIÓN PARA CONTINUAR:** «El creador autorizó R1.1. En axenoban/karmany-monsta-android verifica HEAD/PR/CI y lee AGENTS.md, ROADMAP_ESTADO.md, ROADMAP_CHAT_WORK.md, CONTINUIDAD.md y docs/R1_1_NAVEGACION_LABORATORIO_QA.md. Implementa solo NAV-01 y QA-01 en feature/r1-1-navegacion-qa desde dev vigente. El laboratorio debe tener guardado QA completamente separado del perfil real; niveles 1–15, equipo 1–3, 12 etapas. No E6/R2–R4 ni cambios de reglas. PR/CI/APK SHA verificable; no integrar sin «prueba correcta» del creador.» 
+
+
 ## R1 · aprobación física y cierre seguro · 16/10/2026 (America/La_Paz)
 
 > «Prueba correcta, Preview42. Autorizo a Work a verificar y preparar el cierre seguro de R1/PR20. La corrección de Atrás y el laboratorio QA quedan para una entrega posterior independiente. No iniciar E6 ni R2–R4.»
