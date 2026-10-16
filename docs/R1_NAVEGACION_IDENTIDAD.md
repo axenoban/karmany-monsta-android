@@ -1,9 +1,9 @@
 # R1 · Navegación, identidad y prólogo cinematográfico
 
-**Estado:** especificación cerrada para revisión/aprobación de implementación por el creador. **No implementada ni probada.**
+**Estado:** contrato de diseño cerrado e **implementación R1-01…05 expresamente autorizada por el creador** (15/10/2026). **Responsable de implementación: WORK**. No se ha confirmado inicio de programación, rama activa, CI o APK de R1.
 **Decisión expresa del creador:** Ezel es protagonista controlado; Axe es su mentor y presenta el mundo antes de explorar. Prólogo **cinematográfico**, no combate guiado.
 **Baseline:** Preview40 aprobada (código `0c356db0fcf003e6c6f56e109d9e1e85addfea1d`; CI38833949394; PR19 integrado) en `dev/karmany-core` @ `6c3f6f4da25dac3c5a4f5866d9043b4c2c68fa48` antes de este documento.
-**Responsables:** Chat especifica y revisa; Work implementa solo cuando el creador lo autorice. El diagnóstico de partidas reportado por el creador no equivale a certificar la alfa E6 de 5–10 testers.
+**Responsables:** Chat especifica y revisa; el creador **ha autorizado a Work a comenzar la implementación de R1**. Work es único escritor funcional, con integración bloqueada hasta prueba física correcta identificable. El diagnóstico de partidas reportado por el creador no equivale a certificar la alfa E6 de 5–10 testers.
 
 ## Límite del contrato
 **R1-01:** prólogo con Axe/Ezel. **R1-02:** navegación principal. **R1-03:** Bestiario visual. **R1-04:** perfil de Ezel. **R1-05:** árbol de resonancias táctil.
@@ -59,7 +59,7 @@
 11. CI, Android APK, firma y SHA verificados. PR propio; sin integración a dev hasta declaración física «prueba correcta» de la APK R1 correspondiente.
 
 ## Límites de ejecución
-**R1 está especificado, NO autorizado aún para programar por este documento.** Work, después de autorización expresa del creador, verifica HEAD/AGENTS/PR/CI, crea `feature/r1-navegacion-identidad` desde dev real, implementa R1-01…05 y solo las pruebas/regresiones necesarias. No integrar sin validación física; no tocar main, E6 ni R2/R3/R4. Ninguna CI/APK nueva se afirma aquí.
-**SIGUIENTE PASO:** pedir al creador autorización de implementación de R1 sobre esta especificación.
-**RESPONSABLE:** CHAT hasta el traspaso; WORK solo cuando el creador lo autorice.
-**INSTRUCCIÓN PARA CONTINUAR:** «Implementa exclusivamente R1-01…05 según docs/R1_NAVEGACION_IDENTIDAD.md, partiendo del HEAD de dev y revisando AGENTS/estado. No rediseñes reglas ni R2/R3/R4/E6; conserva Preview40, genera PR/CI/APK y espera prueba correcta para integrar».
+**R1 está especificado y AUTORIZADO por el creador para su implementación exclusiva por Work.** Work verifica HEAD/AGENTS/PR/CI, crea `feature/r1-navegacion-identidad` desde dev real si no hay otra implementación activa, implementa R1-01…05 y solo las pruebas/regresiones necesarias. No integrar sin validación física; no tocar main, E6 ni R2/R3/R4. Ninguna CI/APK nueva se afirma aquí.
+**SIGUIENTE PASO:** Work inicia R1-01…05 en rama feature, genera PR/CI/APK candidata; Chat audita y el creador prueba físicamente antes de integrar.
+**RESPONSABLE:** WORK para implementación R1; Chat revisa en solo lectura.
+**INSTRUCCIÓN PARA CONTINUAR:** «El creador autorizó expresamente implementar R1-01…05. Verifica HEAD y escritor activo, lee docs/R1_NAVEGACION_IDENTIDAD.md, AGENTS y estado, crea feature desde dev vigente y programa solo este contrato. No implementar E6, R2/R3/R4, reglas o balance; genera PR/CI/APK y espera validación física explícita antes de integrar».
