@@ -82,8 +82,13 @@ func _run() -> void:
 		main._show(page)
 		await process_frame
 		_check(main.get_node_or_null("Page") != null, "screen builds: " + page)
+	# Screen construction above is not a user route. Exercise a real origin chain.
+	main._show("home")
+	main._show("map")
+	main._show("trainers")
 	main._back()
 	_check(main.page == "map", "trainers back returns to map")
+	main._show("bestiary")
 	main.selected_species = "tanugami"
 	main._show("species")
 	await process_frame

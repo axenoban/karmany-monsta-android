@@ -1,5 +1,19 @@
 # ESTADO VIVO · Roadmap de Karmany Monsta (Chat + Work)
 
+## R1.1 · implementación Work en validación · 16/10/2026
+
+- Rama `feature/r1-1-navegacion-qa`, base `29be7ba3d30ea72e860f62ec4f0c8aa766e6d1b4`; Work único escritor. Baseline Preview42/293ac5e conservado. Dev y main sin modificar; sin integración autorizada.
+- NAV-01: historial limitado de nombres de ruta, redibujos sin duplicados, Atrás compartido Android/botón y prioridad de modales. Opciones disponibles desde exploración y regreso contextual; nueva partida/cambio de perfil invalidan historial.
+- QA-01: perfil sintético validado, almacén fijo `user://qa/profile.json`, barreras de ruta/escritura, temporizadores por generación, acceso explícito solo preview/editor configurado. Niveles1–15, equipo1–3, 13 especies, 12 etapas, stamina y reinicio. Las puertas regionales se omiten exclusivamente en QA; validadores y costes normales intactos. Antiguos simuladores de nivel/captura bloqueados fuera de QA; redistribución normal conservada.
+- Pruebas locales: 30 suites Godot correctas en la pasada completa;3 pruebas Python correctas. Suite R1.1 final:233 comprobaciones correctas (aislamiento binario, fallos, victoria/derrota, captura, callbacks y navegación); revisión visual:10 comprobaciones y8 imágenes, letras normales/grandes, sin errores de motor. Siete fixtures Preview42 generadas por checkout exacto293ac5e. No atribuir pruebas físicas.
+- Incidencia de regresión resuelta: el test antiguo construía páginas sucesivas y esperaba destinos fijos; ahora construye explícitamente Home→Mapa→Perfil/Bestiario antes de comprobar el regreso. Se conservan las aserciones de destino; el contrato nuevo se comprueba en suite independiente.
+- Falta: publicar commit y PR, CI/export, firma/SHA APK y validación física. No hay todavía APK R1.1 entregable ni aprobación humana.
+
+**SIGUIENTE PASO:** terminar validación y publicar candidata R1.1 identificable.
+**RESPONSABLE:** WORK.
+**INSTRUCCIÓN PARA CONTINUAR:** En axenoban/karmany-monsta-android, continúa exclusivamente R1.1 en feature/r1-1-navegacion-qa desde baseline29be7ba. Verifica cambios y pruebas, completa PR/CI/APK/firma/SHA y entrega las seis comprobaciones físicas del contrato. No integrar dev/main hasta «prueba correcta» explícita; no E6/R2–R4.
+
+
 ## R1.1 AUTORIZADA · contrato implementable registrado · 16/10/2026
 
 - **Nueva autorización del creador:** «Sí, autorizo» para **R1.1 — NAV-01 + QA-01**. La autorización corresponde a la solución descrita por Chat: Atrás contextual, y laboratorio configurable de niveles, equipos y 12 etapas sin alterar el guardado real. **No requiere otra ronda de diseño ni autorización adicional para que Work programe estos dos módulos.**

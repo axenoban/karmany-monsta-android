@@ -8,6 +8,12 @@ var ui_audio: Node
 const Progress = preload("res://scripts/level_progression.gd")
 const ProgressRules = preload("res://scripts/progression_rules.gd")
 signal combat_updated
+signal profile_changed
+const QAStore = preload("res://scripts/qa_store.gd")
+var qa_active := false
+var normal_storage: RefCounted
+var profile_epoch := 0
+var ui_epoch := 0
 const RESPONSE_DELAY:= 0.7
 var response_timer: Timer
 var response_error:= ""
@@ -37,7 +43,9 @@ var load_failed:= false
 func _ready() -> void :
 	response_timer = Timer.new()
 	response_timer.one_shot = true
-	response_timer.timeout.connect(_resolve_enemy_response)
+	var initial_epoch := profile_epoch
+	response_timer.timeout.connect(func():
+		if initial_epoch == profile_epoch: _resolve_enemy_response())
 	add_child(response_timer)
 	var bus:= AudioServer.get_bus_index("SFX")
 	if bus < 0:
@@ -68,6 +76,9 @@ func _ready() -> void :
 	_schedule_enemy_response()
 
 func commit_profile(next_profile: Dictionary) -> bool:
+	if qa_active and (not qa_available() or not storage is QAStore or storage.base_path != QAStore.PATH):
+		notice = "Escritura bloqueada: aislamiento QA inválido."
+		return false
 	var candidate:= next_profile.duplicate(true)
 	if Store.valid(candidate) and candidate.get("schema") == Store.SCHEMA_VERSION:
 		candidate.skill_tree = TreeModel.normalized(candidate.skill_tree)
@@ -104,6 +115,9 @@ func set_preference(key: String, enabled: bool) -> bool:
 	return commit_profile(next_profile)
 
 func change_tree(operation: String, node_id: String = "", expected_rank: int = -1) -> bool:
+	if operation in ["level", "capture"] and not (qa_active and qa_available()):
+		notice = "Esta simulación requiere el laboratorio QA aislado."
+		return false
 	if load_failed:
 		notice = "Recupera la partida antes de modificar el árbol."
 		return false
@@ -191,7 +205,7 @@ func start_route(point_id: String) -> bool:
 		notice = "Retoma y termina el encuentro actual antes de iniciar otro."
 		return false
 	var reason:= ProgressRules.region_reason(profile.skill_tree, Route.region_for(point_id))
-	if not reason.is_empty():
+	if not reason.is_empty() and not qa_active:
 		notice = reason
 		return false
 	return _start_encounter(selected.species, point_id)
@@ -214,7 +228,7 @@ func _start_encounter(enemy_species: String, point_id: String = "") -> bool:
 	energy.drop = {}
 	energy.scouting = not point_id.is_empty()
 	next_profile.campaign.exploration = energy
-	if not point_id.is_empty() and not ProgressRules.region_reason(next_profile.skill_tree, Route.region_for(point_id)).is_empty():
+	if not qa_active and not point_id.is_empty() and not ProgressRules.region_reason(next_profile.skill_tree, Route.region_for(point_id)).is_empty():
 		notice = ProgressRules.region_reason(next_profile.skill_tree, Route.region_for(point_id))
 		return false
 	next_profile.campaign.progression = Progress.normalized(next_profile.campaign)
@@ -437,7 +451,7 @@ func consume_experience(encounter_id: String) -> Dictionary:
 
 func select_region(region_id: String) -> bool:
 	var reason:= ProgressRules.region_reason(profile.skill_tree, region_id)
-	if not reason.is_empty():
+	if not reason.is_empty() and not qa_active:
 		notice = reason
 		return false
 	if not profile.campaign.encounter.is_empty() and profile.campaign.encounter.phase in ["battle", "replacement", "capture"]:
@@ -493,3 +507,62 @@ func finish_r1_intro(status: String) -> bool:
 	next.r1_intro.status = status
 	next.campaign.intro_seen = true
 	return commit_profile(next)
+
+# Export feature is explicit. Editor runs require the explicit development setting.
+func qa_available() -> bool:
+	return OS.has_feature("qa_preview") or (OS.has_feature("editor") and bool(ProjectSettings.get_setting("karmany/qa/development", false)))
+
+func _switch_profile(next_store: RefCounted, next_profile: Dictionary, is_qa: bool) -> void:
+	profile_epoch += 1
+	if qa_active != is_qa: ui_epoch += 1
+	if response_timer != null:
+		response_timer.stop()
+		response_timer.queue_free()
+	response_timer = Timer.new()
+	response_timer.one_shot = true
+	var epoch := profile_epoch
+	response_timer.timeout.connect(func():
+		if epoch == profile_epoch: _resolve_enemy_response())
+	add_child(response_timer)
+	pending_transition = {}
+	pending_experience_id = ""
+	animation_key = ""
+	response_encounter_id = ""
+	response_revision = -1
+	storage = next_store
+	profile = next_profile.duplicate(true)
+	qa_active = is_qa
+	load_failed = false
+	apply_audio_preferences()
+	profile_changed.emit()
+	_schedule_enemy_response()
+
+func enter_qa() -> bool:
+	if not qa_available() or qa_active or load_failed: return false
+	if DirAccess.make_dir_recursive_absolute("user://qa") != OK:
+		notice = "No se pudo crear el directorio QA. Tu partida no cambió."
+		return false
+	var target := QAStore.new()
+	var fresh := preload("res://scripts/qa_profile.gd").preset(1, 0, [{"species":"zephyr", "level":1}], 0, "jade", 1, 100)
+	if not target.save_profile(fresh):
+		notice = target.last_error
+		return false
+	normal_storage = storage
+	_switch_profile(target, fresh, true)
+	return true
+
+func apply_qa(candidate: Dictionary) -> bool:
+	if not qa_active or not qa_available() or candidate.is_empty() or not Store.valid(candidate): return false
+	if not commit_profile(candidate): return false
+	_switch_profile(storage, candidate, true)
+	return true
+
+func exit_qa() -> bool:
+	if not qa_active or normal_storage == null: return false
+	var restored: Dictionary = normal_storage.load_profile()
+	if not normal_storage.last_error.is_empty():
+		notice = "No se pudo recuperar la partida normal. Permaneces en QA sin escribirla. " + normal_storage.last_error
+		return false
+	_switch_profile(normal_storage, restored, false)
+	normal_storage = null
+	return true
