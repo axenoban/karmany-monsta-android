@@ -52,7 +52,26 @@ func _ready():
 	button("Probar escenario / Reiniciar escenario QA", func(): apply(true))
 	button("Reiniciar QA", confirm_reset)
 	button("Salir al juego normal", func(): leave.emit())
+	restore_configuration()
 	update_summary()
+func restore_configuration():
+	var preset: Dictionary = App.qa_preset
+	if preset.is_empty(): return
+	trainer.value = preset.skill_tree.level
+	xp.max_value = preload("res://scripts/level_progression.gd").requirement(int(trainer.value)) - 1
+	xp.value = preset.campaign.progression.trainer_xp
+	var members: Array = preset.campaign.team.members
+	count.value = members.size()
+	for i in range(members.size()):
+		var member: Dictionary = members[i]
+		species_controls[i].selected = Preset.species().find(member.species_id)
+		levels[i].value = preset.campaign.progression.units[member.instance_id].level
+		if member.instance_id == preset.campaign.team.active_id: active.value = i + 1
+	var region_id: String = preset.campaign.route.selected
+	region.selected = 0 if region_id == "jade" else 1
+	point.value = Route.completions(preset.campaign.route,region_id).size() + 1
+	stamina.value = preset.campaign.exploration.value
+
 func update_summary():
 	if not is_instance_valid(summary): return
 	xp.max_value = preload("res://scripts/level_progression.gd").requirement(int(trainer.value)) - 1

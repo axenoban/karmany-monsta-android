@@ -11,6 +11,7 @@ signal combat_updated
 signal profile_changed
 const QAStore = preload("res://scripts/qa_store.gd")
 var qa_active := false
+var qa_preset: Dictionary = {}
 var normal_storage: RefCounted
 var profile_epoch := 0
 var ui_epoch := 0
@@ -548,12 +549,14 @@ func enter_qa() -> bool:
 		notice = target.last_error
 		return false
 	normal_storage = storage
+	qa_preset = fresh.duplicate(true)
 	_switch_profile(target, fresh, true)
 	return true
 
 func apply_qa(candidate: Dictionary) -> bool:
 	if not qa_active or not qa_available() or candidate.is_empty() or not Store.valid(candidate): return false
 	if not commit_profile(candidate): return false
+	qa_preset = candidate.duplicate(true)
 	_switch_profile(storage, candidate, true)
 	return true
 
@@ -565,4 +568,5 @@ func exit_qa() -> bool:
 		return false
 	_switch_profile(normal_storage, restored, false)
 	normal_storage = null
+	qa_preset = {}
 	return true

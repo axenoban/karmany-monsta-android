@@ -40,6 +40,10 @@ func run():
 		main._show("battle")
 		await shot("battle-" + str(large))
 		check(main.get_node("Page").get_rect().end.y <= 720, "QA page fits viewport")
+		main._show("tree_lab")
+		await frames()
+		var returned = main.body.get_child(main.body.get_child_count()-1)
+		check(returned.candidate() == app.qa_preset, "return to QA retains exact repeatable configuration")
 	app.response_timer.stop()
 	main.queue_free(); await process_frame
 	await create_timer(0.8).timeout
