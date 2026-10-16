@@ -1,5 +1,25 @@
 # Continuidad de Karmany Monsta
 
+## Estado vigente · aprobación física de E5 / cierre autorizado (15/10/2026, America/La_Paz)
+
+**Estado: aprobación física registrada; cierre/integración en curso.** E5-01…12 y corrección E5-REV-01 aprobadas por el creador sobre **Preview40/v0.22.1-e5**.
+
+> «Prueba correcta, Preview40. Confirmo que realicé satisfactoriamente las seis comprobaciones indicadas y autorizo a Work a preparar el cierre seguro de E5. No iniciar E6.»
+
+- **Código funcional aprobado:** `0c356db0fcf003e6c6f56e109d9e1e85addfea1d`. [CI38833949394 correcta](https://github.com/axenoban/karmany-monsta-android/actions/runs/38833949394): 5.149 checks únicos Godot/28 suites +3 Python, exportación/firma v2/v3 y auditoría. No se ejecuta ni atribuye nueva CI a cambios solo documentales.
+- **APK aprobada:** [Preview40](https://github.com/axenoban/karmany-monsta-android/releases/download/android-preview-40/karmany-monsta-preview.apk), SHA256 `b0499b43cea54b6b22f41291ec1f2d979fd06aca919fd2916d2e16180a657ea1`; manifest de SHA publicado vuelto a consultar y coincidente. Evidencia en `docs/E5_CANDIDATA_40_VERIFICACION.json`.
+- **Alcance de la evidencia humana:** seis comprobaciones satisfactorias expresamente confirmadas por el creador; E5-REV-01 revisada por Chat según la instrucción de cierre. No se atribuyen dispositivo, datos de rendimiento, sesiones adicionales ni prueba independiente con persona novata no declarados.
+- **Git previo verificado:** dev `08ed2e70b35bfd1489fd9d88a5cdff52e9447dc2`, feature `6dc3c3dd0ce176558de37d719b84a9018d26b67d`, PR19 abierto/no integrado. Merge-base=dev, ahead4/behind0. Entre código0c356db y feature6dc3c3d solo cuatro documentos; sin funcionalidad posterior no validada.
+- **Integración prevista:** actualización no forzada de `dev/karmany-core` al cierre de `feature/e5-primera-sesion`, conservando ascendencia y verificando HEAD esperado. Se registrará el SHA y el estado real del PR después de la operación; no se declara integrado por anticipado.
+- **Protección:** main `9ef7af778ee59a47f62bdfbfd5eb0786ce787213` sin cambios. Preview38 permanece incluida, 2 regiones/12 etapas, contenido/arte, motor E1/E2, migraciones, guardados, XP/vínculo y sistemas estables preservados. El cierre solo toca AGENTS/documentación/evidencias, sin nueva APK ni cambios de reglas, balance o canon.
+- **E6 NO INICIADA y NO AUTORIZADA en esta intervención.** No hay nueva implementación activa tras este cierre. Se conservan ramas/releases/historia; sin force push.
+
+**SIGUIENTE PASO:** verificar el cierre real de E5 y esperar instrucciones del creador, sin iniciar E6.
+**RESPONSABLE:** CHAT (auditoría de solo lectura, sin escritor funcional asignado).
+**INSTRUCCIÓN PARA CONTINUAR:** En axenoban/karmany-monsta-android verifica HEAD real de dev/karmany-core, feature/e5-primera-sesion, main y PR19; contrasta el cierre E5 con Preview40/código0c356db, CI38833949394 y SHA aprobado. Revisa solo en lectura la integración, aprobación literal y continuidad. No hagas commits, merges, nuevas funciones ni inicies o prepares E6; espera instrucciones expresas del creador. Termina con siguiente paso, responsable e instrucción copiable.
+
+Los checkpoints inferiores son históricos; sus estados de prueba pendiente no sustituyen la aprobación explícita actual.
+
 ## Entrega corregida E5-REV-01 · Preview40 · 15/10/2026
 
 - **HECHO:** defecto P2 de cierre de Ayuda reproducido y corregido. Cerrar/Atrás cierran aunque falle persistir `seen`; Otra explicación avanza; aviso visible sin modal ni bucle. Reconocimiento fallido no se inventa en memoria y puede repetirse. Protección contra reapertura diferida cancelada.

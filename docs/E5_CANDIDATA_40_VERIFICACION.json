@@ -1,6 +1,6 @@
 {
   "stage": "E5 primera sesión autónoma",
-  "status": "candidata; prueba física pendiente",
+  "status": "aprobada físicamente por el creador; cierre E5 autorizado",
   "source_commit": "0c356db0fcf003e6c6f56e109d9e1e85addfea1d",
   "ci_run": 38833949394,
   "preview": 40,
@@ -47,7 +47,7 @@
     "help_persistence": 103,
     "rendered_e5_screens": 13,
     "rendered_regional_screens": 22,
-    "physical_android": "pendiente nueva prueba de APK40; no se hereda de39"
+    "physical_android": "creador confirma prueba correcta de Preview40 y seis comprobaciones satisfactorias; cierre E5 autorizado"
   },
   "compiled_script_comparison_to_preview39": {
     "total": 44,
@@ -55,5 +55,14 @@
       "assets/scripts/context_help.gdc"
     ]
   },
-  "unchanged_art_audio_assets_to_preview39": 65
+  "unchanged_art_audio_assets_to_preview39": 65,
+  "approval": {
+    "date_local": "2026-10-15",
+    "timezone": "America/La_Paz",
+    "statement": "Prueba correcta, Preview40. Confirmo que realicé satisfactoriamente las seis comprobaciones indicadas y autorizo a Work a preparar el cierre seguro de E5. No iniciar E6.",
+    "declared_checks": 6,
+    "source": "instrucción expresa del creador para cierre de E5; revisión E5-REV-01 por Chat confirmada en esa instrucción",
+    "limits": "no se atribuyen dispositivos, sesiones ni pruebas adicionales no declarados",
+    "e6": "no iniciar"
+  }
 }

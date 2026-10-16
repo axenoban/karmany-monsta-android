@@ -1,6 +1,6 @@
 # E5 · implementación candidata
 
-**Entrega vigente:** Preview40/v0.22.1-e5, código `0c356db`, [CI38833949394 correcta](https://github.com/axenoban/karmany-monsta-android/actions/runs/38833949394). E5-REV-01 corregida; 5.149 checks/28 suites +3 Python, de ellos103 de cierre/persistencia. Evidencia `E5_CANDIDATA_40_VERIFICACION.json`. [APK candidata](https://github.com/axenoban/karmany-monsta-android/releases/download/android-preview-40/karmany-monsta-preview.apk), SHA256 `b0499b43cea54b6b22f41291ec1f2d979fd06aca919fd2916d2e16180a657ea1`. Requiere nueva prueba física; la39 queda como antecedente. No integrada en dev/main.
+**Entrega vigente aprobada físicamente por el creador:** Preview40/v0.22.1-e5, código `0c356db`, [CI38833949394 correcta](https://github.com/axenoban/karmany-monsta-android/actions/runs/38833949394). E5-REV-01 corregida; 5.149 checks/28 suites +3 Python, de ellos103 de cierre/persistencia. Evidencia `E5_CANDIDATA_40_VERIFICACION.json`. [APK candidata](https://github.com/axenoban/karmany-monsta-android/releases/download/android-preview-40/karmany-monsta-preview.apk), SHA256 `b0499b43cea54b6b22f41291ec1f2d979fd06aca919fd2916d2e16180a657ea1`. Aprobación explícita: «Prueba correcta, Preview40», seis comprobaciones declaradas. Cierre seguro de PR19 autorizado; consultar estado de integración real en ROADMAP_ESTADO. No iniciar E6. La39 queda como antecedente.
 
 Contrato: [E5_PRIMERA_SESION.md](E5_PRIMERA_SESION.md), aprobado 15/10/2026. Work único escritor. Rama `feature/e5-primera-sesion`, base documental `08ed2e70b35bfd1489fd9d88a5cdff52e9447dc2`, juego Preview38 `f0266ba`. Sin E6 ni integración en dev/main. La aprobación del contrato no valida esta APK.
 
@@ -48,7 +48,7 @@ La extensión opcional de perfil `first_session: {version: 1, seen: [...]}` solo
 9. Activar texto grande, movimiento reducido y silencio. Pulsar Atrás, suspender/reanudar durante ataque/XP/vínculo, cerrar/reabrir. Controles y fondo continúan accesibles.
 10. Reabrir una partida E5 tras descartar tarjetas: no repite esas ayudas automáticamente, Ayuda permite consultarlas. Informar dispositivo, versión/build, pasos, esperado/real y asistencia recibida. Confirmar explícitamente **«prueba correcta»** únicamente sobre la APK/SHA probada si resulta aceptable.
 
-Pendiente: comprensión real por una persona novata, compatibilidad visual y ciclo de vida en dispositivo físico. No se declara validación humana ni se integra hasta la confirmación del creador.
+Registro histórico de entrega: esas validaciones estaban pendientes. El creador aprobó después Preview40 y autorizó su cierre; se registran únicamente sus seis comprobaciones declaradas, sin afirmar sesiones adicionales con persona novata. Consultar cierre vigente en ROADMAP_ESTADO.
 
 ## E5-REV-01 · corrección posterior a candidata39
 
@@ -56,4 +56,4 @@ El cierre de Ayuda dejó de depender del éxito de guardar su reconocimiento. An
 
 La prueba anterior de E5 esperaba que la tarjeta quedara visible al fallar. Esa expectativa incorrecta se sustituyó por el contrato no bloqueante, reproduciendo el fallo antes del cambio. La nueva suite ayuda/persistencia añade comparación exacta de perfil y bytes primario/respaldo, dos fallos reales de escritura, cierre por botones/Atrás, avance, interrupción/recarga, reintento y guardados antiguos. La suite completa y APK nuevas constan en los checkpoints más recientes.
 
-**Prueba física adicional obligatoria:** en la APK corregida abrir/cerrar Ayuda varias veces, probar Atrás una y dos veces, Otra explicación, suspender/cerrar/reabrir y comprobar la partida. No es necesario ni recomendable llenar el almacenamiento del dispositivo: el fallo de escritura se inyecta de forma reproducible en tests aislados. Se mantiene pendiente la prueba autónoma por una persona novata y nueva confirmación «prueba correcta» para la APK/SHA corregida; no se hereda de39.
+**Prueba física adicional obligatoria:** en la APK corregida abrir/cerrar Ayuda varias veces, probar Atrás una y dos veces, Otra explicación, suspender/cerrar/reabrir y comprobar la partida. No es necesario ni recomendable llenar el almacenamiento del dispositivo: el fallo de escritura se inyecta de forma reproducible en tests aislados. El creador emitió después una nueva confirmación «prueba correcta, Preview40» y autorizó su cierre. No se hereda de39 ni se afirma prueba independiente con persona novata no declarada.

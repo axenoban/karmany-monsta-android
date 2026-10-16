@@ -4,9 +4,9 @@ Antes de actuar, leer `docs/ROADMAP_ESTADO.md`, `docs/ROADMAP_CHAT_WORK.md` y `d
 
 ## Baseline y etapa vigentes
 
-Preview 38 / v0.21.0-unification, código `f0266badaa7851da3de2bcc08a65752b6409360b`, aprobada físicamente por el creador el 15/10/2026. R0 unifica Preview32 + Chat E1 + Work E2 y queda completada. PR #18 integrado por fast-forward verificado en dev @525acef829ba934ddce3bb84ed08edc194c2640e. GitHub cerró PR #17 por ascendencia, sin una segunda fusión. Los commits documentales posteriores conservan el mismo código aprobado.
+**Baseline funcional aprobado:** Preview40 / v0.22.1-e5, código `0c356db0fcf003e6c6f56e109d9e1e85addfea1d`, CI38833949394 y SHA256 `b0499b43cea54b6b22f41291ec1f2d979fd06aca919fd2916d2e16180a657ea1`. El creador confirma el 15/10/2026 «Prueba correcta, Preview40», seis comprobaciones satisfactorias y autoriza el cierre seguro E5. Registrar solo esas pruebas declaradas. E5-REV-01 corregida/revisada por Chat. Integración de PR19 en curso, comprobar registro real más reciente en ROADMAP_ESTADO y CONTINUIDAD antes de actuar.
 
-**E5 · Primera sesión autónoma: especificación, microcopias, doce intervenciones y criterios aprobados expresamente por el creador el 15/10/2026.** Contrato obligatorio: [`docs/E5_PRIMERA_SESION.md`](docs/E5_PRIMERA_SESION.md). **El único escritor autorizado de E5 es WORK**, que creará `feature/e5-primera-sesion` desde el HEAD real y validado de `dev/karmany-core`, implementará solo lo aprobado y entregará PR/CI/APK para prueba humana. La autorización de especificación NO equivale a `prueba correcta` de la implementación; no integrar a `dev` ni modificar `main` hasta la validación física.
+E5 implementa únicamente el contrato de `docs/E5_PRIMERA_SESION.md`; su especificación histórica se conserva. Preview38/R0 continúa preservada (dos regiones/12 etapas, E1/E2 y partidas). **E6 NO INICIADA: el creador prohíbe comenzarla en este cierre.** No preparar su implementación ni asignar un nuevo bloque; Chat solo verifica cierre en lectura y ambos esperan nuevas instrucciones. No queda autorizado un escritor de nuevas funcionalidades.
 
 ## Ramas, validación y protección
 

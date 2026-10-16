@@ -1,7 +1,7 @@
 # E5 · Primera sesión autónoma · contrato funcional aprobado
 
 **Aprobación humana:** 15/10/2026 (America/La_Paz). El creador aprobó explícitamente las 12 intervenciones, microcopias, criterios y cuatro decisiones de UX.
-**Estado:** APROBADO PARA IMPLEMENTAR, NO IMPLEMENTADO. **Responsable de escritura:** WORK.
+**Estado actual:** IMPLEMENTADA Y APROBADA FÍSICAMENTE en Preview40 por el creador; cierre seguro autorizado a Work el15/10/2026. Código0c356db, CI38833949394 y SHA en ROADMAP_ESTADO. Este documento conserva íntegro el contrato aprobado; referencias a implementación futura del cuerpo son antecedentes. E6 no iniciada.
 **Repositorio:** `axenoban/karmany-monsta-android`.
 **Base comprobada al aprobar:** `dev/karmany-core` @ `76a7347f60605cc28259b0a087f4654b69a89164`. **Código de juego aprobado:** `f0266badaa7851da3de2bcc08a65752b6409360b` (Preview 38 / v0.21.0-unification). Work DEBE consultar HEAD real antes de crear rama.
 **Rama futura sugerida:** `feature/e5-primera-sesion`, desde el nuevo `dev` validado. `main` intacta.
