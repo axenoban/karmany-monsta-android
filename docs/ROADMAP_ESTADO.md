@@ -1,5 +1,20 @@
 # ESTADO VIVO · Roadmap de Karmany Monsta (Chat + Work)
 
+## R1 · entrega técnica Preview42 · 16/10/2026
+
+- **HECHO:** R1-01…05 implementados según contrato: prólogo Axe/Ezel/Zephyr, navegación regional, Bestiario21 fichas/siluetas/datos reales, perfil Ezel/equipo y arrastre táctil del árbol. No E6/R2/R3/R4.
+- **RAMA / PR / CÓDIGO APK:** `feature/r1-navegacion-identidad`, [PR20](https://github.com/axenoban/karmany-monsta-android/pull/20) abierto/borrador, no integrado; código `293ac5efb1b781258065171384db58db47b77aec`, árbol `b24c40e88a1ed3cc2b156942064daed394c3abb4`. El commit de esta evidencia solo añade documentación; no cambia el binario.
+- **CI:** [38889069848](https://github.com/axenoban/karmany-monsta-android/actions/runs/38889069848) completa/correcta:5.560 checks únicos Godot/29 suites +3 Python, importación/exportación Android, firma v2/v3 y auditoría. Las repeticiones de render no suman checks únicos.
+- **APK:** [Preview42 / v0.23.0-r1 / versionCode1042](https://github.com/axenoban/karmany-monsta-android/releases/download/android-preview-42/karmany-monsta-preview.apk),83.387.103 bytes; SHA256 `f63f31c12b2588bf7b65dd13f390d4ceb7b8ad9af18abe104960e4d1a81f84f1`. Descargada/verificada: paquete y fuente correctos, certificado de actualización idéntico a Preview40.
+- **PRESERVACIÓN:**11 JSON de juego iguales al baseline;58 recursos compilados de arte/audio/icono iguales a APK40. Solo cinco scripts compilados existentes cambian (App/Main/SaveStore/SkillTreeMap/TrialUI) y se añaden dos de presentación. Migraciones, modelos de combate/regiones/progresión, estadísticas y JSON del árbol sin cambios. Schema3 conserva compatibilidad con extensión opcional `r1_intro`; campo ausente nunca fuerza prólogo.
+- **PRUEBAS:**411 checks R1,26 renders normal/grande/960×540;40 arrastres sintéticos desde nodo/enlace/fondo, ratón/cancelación; siete fixtures generados ejecutando código exacto Preview40, además de69 Preview32/10 E2/7 Preview38. Carga sin reescritura, primario/backup/temporal, reconocimiento fallido no bloqueante, retorno, conservación E5, propiedad real, datos faltantes y equipo1–3. Suite histórica cubre recompensas únicas, finales, Sakuromushi, derrota/reemplazo, XP/vínculo y turnos.
+- **INCIDENCIAS RESUELTAS:** área de arrastre demasiado estrecha y callback sobre vista retirada detectados/corregidos en prueba local inicial; notas de release heredadas de E5 corregidas. Sin fallo automatizado pendiente. La prueba de20 arrastres Android reales y validación física completa están pendientes; no se atribuyen a simulaciones de CI.
+- **PROTECCIÓN REAL:** dev `ce6917a61ab4dadd9e06296854361d9b9a56f22c`; main `9ef7af778ee59a47f62bdfbfd5eb0786ce787213`, verificadas sin cambios. No force push ni historia eliminada. Guía: [R1_IMPLEMENTACION.md](R1_IMPLEMENTACION.md); evidencia: [R1_CANDIDATA_42_VERIFICACION.json](R1_CANDIDATA_42_VERIFICACION.json).
+
+**SIGUIENTE PASO:** revisión Chat en lectura y seis comprobaciones físicas de Preview42 por el creador. **RESPONSABLE:** CHAT; Work conserva escritura para incidencias R1. **INSTRUCCIÓN PARA CONTINUAR:** En axenoban/karmany-monsta-android verifica HEAD de feature/r1-navegacion-identidad, PR20, CI38889069848 y candidata42/código293ac5e/SHAf63f31c12b2588bf7b65dd13f390d4ceb7b8ad9af18abe104960e4d1a81f84f1. Audita R1-01…05 contra contrato y evidencia, sin escribir. Acompaña prueba de R1_IMPLEMENTACION.md y solicita «prueba correcta, Preview42». No integrar ni iniciar E6/R2–R4. Solo aprobación física explícita permite que Work verifique después una integración segura.
+
+Los registros inferiores son históricos y no sustituyen esta entrega ni su prueba física pendiente.
+
 ## R1 · implementación en curso · Work · 16/10/2026 UTC
 
 Base remota verificada `ce6917a61ab4dadd9e06296854361d9b9a56f22c`; sin PR abiertos ni otra implementación R1. Rama única `feature/r1-navegacion-identidad` creada desde ese HEAD. main `9ef7af7` intacta, código baseline Preview40 `0c356db`, CI38833949394 correcta. Diferencias del baseline a dev exclusivamente documentales.

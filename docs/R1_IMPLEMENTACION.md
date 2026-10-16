@@ -12,7 +12,7 @@ Contrato: `R1_NAVEGACION_IDENTIDAD.md`. Work único escritor. Base documental `c
 ## Evidencia técnica
 Suite R1:411 comprobaciones; incluye perfiles originales Preview32/E2/38, siete perfiles generados ejecutando fuente exactaPreview40, cargas sin escritura, persistencia de marca, fallo real `.tmp` bloqueado con primario/backup conservados, repetición/Atrás, reanudación, propiedad de especies, ausencia de arte/stats, equipo1–3 y40 arrastres sintéticos normal/grande. Renders26 pantallas (normal/grande y960×540). Esto no certifica20 arrastres en hardware Android: debe comprobarlo el creador.
 
-Suite histórica completa y CI se registrarán con referencias reales al entregar. No cambios a JSON de juego, motores de combate/progresión/regiones, migraciones Preview32 ni recursos artísticos. SaveStore conserva schema3, validando solo la extensión opcional. Versionado candidata0.23.0-r1.
+Suite completa local y CI38889069848 correctas:5.560 checks únicos Godot/29 suites +3 Python. Candidata Preview42/v0.23.0-r1, fuente293ac5efb1b781258065171384db58db47b77aec, SHA256f63f31c12b2588bf7b65dd13f390d4ceb7b8ad9af18abe104960e4d1a81f84f1. Exportación/firma v2/v3 y verificación descargada correctas; evidencia R1_CANDIDATA_42_VERIFICACION.json. No cambios a JSON de juego, motores de combate/progresión/regiones, migraciones Preview32 ni recursos artísticos. SaveStore conserva schema3, validando solo la extensión opcional. Versionado candidata0.23.0-r1.
 
 ## Prueba física concreta
 Actualizar sin desinstalar ni borrar datos. Primero probar la partida anterior; Nueva partida conserva su confirmación destructiva: usarla solo después de respaldar la partida que se quiera conservar.
