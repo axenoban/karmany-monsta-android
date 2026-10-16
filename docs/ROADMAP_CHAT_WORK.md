@@ -1,4 +1,16 @@
 # KARMANY MONSTA · ANDROID
+
+## Diseño R1 cerrado · prólogo cinematográfico Ezel/Axe · 15/10/2026
+
+- Decisión humana: **Ezel** es protagonista controlado; **Axe** es su mentor. El creador aprobó **introducción cinematográfica** antes de explorar (no combate guiado) y pidió cerrar la especificación.
+- **Contrato listo para autorización de ejecución:** [docs/R1_NAVEGACION_IDENTIDAD.md](R1_NAVEGACION_IDENTIDAD.md). Alcance R1-01 prólogo / R1-02 navegación / R1-03 Bestiario visual / R1-04 perfil Ezel / R1-05 árbol táctil. Contrato incluye condiciones de guardados antiguos, 21 especies canónicas y 13 de combate, Zephyr inicial separado del catálogo, 11 pruebas de aceptación y microcopias.
+- **Solo documentación nueva, sin programación R1 ni CI ni APK candidata.** Preview40/E5 mantiene código funcional aprobado `0c356db`, CI38833949394; PR19 cerrado. No se atribuye nueva prueba física ni se considera la alfa E6 certificada. R2/R3/R4 quedan fuera y no iniciadas.
+- **Puerta de aprobación:** el contrato queda cerrado en diseño, pero Work no está autorizado a implementarlo hasta orden expresa del creador. `main` no debe cambiar; no tocar reglas, balance ni partidas.
+
+**SIGUIENTE PASO:** solicitar autorización expresa para que Work programe solamente R1-01…05 desde HEAD verificado.
+**RESPONSABLE:** CHAT (especificación terminada; ningún escritor funcional asignado).
+**INSTRUCCIÓN PARA CONTINUAR:** «Con docs/R1_NAVEGACION_IDENTIDAD.md y la Preview40 de base, autoriza o rechaza la implementación de R1. Work solo tras aprobación ejecutará el contrato en feature propia, PR/CI/APK, sin E6 ni R2–R4, esperando prueba física antes de integrar».
+
 ## Roadmap coordinado de Chat + Work
 
 
