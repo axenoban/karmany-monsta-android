@@ -1,5 +1,26 @@
 # ESTADO VIVO · Roadmap de Karmany Monsta (Chat + Work)
 
+## R1 · aprobación física y cierre seguro · 16/10/2026 (America/La_Paz)
+
+> «Prueba correcta, Preview42. Autorizo a Work a verificar y preparar el cierre seguro de R1/PR20. La corrección de Atrás y el laboratorio QA quedan para una entrega posterior independiente. No iniciar E6 ni R2–R4.»
+
+**Estado: R1 COMPLETADA, APROBADA FÍSICAMENTE E INTEGRADA; PR20 cerrado/merged verificado.** Aprobación general de Preview42; no se atribuyen dispositivo, número de arrastres ni pruebas individuales no especificadas. NAV-01 y QA-01 son incidencias aceptadas y diferidas; esta aprobación no afirma que Atrás esté corregido en todos los contextos.
+
+- Preview42 / v0.23.0-r1, código `293ac5efb1b781258065171384db58db47b77aec`, CI [38889069848](https://github.com/axenoban/karmany-monsta-android/actions/runs/38889069848) correcta, SHA256 `f63f31c12b2588bf7b65dd13f390d4ceb7b8ad9af18abe104960e4d1a81f84f1`. Se conserva la misma APK, sin recompilar.
+- **Integración verificada:** fast-forward no forzado de dev `ce6917a61ab4dadd9e06296854361d9b9a56f22c` a `21c2964e0da17f58a1d7a413615a5f8138e95a61`. GitHub confirma PR20 closed/merged=true; feature y dev idénticos. Árbol scripts igual al código aprobado: `fd8699bddd52f1f5960b63f0e0c30958963e145b`. El commit documental que contiene este cierre avanza después ambas ramas sin código nuevo; consultar HEAD real. SHA publicado de APK vuelto a consultar y coincidente.
+- Comprobación inicial real: dev `ce6917a61ab4dadd9e06296854361d9b9a56f22c`; feature `21c2964e0da17f58a1d7a413615a5f8138e95a61`; PR20 único abierto, mergeable. Merge-base=dev, ahead3/behind0. Desde código293ac5e solo cuatro documentos; no existe código posterior sin validar.
+- Evidencia técnica anterior:5.560 checks Godot/29 suites +3 Python,26 renders R1; importación/exportación/firma v2/v3 correctas. Este cierre documental no ejecuta ni atribuye nuevas pruebas de juego. E5, dos regiones6+6, partidas anteriores y sistemas estables se conservan mediante identidad del código aprobado.
+- main `9ef7af778ee59a47f62bdfbfd5eb0786ce787213` protegida. Sin funciones nuevas, cambios de reglas/balance/canon/PS, force push ni eliminación de historia o ramas.
+
+### Pendientes R1.1 · sin implementación autorizada en este cierre
+
+- **NAV-01:** algunos botones Atrás regresan al menú principal; pendiente navegación contextual hacia el mapa/escenario de procedencia. Aceptada y diferida por el creador.
+- **QA-01:** pendiente laboratorio con niveles, equipos y regiones configurables, totalmente aislado del guardado real. No implementar ni usar la partida real como laboratorio en este cierre.
+
+**SIGUIENTE PASO:** Chat verifica el cierre en lectura y mantiene NAV-01/QA-01 pendientes para entrega independiente; esperar autorización/contrato específico antes de implementarlas. **RESPONSABLE:** CHAT. **INSTRUCCIÓN PARA CONTINUAR:** En axenoban/karmany-monsta-android verifica HEAD real de dev, feature/r1-navegacion-identidad, main y PR20; contrasta Preview42/código293ac5e/CI38889069848/SHA registrado y aprobación literal. Revisa solo en lectura el cierre y los pendientes R1.1 NAV-01/QA-01. No escribas código ni integres nuevas funciones ni inicies E6/R2–R4; espera instrucciones del creador para la entrega posterior.
+
+Los registros inferiores son históricos; las solicitudes previas de prueba física han quedado superadas por la aprobación expresa anterior.
+
 ## R1 · entrega técnica Preview42 · 16/10/2026
 
 - **HECHO:** R1-01…05 implementados según contrato: prólogo Axe/Ezel/Zephyr, navegación regional, Bestiario21 fichas/siluetas/datos reales, perfil Ezel/equipo y arrastre táctil del árbol. No E6/R2/R3/R4.

@@ -2,6 +2,10 @@
 
 Antes de actuar, leer `docs/ROADMAP_ESTADO.md`, `docs/ROADMAP_CHAT_WORK.md` y `docs/CONTINUIDAD.md`; verificar HEAD, historia, PR, diferencias y CI reales. Los documentos históricos no sustituyen GitHub ni las instrucciones actuales del creador.
 
+## Estado vigente R1
+
+Preview42/v0.23.0-r1 aprobada físicamente el16/10/2026; código293ac5efb1b781258065171384db58db47b77aec, CI38889069848 y SHA256f63f31c12b2588bf7b65dd13f390d4ceb7b8ad9af18abe104960e4d1a81f84f1. R1 completada e integrada por fast-forward a21c2964; PR20 cerrado/merged verificado. Consultar ROADMAP_ESTADO/CONTINUIDAD para la aprobación exacta y HEAD real. No atribuir pruebas físicas individuales no especificadas. NAV-01/Atrás contextual y QA-01/laboratorio aislado quedan pendientes R1.1 para entrega independiente, sin programar en este cierre. No E6/R2–R4 ni nuevas funcionalidades. Los baselines inferiores son históricos y se conservan.
+
 ## Baseline y etapa vigentes
 
 **Baseline funcional aprobado:** Preview40 / v0.22.1-e5, código `0c356db0fcf003e6c6f56e109d9e1e85addfea1d`, CI38833949394 y SHA256 `b0499b43cea54b6b22f41291ec1f2d979fd06aca919fd2916d2e16180a657ea1`. El creador confirma el 15/10/2026 «Prueba correcta, Preview40», seis comprobaciones satisfactorias y autoriza el cierre seguro E5. Registrar solo esas pruebas declaradas. E5-REV-01 corregida/revisada por Chat. **E5 completada e integrada:** PR19 closed/merged verificado tras fast-forward de dev08ed2e7 a `1329bee479b013c753b6a2d631b3b840f11ee13c`; dev y feature idénticos. El commit documental posterior registra el cierre; comprobar HEAD real y registros ROADMAP_ESTADO/CONTINUIDAD antes de actuar.

@@ -106,7 +106,7 @@
     "assets/assets/icon.svg"
   ],
   "stage": "R1",
-  "status": "candidata técnica; pendiente revisión Chat y prueba física; no integrada",
+  "status": "R1 completada, aprobada físicamente e integrada; PR20 cerrado/merged verificado",
   "source_commit": "293ac5efb1b781258065171384db58db47b77aec",
   "source_tree": "b24c40e88a1ed3cc2b156942064daed394c3abb4",
   "ci_run": 38889069848,
@@ -131,6 +131,27 @@
     "preview38_fixtures": 7,
     "preview40_fixtures": 7,
     "synthetic_touch_drags": 40,
-    "physical_android": "pending; no physical test attributed"
+    "physical_android": "creador confirma prueba correcta de Preview42; no especifica casos individuales"
+  },
+  "approval": {
+    "date_local": "2026-10-16",
+    "timezone": "America/La_Paz",
+    "statement": "Prueba correcta, Preview42. Autorizo a Work a verificar y preparar el cierre seguro de R1/PR20. La corrección de Atrás y el laboratorio QA quedan para una entrega posterior independiente. No iniciar E6 ni R2–R4.",
+    "scope": "aprobación general; sin atribución de pruebas físicas individuales",
+    "deferred": [
+      "NAV-01",
+      "QA-01"
+    ]
+  },
+  "integration": {
+    "method": "fast-forward no forzado",
+    "from_dev": "ce6917a61ab4dadd9e06296854361d9b9a56f22c",
+    "approved_head_integrated": "21c2964e0da17f58a1d7a413615a5f8138e95a61",
+    "pr_closed": true,
+    "pr_merged": true,
+    "scripts_tree_equal_to_approved": "fd8699bddd52f1f5960b63f0e0c30958963e145b",
+    "main_unchanged": "9ef7af778ee59a47f62bdfbfd5eb0786ce787213",
+    "closure_commit": "commit documental que contiene este registro; sin modificaciones funcionales",
+    "new_tests_or_apk": false
   }
 }

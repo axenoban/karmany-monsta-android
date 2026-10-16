@@ -1,5 +1,7 @@
 # R1 · implementación y prueba de la candidata
 
+**Actualización vigente de cierre R1 (16/10/2026):** Preview42/v0.23.0-r1 aprobada físicamente por el creador; código293ac5e, CI38889069848, SHA256f63f31c12b2588bf7b65dd13f390d4ceb7b8ad9af18abe104960e4d1a81f84f1. Integrada por fast-forward a21c2964; PR20 cerrado/merged verificado. NAV-01/Atrás y QA-01/laboratorio aislado aceptados y diferidos a R1.1, sin implementar. No se atribuyen casos físicos individuales. Ver ROADMAP_ESTADO.md/CONTINUIDAD.md para evidencias y estado real. El contenido inferior conserva el contrato y la guía históricos, no autoriza una nueva implementación ni exige repetir la prueba ya aprobada. No E6/R2–R4.
+
 Contrato: `R1_NAVEGACION_IDENTIDAD.md`. Work único escritor. Base documental `ce6917a61ab4dadd9e06296854361d9b9a56f22c`, funcional Preview40 `0c356db`. Rama `feature/r1-navegacion-identidad`. No integración hasta «prueba correcta» explícita de la nueva APK.
 
 ## Alcance implementado

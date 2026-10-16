@@ -1,5 +1,7 @@
 # Baseline validado
 
+**Actualización vigente de cierre R1 (16/10/2026):** Preview42/v0.23.0-r1 aprobada físicamente por el creador; código293ac5e, CI38889069848, SHA256f63f31c12b2588bf7b65dd13f390d4ceb7b8ad9af18abe104960e4d1a81f84f1. Integrada por fast-forward a21c2964; PR20 cerrado/merged verificado. NAV-01/Atrás y QA-01/laboratorio aislado aceptados y diferidos a R1.1, sin implementar. No se atribuyen casos físicos individuales. Ver ROADMAP_ESTADO.md/CONTINUIDAD.md para evidencias y estado real. El contenido inferior conserva el contrato y la guía históricos, no autoriza una nueva implementación ni exige repetir la prueba ya aprobada. No E6/R2–R4.
+
 ## Estado vigente · aprobación física de E5 / cierre autorizado (15/10/2026, America/La_Paz)
 
 **Estado: E5 COMPLETADA, APROBADA FÍSICAMENTE E INTEGRADA; cierre verificado.** E5-01…12 y corrección E5-REV-01 aprobadas por el creador sobre **Preview40/v0.22.1-e5**.

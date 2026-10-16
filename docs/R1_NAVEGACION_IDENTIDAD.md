@@ -1,5 +1,7 @@
 # R1 · Navegación, identidad y prólogo cinematográfico
 
+**Actualización vigente de cierre R1 (16/10/2026):** Preview42/v0.23.0-r1 aprobada físicamente por el creador; código293ac5e, CI38889069848, SHA256f63f31c12b2588bf7b65dd13f390d4ceb7b8ad9af18abe104960e4d1a81f84f1. Integrada por fast-forward a21c2964; PR20 cerrado/merged verificado. NAV-01/Atrás y QA-01/laboratorio aislado aceptados y diferidos a R1.1, sin implementar. No se atribuyen casos físicos individuales. Ver ROADMAP_ESTADO.md/CONTINUIDAD.md para evidencias y estado real. El contenido inferior conserva el contrato y la guía históricos, no autoriza una nueva implementación ni exige repetir la prueba ya aprobada. No E6/R2–R4.
+
 **Estado:** contrato de diseño cerrado e **implementación R1-01…05 expresamente autorizada por el creador** (15/10/2026). **Responsable de implementación: WORK**. No se ha confirmado inicio de programación, rama activa, CI o APK de R1.
 **Decisión expresa del creador:** Ezel es protagonista controlado; Axe es su mentor y presenta el mundo antes de explorar. Prólogo **cinematográfico**, no combate guiado.
 **Baseline:** Preview40 aprobada (código `0c356db0fcf003e6c6f56e109d9e1e85addfea1d`; CI38833949394; PR19 integrado) en `dev/karmany-core` @ `6c3f6f4da25dac3c5a4f5866d9043b4c2c68fa48` antes de este documento.
