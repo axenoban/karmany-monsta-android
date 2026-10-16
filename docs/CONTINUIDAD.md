@@ -2,7 +2,7 @@
 
 ## Estado vigente · aprobación física de E5 / cierre autorizado (15/10/2026, America/La_Paz)
 
-**Estado: aprobación física registrada; cierre/integración en curso.** E5-01…12 y corrección E5-REV-01 aprobadas por el creador sobre **Preview40/v0.22.1-e5**.
+**Estado: E5 COMPLETADA, APROBADA FÍSICAMENTE E INTEGRADA; cierre verificado.** E5-01…12 y corrección E5-REV-01 aprobadas por el creador sobre **Preview40/v0.22.1-e5**.
 
 > «Prueba correcta, Preview40. Confirmo que realicé satisfactoriamente las seis comprobaciones indicadas y autorizo a Work a preparar el cierre seguro de E5. No iniciar E6.»
 
@@ -10,7 +10,7 @@
 - **APK aprobada:** [Preview40](https://github.com/axenoban/karmany-monsta-android/releases/download/android-preview-40/karmany-monsta-preview.apk), SHA256 `b0499b43cea54b6b22f41291ec1f2d979fd06aca919fd2916d2e16180a657ea1`; manifest de SHA publicado vuelto a consultar y coincidente. Evidencia en `docs/E5_CANDIDATA_40_VERIFICACION.json`.
 - **Alcance de la evidencia humana:** seis comprobaciones satisfactorias expresamente confirmadas por el creador; E5-REV-01 revisada por Chat según la instrucción de cierre. No se atribuyen dispositivo, datos de rendimiento, sesiones adicionales ni prueba independiente con persona novata no declarados.
 - **Git previo verificado:** dev `08ed2e70b35bfd1489fd9d88a5cdff52e9447dc2`, feature `6dc3c3dd0ce176558de37d719b84a9018d26b67d`, PR19 abierto/no integrado. Merge-base=dev, ahead4/behind0. Entre código0c356db y feature6dc3c3d solo cuatro documentos; sin funcionalidad posterior no validada.
-- **Integración prevista:** actualización no forzada de `dev/karmany-core` al cierre de `feature/e5-primera-sesion`, conservando ascendencia y verificando HEAD esperado. Se registrará el SHA y el estado real del PR después de la operación; no se declara integrado por anticipado.
+- **Integración realizada y verificada:** fast-forward no forzado de dev desde `08ed2e70b35bfd1489fd9d88a5cdff52e9447dc2` a `1329bee479b013c753b6a2d631b3b840f11ee13c`. GitHub confirma PR19 **closed / merged=true**, dev y feature idénticos, cero diferencias. No se creó un merge alternativo ni se reescribió historia. El commit documental posterior solo registra esta comprobación; consultar su HEAD real para la referencia final.
 - **Protección:** main `9ef7af778ee59a47f62bdfbfd5eb0786ce787213` sin cambios. Preview38 permanece incluida, 2 regiones/12 etapas, contenido/arte, motor E1/E2, migraciones, guardados, XP/vínculo y sistemas estables preservados. El cierre solo toca AGENTS/documentación/evidencias, sin nueva APK ni cambios de reglas, balance o canon.
 - **E6 NO INICIADA y NO AUTORIZADA en esta intervención.** No hay nueva implementación activa tras este cierre. Se conservan ramas/releases/historia; sin force push.
 

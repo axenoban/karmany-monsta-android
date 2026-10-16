@@ -1,6 +1,6 @@
 {
   "stage": "E5 primera sesión autónoma",
-  "status": "aprobada físicamente por el creador; cierre E5 autorizado",
+  "status": "aprobada físicamente por el creador; E5 completada e integrada",
   "source_commit": "0c356db0fcf003e6c6f56e109d9e1e85addfea1d",
   "ci_run": 38833949394,
   "preview": 40,
@@ -64,5 +64,17 @@
     "source": "instrucción expresa del creador para cierre de E5; revisión E5-REV-01 por Chat confirmada en esa instrucción",
     "limits": "no se atribuyen dispositivos, sesiones ni pruebas adicionales no declarados",
     "e6": "no iniciar"
+  },
+  "integration": {
+    "method": "fast-forward no forzado",
+    "from_dev": "08ed2e70b35bfd1489fd9d88a5cdff52e9447dc2",
+    "verified_head": "1329bee479b013c753b6a2d631b3b840f11ee13c",
+    "pr": 19,
+    "pr_state": "closed",
+    "merged": true,
+    "feature_equal_dev": true,
+    "main_unchanged": "9ef7af778ee59a47f62bdfbfd5eb0786ce787213",
+    "post_commit": "sucesor solo documental registra esta verificación; consultar HEAD real",
+    "e6": "no iniciada ni autorizada en este cierre"
   }
 }
