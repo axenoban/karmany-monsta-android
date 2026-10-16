@@ -1,5 +1,7 @@
 # E5 · implementación candidata
 
+**Entrega vigente:** Preview40/v0.22.1-e5, código `0c356db`, [CI38833949394 correcta](https://github.com/axenoban/karmany-monsta-android/actions/runs/38833949394). E5-REV-01 corregida; 5.149 checks/28 suites +3 Python, de ellos103 de cierre/persistencia. Evidencia `E5_CANDIDATA_40_VERIFICACION.json`. [APK candidata](https://github.com/axenoban/karmany-monsta-android/releases/download/android-preview-40/karmany-monsta-preview.apk), SHA256 `b0499b43cea54b6b22f41291ec1f2d979fd06aca919fd2916d2e16180a657ea1`. Requiere nueva prueba física; la39 queda como antecedente. No integrada en dev/main.
+
 Contrato: [E5_PRIMERA_SESION.md](E5_PRIMERA_SESION.md), aprobado 15/10/2026. Work único escritor. Rama `feature/e5-primera-sesion`, base documental `08ed2e70b35bfd1489fd9d88a5cdff52e9447dc2`, juego Preview38 `f0266ba`. Sin E6 ni integración en dev/main. La aprobación del contrato no valida esta APK.
 
 ## Correspondencia de contrato y pruebas

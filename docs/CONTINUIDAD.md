@@ -1,5 +1,23 @@
 # Continuidad de Karmany Monsta
 
+## Entrega corregida E5-REV-01 · Preview40 · 15/10/2026
+
+- **HECHO:** defecto P2 de cierre de Ayuda reproducido y corregido. Cerrar/Atrás cierran aunque falle persistir `seen`; Otra explicación avanza; aviso visible sin modal ni bucle. Reconocimiento fallido no se inventa en memoria y puede repetirse. Protección contra reapertura diferida cancelada.
+- **RAMA / CÓDIGO APK:** `feature/e5-primera-sesion` @ `0c356db0fcf003e6c6f56e109d9e1e85addfea1d`, PR19 abierto, no integrado. Árbol fuente `e2f4ba6c8733c2b79ccc5838269e8801db1b4283`, igual al probado localmente. Commit posterior de evidencia solo documentación; ver HEAD real, sin recompilar esos registros.
+- **CI:** [38833949394](https://github.com/axenoban/karmany-monsta-android/actions/runs/38833949394), Preview40, completa/correcta. **5.149 checks únicos Godot en28 suites +3 Python**. E5:601; cierre/persistencia:103. Renders repetidos no sumados otra vez. Import/export Android, firma v2/v3 y auditoría correctas.
+- **APK:** [Preview40 · v0.22.1-e5 · versionCode1040](https://github.com/axenoban/karmany-monsta-android/releases/download/android-preview-40/karmany-monsta-preview.apk), 83374501 bytes; **SHA256 `b0499b43cea54b6b22f41291ec1f2d979fd06aca919fd2916d2e16180a657ea1`**. Descargada y contrastada con SHA de CI, paquete/build/source y certificado `756c8c1a8136ae2e80987c540d805641d7bfd2d5b657d1f04584f0074ac61bf8` correcto para actualizar.
+- **PROTECCIÓN VERIFICADA:** de44 scripts compilados del APK39, solo cambia `context_help.gdc`; los otros43, 65 recursos gráficos/audio y los11 JSON de juego se conservan. Dos regiones6+6 intactas. App/Store/motores/migraciones sin cambios. Evidencia: [E5_CANDIDATA_40_VERIFICACION.json](E5_CANDIDATA_40_VERIFICACION.json).
+- **PERSISTENCIA:** pruebas con archivo temporal bloqueado y destino inexistente comprueban botones reales, Atrás doble, avance, bytes exactos de primario+backup, perfil entero, recarga, repetición del tema no guardado y persistencia al reintentar correctamente. Partida antigua sigue sin campo E5 ni tutorial forzado. Fallo de almacenamiento inyectado solo en rutas aisladas de tests; no se pide llenar ni dañar almacenamiento humano.
+- **VALIDACIÓN LOCAL:** suite completa y renders correctos:13 pantallas E5 (incluido aviso con texto grande) +22 regionales. Regresiones69 Preview32 +10 E2 +7 perfiles Preview38; recompensa única, derrota/reemplazo, XP/vínculo, interrupciones y continuidad intactos. La prueba anterior que exigía bloquear el cierre fue corregida conforme a AC-09 y reforzada con103 checks, no silenciada.
+- **PENDIENTE EXTERNO:** nueva prueba Android física de APK40 y comprensión por al menos una persona novata sin guía verbal. Una prueba correcta de39 no valida este binario. No se declara validación humana ni cierre definitivo E5.
+- **Ramas protegidas:** dev `08ed2e70b35bfd1489fd9d88a5cdff52e9447dc2`; main `9ef7af778ee59a47f62bdfbfd5eb0786ce787213`. No integración, force push, pérdida de historia ni E6.
+
+**SIGUIENTE PASO:** Chat revisa la corrección en solo lectura y acompaña nueva prueba física de Preview40, incluida primera sesión autónoma.
+**RESPONSABLE:** CHAT (Work conserva escritura únicamente para incidencias E5).
+**INSTRUCCIÓN PARA CONTINUAR:** En axenoban/karmany-monsta-android verifica HEAD real de feature/e5-primera-sesion/PR19, contrato E5 y CI38833949394; revisa E5-REV-01 sobre código0c356db y evidencia de Preview40/v0.22.1-e5. No escribas ni integres ni inicies E6. Comprueba Cerrar/Atrás/Otra explicación, persistencia y oferta diferida; solicita prueba física nueva de APK/SHA y sesión con persona novata. Solo una nueva «prueba correcta» explícita sobre40 autoriza a Work a comprobar después una integración segura.
+
+Los checkpoints inferiores son históricos y no sustituyen esta nueva candidata ni su validación pendiente.
+
 ## Corrección E5-REV-01 · Work · 15/10/2026
 
 - Revisión real: PR19 abierto/no integrado, feature `6e96396`, dev `08ed2e7`, main `9ef7af7`. Código candidata39 `e9795fc` con CI38829976270 correcta. Sin otra implementación E5. Contrato E5 y coordinación releídos.
