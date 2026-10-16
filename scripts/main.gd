@@ -126,9 +126,16 @@ func _show(next_page: String, record_history: bool = true) -> void :
 		banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		banner.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		banner.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		strip.add_child(banner)
-		banner.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		if page != "tree_lab": column.add_child(_button("Volver al laboratorio QA", func(): _show("tree_lab")))
+		var bar := HBoxContainer.new()
+		strip.add_child(bar)
+		bar.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		banner.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		bar.add_child(banner)
+		if page != "tree_lab":
+			var lab_button := _button("Laboratorio QA", func(): _show("tree_lab"))
+			lab_button.custom_minimum_size.y = 40
+			lab_button.add_theme_font_size_override("font_size", 22)
+			bar.add_child(lab_button)
 	var brand:= _label("KARMANY MONSTA", 22, JADE)
 	brand.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(brand)

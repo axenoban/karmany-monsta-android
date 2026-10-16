@@ -2,7 +2,7 @@
 
 Base documental:29be7ba. Base funcional aprobada:Preview42/293ac5e. Candidata:v0.24.0-r1.1; número APK, SHA y CI pendientes de la ejecución del PR. Work implementa, Chat revisa; no integración en dev/main sin prueba física explícita.
 
-La primera ejecución PR21/Preview43 corresponde a cef00c5 y queda sustituida por la corrección de repetición de escenarios: el laboratorio conserva en memoria su preset al volver de combate. Se añadió comprobación de igualdad de configuración tras regresar. No se entregó ni aprobó físicamente Preview43.
+La primera ejecución PR21/Preview43 corresponde a cef00c5 y queda sustituida por la corrección de repetición de escenarios: el laboratorio conserva en memoria su preset al volver de combate y mantiene preferencias de accesibilidad al aplicar/reiniciar escenarios. Se añadió comprobación de igualdad de configuración tras regresar. No se entregó ni aprobó físicamente Preview43.
 
 ## NAV-01
 
@@ -24,7 +24,7 @@ Indicador QA en CanvasLayer100, incluso sobre transiciones/captura. Controles en
 
 -30 suites Godot completas correctas en pasada de regresión;3 pruebas Python correctas.
 -Suite R1.1 final:233 comprobaciones correctas, incluyendo perfiles/bytes principales, ruta errónea, archivo temporal no escribible, corrupción QA/recuperación, fallo de recarga normal, reinicio de App, callbacks, combate victoria/derrota, XP/recibo/captura únicos,12 etapas/finales dobles, navegación y Preview42.
--Interfaz:12 comprobaciones correctas,8 renders laboratorio/exploración/combate con texto normal/grande; logs sin errores.
+-Interfaz:32 comprobaciones correctas,8 renders laboratorio/exploración/combate con texto normal/grande; logs sin errores.
 -7 fixtures Preview42 emitidas por checkout exacto293ac5efb1b781258065171384db58db47b77aec, script reproducible `ci/recovery/generate_preview42_fixtures.gd`. Las regresiones históricas32/E2/38/40 se conservan.
 -El test fundacional ahora establece rutas reales antes de comprobar Atrás, en lugar de suponer destinos fijos tras una lista artificial de pantallas. No se eliminaron sus aserciones.
 -El test de captura usa tiradas deterministas y distingue la nueva ficha de unidad de una duplicación de XP. No se modifica el motor para satisfacer el test.

@@ -84,7 +84,9 @@ func candidate() -> Dictionary:
 	var members: Array = []
 	for i in range(int(count.value)):
 		members.append({"species":species_controls[i].get_item_text(species_controls[i].selected),"level":int(levels[i].value)})
-	return Preset.preset(int(trainer.value), int(xp.value), members, int(active.value)-1, "jade" if region.selected == 0 else "veil", int(point.value), int(stamina.value))
+	var result := Preset.preset(int(trainer.value), int(xp.value), members, int(active.value)-1, "jade" if region.selected == 0 else "veil", int(point.value), int(stamina.value))
+	if not result.is_empty(): result.settings = App.profile.settings.duplicate(true)
+	return result
 func apply(start: bool):
 	var next := candidate()
 	if next.is_empty():

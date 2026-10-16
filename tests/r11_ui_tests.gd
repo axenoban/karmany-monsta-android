@@ -35,11 +35,14 @@ func run():
 		lab.apply(true)
 		await frames()
 		check(main.page == "exploration", "UI launches Velo6")
+		check(app.profile.settings.large_text == large, "applying QA configuration preserves accessibility preferences")
 		await shot("exploration-" + str(large))
 		app.discover_location(app.profile.campaign.encounter.id)
 		main._show("battle")
 		await shot("battle-" + str(large))
 		check(main.get_node("Page").get_rect().end.y <= 720, "QA page fits viewport")
+		var column = main.get_node("Page").get_child(0)
+		check_buttons(main, column.get_child(column.get_child_count()-1).global_position.y)
 		main._show("tree_lab")
 		await frames()
 		var returned = main.body.get_child(main.body.get_child_count()-1)
@@ -52,3 +55,8 @@ func run():
 	report.store_string(JSON.stringify({"checks":checks,"failures":failures})); report.close()
 	print("R11 UI: %d checks, %d failures" % [checks,failures])
 	quit(1 if failures else 0)
+
+func check_buttons(node: Node, footer_y: float):
+	if node is Button and node.is_visible_in_tree():
+		check(node.get_global_rect().end.y <= footer_y, "visible button does not overlap footer: " + node.text)
+	for child in node.get_children(): check_buttons(child, footer_y)

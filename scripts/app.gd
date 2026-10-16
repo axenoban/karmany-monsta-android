@@ -545,6 +545,7 @@ func enter_qa() -> bool:
 		return false
 	var target := QAStore.new()
 	var fresh := preload("res://scripts/qa_profile.gd").preset(1, 0, [{"species":"zephyr", "level":1}], 0, "jade", 1, 100)
+	fresh.settings = profile.settings.duplicate(true)
 	if not target.save_profile(fresh):
 		notice = target.last_error
 		return false
@@ -555,9 +556,11 @@ func enter_qa() -> bool:
 
 func apply_qa(candidate: Dictionary) -> bool:
 	if not qa_active or not qa_available() or candidate.is_empty() or not Store.valid(candidate): return false
-	if not commit_profile(candidate): return false
-	qa_preset = candidate.duplicate(true)
-	_switch_profile(storage, candidate, true)
+	var configured := candidate.duplicate(true)
+	configured.settings = profile.settings.duplicate(true)
+	if not commit_profile(configured): return false
+	qa_preset = configured.duplicate(true)
+	_switch_profile(storage, configured, true)
 	return true
 
 func exit_qa() -> bool:
