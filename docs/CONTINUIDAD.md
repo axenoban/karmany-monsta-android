@@ -1,8 +1,36 @@
 # Continuidad de Karmany Monsta
 
-> **ESTADO VIGENTE · 15/10/2026:** candidata **Preview38 / v0.21.0-unification**, código `f0266badaa7851da3de2bcc08a65752b6409360b`, rama `feature/unificacion-jade-bosque`. [CI38824304295 correcta](https://github.com/axenoban/karmany-monsta-android/actions/runs/38824304295), [APK candidata](https://github.com/axenoban/karmany-monsta-android/releases/download/android-preview-38/karmany-monsta-preview.apk), [PR18 borrador](https://github.com/axenoban/karmany-monsta-android/pull/18). **Work conserva escritura; Chat revisa en solo lectura. Prueba física pendiente; no integrada en dev/main.**
->
-> Recuperadas dos regiones/12etapas,13criaturas de combate/21fichas y flujos Preview32, con relevo E1 y motor/persistencia E2. **4409checks únicos en26suitesGodot y3Python correctos**,69guardados Preview32 +10E2,24simulaciones y22pantallas renderizadas. Firma v2/v3, paquete, certificado de actualización y SHA256 verificados. Procedencia y prueba física: [UNIFICACION_JADE_BOSQUE.md](UNIFICACION_JADE_BOSQUE.md).
+## Estado vigente · cierre aprobado de R0 (15/10/2026, America/La_Paz)
+
+La **Preview 38 / v0.21.0-unification**, código `f0266badaa7851da3de2bcc08a65752b6409360b`, ha sido **probada físicamente y aprobada por el creador**: «Confirmo que probé físicamente la Preview 38 (v0.21.0-unification) y la considero correcta y aceptable. Apruebo esta versión».
+
+Referencia adicional: [validación registrada por Chat en PR #18](https://github.com/axenoban/karmany-monsta-android/pull/18#issuecomment-6204818029). Es aprobación general de la versión; no se atribuyen pruebas específicas no detalladas por el usuario.
+
+- **Unificación completada y aprobada.** Valle Jade y Bosque del Velo (6 + 6 etapas), contenido recuperado de Preview32 y mejoras E1/E2 constituyen el baseline estable.
+- **Integración autorizada:** fast-forward de `dev/karmany-core` desde `2ea590cff0b0e1cb1c6b33318bf156901efb681e` al commit documental de este cierre, descendiente de `892a109e8db48f25c30d81fa3c74aefdf0d7d414`. El SHA exacto de cierre es el commit que contiene esta sección y debe comprobarse en GitHub.
+- Código aprobado idéntico: desde `f0266ba` hasta `892a109` solo cambiaron cuatro archivos en `docs/`; este cierre solo modifica instrucciones/documentación.
+- [CI 38824304295 correcta](https://github.com/axenoban/karmany-monsta-android/actions/runs/38824304295): 4.409 checks Godot en 26 suites, 3 Python, exportación, firma v2/v3 y auditoría. No se atribuye una ejecución nueva a este cierre documental.
+- [APK aprobada Preview 38](https://github.com/axenoban/karmany-monsta-android/releases/download/android-preview-38/karmany-monsta-preview.apk), SHA-256 `16a66fc970346981eb628f7ac4a04a7633eac8ff08b93a735d723c7bb37c08ac`; evidencia en `docs/recovery/CANDIDATA_38_VERIFICACION.json`.
+- **main se conserva en `9ef7af778ee59a47f62bdfbfd5eb0786ce787213`**. No se eliminan ramas/releases ni se reescribe historia. PR #17 está absorbido por la ascendencia del PR #18; no se vuelve a fusionar.
+- **Siguiente etapa pendiente: E5, diseño/especificación a cargo de Chat.** Work no inicia E5 ni crea nuevas funcionalidades hasta disponer de criterios y decisiones aprobados.
+
+## Cierre operativo y traspaso
+
+La orden actual se limita a cerrar la unificación. Se actualizan instrucciones, roadmaps y registro del baseline; no se toca ningún archivo funcional. La aprobación general no se convierte en una lista de casos físicos específicos no descritos. El entorno de ejecución local no está disponible en esta intervención; las verificaciones se realizan directamente contra GitHub y la evidencia de APK/CI ya descargada y registrada en la entrega anterior. No se afirma nueva ejecución de tests o compilación.
+
+PR18 se integra mediante actualización no forzada de dev, con comprobación de ascendencia y HEAD esperado. PR17 está absorbido (00b2769 antecesor de 892a109), sin una segunda fusión. La integración debe verificarse después y conservar los releases/ramas anteriores. Solo se invocan herramientas de cierre; no se envían mensajes ni comentarios nuevos.
+
+**SIGUIENTE PASO:** especificación E5 antes de programar.
+**RESPONSABLE:** CHAT.
+**INSTRUCCIÓN PARA CONTINUAR:**
+
+```text
+Continúa Karmany Monsta Android en axenoban/karmany-monsta-android. Verifica el HEAD real de dev/karmany-core y lee AGENTS.md, docs/ROADMAP_ESTADO.md, docs/ROADMAP_CHAT_WORK.md y docs/CONTINUIDAD.md. La Preview 38 (v0.21.0-unification, código f0266ba) está aprobada físicamente y la unificación está cerrada. Prepara únicamente el diseño y la especificación de E5: primera sesión autónoma, tutorial contextual y claridad de derrota/progresión. Define alcance, exclusiones, microcopias, criterios de aceptación, regresiones de guardado/UI y un bloque acotado con instrucción lista para Work. No programes ni modifiques reglas, balance, canon o sistemas estables. Distingue decisiones pendientes y espera su aprobación antes de autorizar implementación. Termina con SIGUIENTE PASO, RESPONSABLE (CHAT O WORK) e INSTRUCCIÓN PARA CONTINUAR.
+```
+
+## Historial anterior al cierre vigente
+
+Los siguientes registros preservan el estado que había en cada checkpoint. Sus esperas de validación de R0/E1 y su baseline Preview29 son históricos, no el estado actual.
 
 ## Lectura inicial obligatoria
 Leer este documento antes de cada proceso; `AGENTS.md` en la raíz establece esta instrucción para agentes compatibles. No depende del historial del chat. Un agente debe confirmar el estado real con git/CI y leer el código afectado; el documento no sustituye esa verificación.

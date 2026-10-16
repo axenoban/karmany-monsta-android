@@ -1,25 +1,49 @@
 # ESTADO VIVO · Roadmap de Karmany Monsta (Chat + Work)
 
-> **ESTADO VIGENTE · 15/10/2026:** candidata **Preview38 / v0.21.0-unification**, código `f0266badaa7851da3de2bcc08a65752b6409360b`, rama `feature/unificacion-jade-bosque`. [CI38824304295 correcta](https://github.com/axenoban/karmany-monsta-android/actions/runs/38824304295), [APK candidata](https://github.com/axenoban/karmany-monsta-android/releases/download/android-preview-38/karmany-monsta-preview.apk), [PR18 borrador](https://github.com/axenoban/karmany-monsta-android/pull/18). **Work conserva escritura; Chat revisa en solo lectura. Prueba física pendiente; no integrada en dev/main.**
->
-> Recuperadas dos regiones/12etapas,13criaturas de combate/21fichas y flujos Preview32, con relevo E1 y motor/persistencia E2. **4409checks únicos en26suitesGodot y3Python correctos**,69guardados Preview32 +10E2,24simulaciones y22pantallas renderizadas. Firma v2/v3, paquete, certificado de actualización y SHA256 verificados. Procedencia y prueba física: [UNIFICACION_JADE_BOSQUE.md](UNIFICACION_JADE_BOSQUE.md).
+## Estado vigente · cierre aprobado de R0 (15/10/2026, America/La_Paz)
+
+La **Preview 38 / v0.21.0-unification**, código `f0266badaa7851da3de2bcc08a65752b6409360b`, ha sido **probada físicamente y aprobada por el creador**: «Confirmo que probé físicamente la Preview 38 (v0.21.0-unification) y la considero correcta y aceptable. Apruebo esta versión».
+
+Referencia adicional: [validación registrada por Chat en PR #18](https://github.com/axenoban/karmany-monsta-android/pull/18#issuecomment-6204818029). Es aprobación general de la versión; no se atribuyen pruebas específicas no detalladas por el usuario.
+
+- **Unificación completada y aprobada.** Valle Jade y Bosque del Velo (6 + 6 etapas), contenido recuperado de Preview32 y mejoras E1/E2 constituyen el baseline estable.
+- **Integración autorizada:** fast-forward de `dev/karmany-core` desde `2ea590cff0b0e1cb1c6b33318bf156901efb681e` al commit documental de este cierre, descendiente de `892a109e8db48f25c30d81fa3c74aefdf0d7d414`. El SHA exacto de cierre es el commit que contiene esta sección y debe comprobarse en GitHub.
+- Código aprobado idéntico: desde `f0266ba` hasta `892a109` solo cambiaron cuatro archivos en `docs/`; este cierre solo modifica instrucciones/documentación.
+- [CI 38824304295 correcta](https://github.com/axenoban/karmany-monsta-android/actions/runs/38824304295): 4.409 checks Godot en 26 suites, 3 Python, exportación, firma v2/v3 y auditoría. No se atribuye una ejecución nueva a este cierre documental.
+- [APK aprobada Preview 38](https://github.com/axenoban/karmany-monsta-android/releases/download/android-preview-38/karmany-monsta-preview.apk), SHA-256 `16a66fc970346981eb628f7ac4a04a7633eac8ff08b93a735d723c7bb37c08ac`; evidencia en `docs/recovery/CANDIDATA_38_VERIFICACION.json`.
+- **main se conserva en `9ef7af778ee59a47f62bdfbfd5eb0786ce787213`**. No se eliminan ramas/releases ni se reescribe historia. PR #17 está absorbido por la ascendencia del PR #18; no se vuelve a fusionar.
+- **Siguiente etapa pendiente: E5, diseño/especificación a cargo de Chat.** Work no inicia E5 ni crea nuevas funcionalidades hasta disponer de criterios y decisiones aprobados.
+
+## Regla permanente de cierre y traspaso
+
+**Cada entrega de Chat o Work, incluso una revisión, corrección, bloqueo o cierre documental, debe terminar indicando el siguiente paso concreto, un responsable único (CHAT o WORK) y una instrucción lista para copiar al agente correspondiente.** No basta «continúa el roadmap». Esta regla es obligatoria por instrucción del creador del 15/10/2026.
+
+Formato mínimo:
+
+```text
+HECHO:
+RAMA/COMMIT/PR:
+CI:
+APK:
+PRUEBAS / RESULTADO:
+RIESGOS / VALIDACIÓN PENDIENTE:
+SIGUIENTE PASO: [acción concreta]
+RESPONSABLE: CHAT o WORK
+INSTRUCCIÓN PARA CONTINUAR:
+[texto completo copiable, con repositorio, etapa, baseline que debe verificarse,
+alcance, límites, entregables y condición para pasar al siguiente agente]
+```
+
+Si el paso está bloqueado, identificar la causa y el agente que debe resolverla. No autorizar implícitamente otra fase mediante el cierre de la anterior.
 
 **Control de planificación:** 2026-10-15, zona America/La_Paz. **Versión del estado:** 1.0.  
 **Regla:** este archivo es el tablero operativo que ambos agentes deben consultar y actualizar. La planificación completa y los prompts están en [ROADMAP_CHAT_WORK.md](ROADMAP_CHAT_WORK.md). El historial técnico está en [CONTINUIDAD.md](CONTINUIDAD.md). Se debe comprobar el GitHub real antes de confiar en cualquier SHA anotado.
 
-## 0. ALERTA DE NO REGRESIÓN (actualizada tras auditoría de dos líneas)
+## 0. No regresión · R0 cerrada
 
-**PRIORIDAD MÁXIMA — fase R0 «RECUPERACIÓN / CONVERGENCIA»**, por encima de continuar E1/E2/E3 sin unificar. [Auditoría y plan de integración](AUDITORIA_DOS_LINEAS_2026-10-15.md).
+La divergencia documentada en [la auditoría](AUDITORIA_DOS_LINEAS_2026-10-15.md) fue resuelta en Preview38. La aprobación física y el cierre sustituyen los bloqueos de rescate históricos. Mantener las dos regiones/12 etapas, 13 criaturas de combate, 21 fichas, gráficos, flujos, relevo E1, motor E2 y compatibilidad de partidas. No reconstruir Bosque ni repetir E2/E3. **No comenzar implementación E5 en este cierre.**
 
-Se ha recuperado la **Preview32 v0.20.0** de otra línea local, con **Valle Jade 6 etapas + Bosque del Velo 6 etapas**, ocho criaturas adicionales, doce recursos CTEX regionales y pantallas de derrota/transición. La divergencia original era real; ahora el código editable de Preview32 fue recuperado con GDRE y sus datos/arte están incorporados a la rama de unificación. E1/Preview34 conserva su línea histórica de cuatro etapas. No confundir esas APK anteriores con la candidata38.
-
-También existe **E2 ejecutada localmente por Work**: commit `42fed0ce330366de891ad7944e50e6d79f5836d8`, rama local `feature/e2-regional-engine`, APK E2 Preview35 v0.19.0, resultados locales correctos. La fuente se recuperó y publicó en `feature/e2-regional-engine-recovered`, con el bundle exacto preservado en `docs/recovery/E2_incremental.bundle`; el respaldo original sigue identificado como `Karmany_Monsta_E2_Fuente_y_Pruebas.zip` con `E2_incremental.bundle`. **No confundir** con el release público `android-preview-35`, que es otro artefacto.
-
-**DUEÑO DE ESCRITURA AUTORIZADO POR EL CREADOR:** Work para recuperar E2 y reconstruir la convergencia en rama `feature/unificacion-jade-bosque`. **Chat:** auditoría/QA/documentación y lectura. En esta etapa de decisión no se autoriza a ningún agente a sobrescribir `dev/karmany-core`, `main` o perder los avances de Preview32. No comenzar nuevas funciones hasta restaurar las dos regiones y migraciones.
-
-**Portón técnico del rescate cumplido:** E2 recuperada, inventario y fuentes editables Preview32, dos regiones/12 etapas y migraciones/regresiones/CI verificadas. **Portón humano pendiente:** probar Preview38 en Android y aprobar explícitamente antes de integrar. El migrador Preview32 está implementado y probado con69guardados originales, sin sustituir todavía la prueba física.
-
-## 1. Estado confirmado al crear este tablero
+## 1. Estado histórico al crear este tablero (superado por el cierre vigente)
 
 | Elemento | Situación |
 |---|---|
@@ -37,7 +61,7 @@ También existe **E2 ejecutada localmente por Work**: commit `42fed0ce330366de89
 | **Área permitida a Work ahora** | **Recuperar E2 (fuente de Work) y construir rama de convergencia**, sin escribir sobre E1 ni dev |
 | **Siguiente objetivo habilitado** | **Rescate fuente E2 + conservación Preview32; convergencia 2 regiones sin retroceso** |
 
-### Última observación del creador — **no dar E1 por validada**
+### Observación histórica de Preview34 (superada por la aprobación general de Preview38)
 Tras la entrega de Preview 34, el creador comentó que veía una potenciación pero no percibía el cambio de Karmany. En otra respuesta se explicó que **solo la Insignia de Sakuromushi** produce el relevo automático, y se preguntó qué versión utilizó. No hay confirmación posterior de versión, reproducción ni «prueba correcta». **Estado exacto: comentario de validación abierto, diagnóstico pendiente.** No marcarlo como fallo técnico demostrado, pero tampoco como resuelto. El código/CI cambian el activo; se requiere confirmar el comportamiento visible en Android.
 
 ### E1: decisiones aprobadas pero todavía no integradas a la APK estable
@@ -50,23 +74,28 @@ Tras la entrega de Preview 34, el creador comentó que veía una potenciación p
 - Ajuste E1 a Sakuromushi: ataque leve + relevo automático antes del contraataque + potenciación por varias rondas. **Valores de prueba 70% daño, +20% durante dos rondas, recarga2**; falta validación humana, no generalizar a otras especies automáticamente.
 - Documento de implementación: `docs/E1_JADE_RELEVO_2026-10-15.md` **en la rama E1**. Ni seis etapas completas ni nuevo motor regional forman parte de Preview 34.
 
-## 2. Etapas, responsable y condición de salida
+## 2. Etapas y responsables vigentes
 
-| Etapa | Estado | Dueño de análisis | Dueño de implementación | Paso de salida |
-|---|---|---|---|---|
-| E0 · Coordinación y roadmap | **Implementado como documentación** | Chat | No aplica | Mantener docs y responsabilidades actualizadas |
-| E1 · Reglas Jade y relevo de prueba | **Reglas aceptadas; prototipo CI verde; prueba Android pendiente** | Chat | **Chat (rama E1)** | Verificar en Android, corregir si procede y aprobación explícita |
-| E2 · Motor regional | **Recuperado y publicado en feature/e2-regional-engine-recovered; integrado en candidata** | Chat audita archivos de rescate | Work recupera `E2_incremental.bundle` | Rama recuperada + CI GitHub + prueba física antes de integración |
-| E3 · Jade de seis etapas | **Implementada en candidata38; pendiente prueba física** | Chat: canon, assets y QA | Work (Sol Medio) | Campaña corta completa en Android |
-| E4 · Continuidad de batalla/vínculo | **Implementada en candidata38; pendiente prueba física** | Chat: UX/criterios | Work (Sol Medio) | Un fondo continuo, controles compactos, transiciones |
-| E5 · Primera partida autónoma | **En espera** | Chat: microtutorial | Work (Sol Medio) | Tester navega sin ayuda |
-| E6 · Alfa y playtest | **En espera** | Chat: QA, 5–10 testers | Work: corrección de P0/P1 | APK alfa con recorrido Jade testeado |
-| E7 · Bosque del Velo | **Seis etapas recuperadas en candidata38; pendiente prueba física** | Chat compara catálogo y reglas | Work reconstruye código/arte de Preview32 en convergencia | Recuperar sus 6 etapas sin perder funcionalidades |
-| E8 · Profundidad y pulido | **Después de feedback** | Chat: priorizar | Work | Mejoras justificadas y probadas |
-| E9 · Beta | **En espera** | Chat: pruebas extendidas | Work | Beta estable |
-| E10 · Publicación | **En espera, sujeto a autorización** | Chat: requisitos/editorial | Work | Go/no-go y release aprobado |
+| Etapa | Estado actual | Siguiente responsable / condición |
+|---|---|---|
+| R0 · Unificación | Completada y aprobada físicamente en Preview38 | Cierre/integración de PR18 por Work; mantener baseline |
+| E0 · Coordinación | Vigente | Ambos cumplen los documentos y el traspaso obligatorio |
+| E1 · Jade / relevo | Incorporada y aprobada dentro de Preview38 | No fusionar PR17 otra vez |
+| E2 · Motor regional | Incorporada y aprobada dentro de Preview38 | Preservar contratos y migraciones |
+| E3 · Jade de seis etapas | Completada dentro de R0 | Preservar contenido validado |
+| E4 · Continuidad visual | Completada dentro de R0 | Preservar flujos validados |
+| **E5 · Primera sesión autónoma** | **Pendiente de diseño/especificación; implementación no iniciada** | **Chat primero; Work después de criterios/decisiones aprobados** |
+| E6 · Alfa / playtest | Pendiente, después de E5 | Chat prepara QA; Work corrige cuando corresponda |
+| E7 · Bosque del Velo | Sus seis etapas ya recuperadas y aprobadas en R0 | No reconstruir ni añadir región nueva |
+| E8–E10 | Pendientes | Según feedback y autorizaciones futuras |
 
-**Prioridad vigente actualizada:** R0 rescate Preview32 + fuente Work E2 → rama de convergencia → 2 regiones/12 etapas + relevo E1 + motor E2 + UX → validar APK con partidas antiguas → retomar roadmap alfa. No desarrollar contenido adicional hasta lograr paridad con Preview32.
+**SIGUIENTE PASO:** preparar únicamente el contrato de implementación E5.
+**RESPONSABLE:** CHAT.
+**INSTRUCCIÓN PARA CONTINUAR:**
+
+```text
+Continúa Karmany Monsta Android en axenoban/karmany-monsta-android. Verifica el HEAD real de dev/karmany-core y lee AGENTS.md, docs/ROADMAP_ESTADO.md, docs/ROADMAP_CHAT_WORK.md y docs/CONTINUIDAD.md. La Preview 38 (v0.21.0-unification, código f0266ba) está aprobada físicamente y la unificación está cerrada. Prepara únicamente el diseño y la especificación de E5: primera sesión autónoma, tutorial contextual y claridad de derrota/progresión. Define alcance, exclusiones, microcopias, criterios de aceptación, regresiones de guardado/UI y un bloque acotado con instrucción lista para Work. No programes ni modifiques reglas, balance, canon o sistemas estables. Distingue decisiones pendientes y espera su aprobación antes de autorizar implementación. Termina con SIGUIENTE PASO, RESPONSABLE (CHAT O WORK) e INSTRUCCIÓN PARA CONTINUAR.
+```
 
 ## 3. Contrato de continuidad («continúa»)
 
@@ -118,7 +147,7 @@ INTEGRADO EN dev: sí/no; nuevo SHA:
 SIGUIENTE RESPONSABLE + PRIMER PASO:
 ```
 
-## 5. Registro cronológico mínimo
+## 5. Registro histórico de checkpoints (conservar procedencia; manda el estado vigente de arriba)
 
 - **2026-10-14** — Preview29/v0.17.0, progresión y resumen XP aprobados e integrados en dev; evidencia histórica en CONTINUIDAD y BASELINE_VALIDADO.
 - **2026-10-15** — Dirección de Jade E1 aprobada por el creador; variación de Insignia de Sakuromushi para evitar usar dos turnos, con bono que dure varias rondas.
@@ -159,3 +188,7 @@ Verificación adicional: diez guardados generados ejecutando la fuente E2 origin
 - Verificados tras descargar: versión0.21.0-unification, build38, identificación R0 correcta, seis etapas de cada región y13especies, paquete com.axenoban.karmanymonsta.preview y certificado idéntico a Preview32/E2; no contiene tests/docs/ci.
 - Prueba física: pendiente. No se interpreta CI verde como aprobación de E1 ni de la unificación. dev2ea590c y main9ef7af7 intactos.
 - Siguiente acción: el creador instala Preview38 encima de su partida, sigue la prueba de docs/UNIFICACION_JADE_BOSQUE.md e informa resultado. Chat audita PR18 en solo lectura. Work corrige cualquier reproducción en esta rama; no inicia nuevo contenido ni integra hasta aprobación física explícita.
+
+## Cierre aprobado de unificación · 15/10/2026
+
+Se registra la aprobación textual del creador y el comentario de Chat en PR18. Work verificó: f0266ba aprobado; 892a109 solo documentación posterior; dev2ea590c y E1/PR17 (00b2769) son antecesores del cierre. Integración por fast-forward, sin modificar código de juego, datos, guardados, arte, tests, configuración Android ni main. La operación y el nuevo HEAD deben verificarse en GitHub; el SHA de este cierre se obtiene del commit que contiene esta sección. E5 queda pendiente de especificación por Chat, sin implementación ni diseño nuevo en este bloque.

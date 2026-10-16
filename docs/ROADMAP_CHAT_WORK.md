@@ -1,5 +1,22 @@
 # KARMANY MONSTA · ANDROID
 ## Roadmap coordinado de Chat + Work
+
+## Estado vigente · cierre aprobado de R0 (15/10/2026, America/La_Paz)
+
+La **Preview 38 / v0.21.0-unification**, código `f0266badaa7851da3de2bcc08a65752b6409360b`, ha sido **probada físicamente y aprobada por el creador**: «Confirmo que probé físicamente la Preview 38 (v0.21.0-unification) y la considero correcta y aceptable. Apruebo esta versión».
+
+Referencia adicional: [validación registrada por Chat en PR #18](https://github.com/axenoban/karmany-monsta-android/pull/18#issuecomment-6204818029). Es aprobación general de la versión; no se atribuyen pruebas específicas no detalladas por el usuario.
+
+- **Unificación completada y aprobada.** Valle Jade y Bosque del Velo (6 + 6 etapas), contenido recuperado de Preview32 y mejoras E1/E2 constituyen el baseline estable.
+- **Integración autorizada:** fast-forward de `dev/karmany-core` desde `2ea590cff0b0e1cb1c6b33318bf156901efb681e` al commit documental de este cierre, descendiente de `892a109e8db48f25c30d81fa3c74aefdf0d7d414`. El SHA exacto de cierre es el commit que contiene esta sección y debe comprobarse en GitHub.
+- Código aprobado idéntico: desde `f0266ba` hasta `892a109` solo cambiaron cuatro archivos en `docs/`; este cierre solo modifica instrucciones/documentación.
+- [CI 38824304295 correcta](https://github.com/axenoban/karmany-monsta-android/actions/runs/38824304295): 4.409 checks Godot en 26 suites, 3 Python, exportación, firma v2/v3 y auditoría. No se atribuye una ejecución nueva a este cierre documental.
+- [APK aprobada Preview 38](https://github.com/axenoban/karmany-monsta-android/releases/download/android-preview-38/karmany-monsta-preview.apk), SHA-256 `16a66fc970346981eb628f7ac4a04a7633eac8ff08b93a735d723c7bb37c08ac`; evidencia en `docs/recovery/CANDIDATA_38_VERIFICACION.json`.
+- **main se conserva en `9ef7af778ee59a47f62bdfbfd5eb0786ce787213`**. No se eliminan ramas/releases ni se reescribe historia. PR #17 está absorbido por la ascendencia del PR #18; no se vuelve a fusionar.
+- **Siguiente etapa pendiente: E5, diseño/especificación a cargo de Chat.** Work no inicia E5 ni crea nuevas funcionalidades hasta disponer de criterios y decisiones aprobados.
+
+Los apartados de partida y las especificaciones E1–E4/E7 documentan el recorrido histórico; sus tareas ya incorporadas no vuelven a abrirse. La prioridad vigente es E5, primero especificación de Chat, después implementación aprobada por Work.
+
 **Versión de planificación:** 1.1 · **Documento original del 15 de octubre de 2026, incorporado íntegro y actualizado operativamente**  
 **Objetivo inmediato:** una alfa cerrada realmente jugable y evaluable por jugadores externos.  
 **Objetivo posterior:** beta sólida y, mediante una decisión posterior, versión comercial publicable.
@@ -209,13 +226,34 @@ No agregues nuevas reglas al cuestionario ni al repositorio.
 
 **Prioridades:** P0 = cierre/crash, pérdida de guardado, imposibilidad de completar partida o duplicación explotable. P1 = fallo reproducible grave de jugabilidad/interfaz. P2 = pulido o molestia no bloqueante. Un lanzamiento de alfa requiere cero P0 conocidos y tratamiento explícito de P1; los P2 pueden quedar registrados.
 
-## 10. Primer movimiento recomendado (actualización 15/10/2026)
+## 10. Siguiente movimiento vigente · E5, especificación por Chat
 
-**Primero cerrar E1 con prueba real.** La configuración y reglas de Jade ya fueron aprobadas, y Chat implementó el ensayo de relevo de Sakuromushi en `feature/e1-jade-relay` (Preview 34, v0.18.0, CI verde). Sin embargo el creador comentó que percibía solo el bonus y no el cambio; no hay confirmación inequívoca de la versión instalada ni aprobación de esa experiencia. **No marcar «E1 validada» ni integrar a dev.**
+R0/Preview38 ha sido aprobada físicamente. No volver a cerrar E1 de forma aislada ni rehacer E2, Jade o Bosque. La siguiente etapa pendiente es E5 (primera sesión autónoma). **No se inicia ni se diseña E5 durante el cierre de R0.**
 
-**Siguiente acción:** Chat comprueba versión, equipo, selección de Sakuromushi y estado del Karmany activo; identifica si es una diferencia de APK, expectativa de UX o defecto real. Si hay bug, Work o Chat como único dueño asignado corrige y prueba E1; si se valida, cerrar el PR por fast-forward seguro y actualizar ROADMAP_ESTADO.md. Solo entonces Work inicia E2 (motor regional) y luego E3 (Jade completo). Nunca crear Bosque antes de superar alfa E6.
+Chat debe preparar primero un contrato con alcance/exclusiones, estados y textos propuestos, criterios de aceptación, pruebas de comprensión y regresiones de guardado/UI. Cualquier cambio de reglas, balance o canon queda como decisión pendiente. Work implementará después únicamente lo aprobado, desde dev validado y con un solo escritor.
 
-**Regla de ahorro:** especificar en Chat, escribir en Work únicamente un bloque acotado, revisar en Chat, corregir en la rama propietaria, validar en Android, actualizar el estado y seguir.
+## Regla permanente de cierre y traspaso
+
+**Cada entrega de Chat o Work, incluso una revisión, corrección, bloqueo o cierre documental, debe terminar indicando el siguiente paso concreto, un responsable único (CHAT o WORK) y una instrucción lista para copiar al agente correspondiente.** No basta «continúa el roadmap». Esta regla es obligatoria por instrucción del creador del 15/10/2026.
+
+Formato mínimo:
+
+```text
+HECHO:
+RAMA/COMMIT/PR:
+CI:
+APK:
+PRUEBAS / RESULTADO:
+RIESGOS / VALIDACIÓN PENDIENTE:
+SIGUIENTE PASO: [acción concreta]
+RESPONSABLE: CHAT o WORK
+INSTRUCCIÓN PARA CONTINUAR:
+[texto completo copiable, con repositorio, etapa, baseline que debe verificarse,
+alcance, límites, entregables y condición para pasar al siguiente agente]
+```
+
+Si el paso está bloqueado, identificar la causa y el agente que debe resolverla. No autorizar implícitamente otra fase mediante el cierre de la anterior.
+
 
 ## 11. Bitácora mínima para pasar el control de Chat a Work
 
@@ -257,3 +295,7 @@ SIGUIENTE ACCIÓN: [un único responsable + objetivo concreto]
 La lista E0–E10 de este documento define **qué** hacer. `docs/ROADMAP_ESTADO.md` define **en qué punto real está el proyecto**, quién escribe, cuáles son las ramas bloqueadas y qué falta por validar. No tomar «último mensaje de Chat» ni «última ejecución de Work» como estado oficial sin revisar GitHub. Cuando el creador diga «continúa», el agente debe decidir si le toca **ejecutar**, **revisar** o **ceder al otro agente**, usando las responsabilidades activas. Si el usuario asigna explícitamente el control, registrar el traspaso antes de escribir. No inferir que «continúa» es una aprobación.
 
 **Obligación al finalizar cada intervención con cambios:** en la misma rama del bloque, escribir un estado con responsable, fase, SHA y fecha, commit/PR/CI, pruebas físicas pendientes y siguiente responsable. Tras «prueba correcta» en APK identificada, ejecutar pruebas finales, integrar en `dev/karmany-core` cuando sea seguro, verificar y actualizar el registro histórico del estado; no marcar aprobado si falla. Los cambios de estado durante un feature se registran en esa rama; en `dev` constan solo fases aprobadas e integración pendiente. Esto no sustituye `docs/CONTINUIDAD.md`.
+
+## Cierre R0 y traspaso autorizado · 15/10/2026
+
+Aprobación humana de Preview38/f0266ba y validación de Chat en PR18 registradas. Integración autorizada por fast-forward a dev; main intacta. E5 pendiente de especificación por Chat, no de implementación directa por Work. La regla permanente de cierre exige siempre SIGUIENTE PASO, RESPONSABLE (CHAT O WORK) e INSTRUCCIÓN PARA CONTINUAR lista para copiar.

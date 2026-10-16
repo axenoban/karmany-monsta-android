@@ -1,6 +1,20 @@
-# Candidata de unificación · Preview32 + E1 + E2
+# Unificación validada · Preview32 + E1 + E2
 
-Estado: candidata Preview38 lista en feature/unificacion-jade-bosque. CódigoAPKf0266badaa7851da3de2bcc08a65752b6409360b; CI38824304295 correcta. Único escritor Work; Chat revisa. No integrada en dev/main; aprobación física pendiente.
+## Estado vigente · cierre aprobado de R0 (15/10/2026, America/La_Paz)
+
+La **Preview 38 / v0.21.0-unification**, código `f0266badaa7851da3de2bcc08a65752b6409360b`, ha sido **probada físicamente y aprobada por el creador**: «Confirmo que probé físicamente la Preview 38 (v0.21.0-unification) y la considero correcta y aceptable. Apruebo esta versión».
+
+Referencia adicional: [validación registrada por Chat en PR #18](https://github.com/axenoban/karmany-monsta-android/pull/18#issuecomment-6204818029). Es aprobación general de la versión; no se atribuyen pruebas específicas no detalladas por el usuario.
+
+- **Unificación completada y aprobada.** Valle Jade y Bosque del Velo (6 + 6 etapas), contenido recuperado de Preview32 y mejoras E1/E2 constituyen el baseline estable.
+- **Integración autorizada:** fast-forward de `dev/karmany-core` desde `2ea590cff0b0e1cb1c6b33318bf156901efb681e` al commit documental de este cierre, descendiente de `892a109e8db48f25c30d81fa3c74aefdf0d7d414`. El SHA exacto de cierre es el commit que contiene esta sección y debe comprobarse en GitHub.
+- Código aprobado idéntico: desde `f0266ba` hasta `892a109` solo cambiaron cuatro archivos en `docs/`; este cierre solo modifica instrucciones/documentación.
+- [CI 38824304295 correcta](https://github.com/axenoban/karmany-monsta-android/actions/runs/38824304295): 4.409 checks Godot en 26 suites, 3 Python, exportación, firma v2/v3 y auditoría. No se atribuye una ejecución nueva a este cierre documental.
+- [APK aprobada Preview 38](https://github.com/axenoban/karmany-monsta-android/releases/download/android-preview-38/karmany-monsta-preview.apk), SHA-256 `16a66fc970346981eb628f7ac4a04a7633eac8ff08b93a735d723c7bb37c08ac`; evidencia en `docs/recovery/CANDIDATA_38_VERIFICACION.json`.
+- **main se conserva en `9ef7af778ee59a47f62bdfbfd5eb0786ce787213`**. No se eliminan ramas/releases ni se reescribe historia. PR #17 está absorbido por la ascendencia del PR #18; no se vuelve a fusionar.
+- **Siguiente etapa pendiente: E5, diseño/especificación a cargo de Chat.** Work no inicia E5 ni crea nuevas funcionalidades hasta disponer de criterios y decisiones aprobados.
+
+Los apartados de procedencia y comparación describen la implementación original; la aprobación vigente sustituye las referencias históricas a prueba pendiente.
 
 ## Procedencia y recuperación
 
@@ -85,4 +99,8 @@ Además de las regresiones del motor, tests/e2_source_compatibility_tests.gd car
 
 4409checks únicos Godot/26suites y3Python correctos; la suite UI se repite además al renderizar22pantallas. Todas las24simulaciones finalizaron con victoria en4–22rondas. No implica aprobación humana del balance. SHA256APK16a66fc970346981eb628f7ac4a04a7633eac8ff08b93a735d723c7bb37c08ac;83365989bytes. Código fuente, dosregiones y ausencia de tests/ci/docs verificados dentro delAPK descargado. Firma v2/v3 correcta y certificado igual al de Preview32/E2. Conservar partida mediante actualización sin desinstalar; ante rechazo de instalación, reportar el mensaje conservando los datos.
 
-Limitaciones explícitas: no se ha ejecutado en el dispositivo físico del creador; el historial Git y los comentarios originales de Preview32 no pueden recuperarse de laAPK; las imágenes se recuperan de sus recursos ya comprimidos. La procedencia editable, las mecánicas y los formatos de partidas sí se implementaron y probaron. No se afirma equivalencia visual física definitiva ni balance final aprobado. Esperar prueba del creador antes de integrar.
+Limitaciones históricas al emitir la candidata (actualizadas por la aprobación física general del 15/10/2026): el historial Git y los comentarios originales de Preview32 no pueden recuperarse de laAPK; las imágenes se recuperan de sus recursos ya comprimidos. La procedencia editable, las mecánicas y los formatos de partidas sí se implementaron y probaron. No se afirma equivalencia visual física definitiva ni balance final aprobado. Esperar prueba del creador antes de integrar.
+
+## Cierre de aprobación
+
+El creador confirmó que probó físicamente Preview38/v0.21.0-unification y la considera correcta y aceptable. Chat registró la validación en PR18. Se aprueba el código f0266ba, no funcionalidades nuevas; el único commit posterior previo al cierre (892a109) es documental. La integración autorizada conserva ese código mediante fast-forward de dev. E5 queda a cargo de Chat para especificación previa; Work no implementa hasta recibir lo aprobado. La prueba física es general; no se presume cobertura exhaustiva de todos los casos propuestos arriba.

@@ -1,28 +1,53 @@
 # Instrucciones de desarrollo de Karmany Monsta
 
-Antes de iniciar cualquier desarrollo, ajuste o actualización, leer `docs/CONTINUIDAD.md` completo y los documentos que indique para el bloque actual. Verificar ramas, commits, cambios locales y CI reales antes de editar. Esta lectura es obligatoria, especialmente antes de cambios grandes.
+Antes de actuar, leer `docs/ROADMAP_ESTADO.md`, `docs/ROADMAP_CHAT_WORK.md` y `docs/CONTINUIDAD.md`; verificar HEAD, historia, PR, diferencias y CI reales. Los documentos históricos no sustituyen GitHub ni las instrucciones actuales del creador.
 
-Al terminar cada mejora actualizar `docs/CONTINUIDAD.md`: implementación, rama, pruebas ejecutadas, validación pendiente, limitaciones y siguiente paso concreto si el creador confirma «prueba correcta». Actualizarlo también ante interrupciones o cambios de alcance. No afirmar resultados aún no comprobados.
+## Baseline y etapa vigentes
 
-«Prueba correcta» permite cerrar el bloque e integrar por fast-forward en `dev/karmany-core`, sin force push. `main` se reserva para publicación. Trabajar en `feature/*` para bloques no validados. Conservar guardados y reglas aprobadas; no inventar canon, balance o economía. Si el siguiente bloque requiere decisiones nuevas, preparar preguntas concretas antes de implementarlo.
+Preview 38 / v0.21.0-unification, código `f0266badaa7851da3de2bcc08a65752b6409360b`, aprobada físicamente por el creador el 15/10/2026. R0 unifica Preview32 + Chat E1 + Work E2 y queda completada. El cierre integra el PR #18 en dev por fast-forward autorizado. El PR #17 anterior se considera absorbido; comprobar su ascendencia antes de cerrarlo sin fusionarlo de nuevo.
 
-Las instrucciones del usuario tienen prioridad. No es necesario recuperar el chat anterior si este documento y el estado real del repositorio proporcionan el contexto suficiente.
+E5 es la siguiente etapa pendiente: **Chat prepara primero diseño, especificación y criterios de aceptación**. **Work espera lo aprobado** y solo después implementará en una nueva feature desde dev validado. Esta intervención únicamente cierra R0; no inicia E5.
 
-## ALERTA DE RAMAS DIVERGENTES (prioridad máxima, 15/10/2026)
+## Ramas, validación y protección
 
-ANTES de codificar: leer `docs/AUDITORIA_DOS_LINEAS_2026-10-15.md` además del roadmap vivo. Se verificó por análisis de APK que Preview32 contenía **dos regiones y 12 etapas**, mientras que las APK Chat/E1 y Work/E2 retornaron a 4 etapas de Jade por partir del `dev` previo. **NO dar por terminado el proyecto ni avanzar E2/E3 aisladamente:** primero rescatar la fuente E2 en Library (`Karmany_Monsta_E2_Fuente_y_Pruebas.zip`) y preservar los elementos de Preview32 (`Karmany_Monsta_Preview32.apk`) mediante una rama de convergencia. Solo Work escribe motor/arte durante ese rescate; Chat audita. No presentar `.gdc` como fuente editable. No migrar perfiles de Preview32 sin pruebas. No tocar `dev`/ `main` salvo documentación verificada y futuras aprobaciones explícitas.
+- `main`: versiones publicables; no modificar durante este cierre.
+- `dev/karmany-core`: última versión completa validada.
+- `feature/*`: trabajo pendiente de validación.
+- «Prueba correcta» sobre APK/SHA identificable autoriza el cierre e integración segura, preferentemente fast-forward. «Continúa» por sí solo no aprueba.
+- No force push, no reescribir historia, no merges ciegos, no eliminar ramas/releases anteriores. Verificar ascendencia y HEAD antes y después de integrar. Si dev avanzó, revisar diferencias e incorporar su historia de forma trazable; nunca forzar un falso avance lineal.
+- Conservar guardados, contratos, reglas, canon, economía y sistemas estables. No inventar contenido ni modificar balance sin decisión aprobada.
+- Buscar el primer error real; no debilitar tests, asserts o controles para ocultarlo. Ejecutar las regresiones correspondientes a cambios transversales.
+- CI verde no reemplaza prueba física. Registrar aprobación real sin atribuir casos o dispositivos no detallados.
 
-## Roadmap vivo y reparto Chat / Work (lectura obligatoria)
+## Protección permanente contra la divergencia
 
-**Antes de cualquier acción**, desde Chat, Work u otro agente, leer desde la rama actual `docs/ROADMAP_ESTADO.md` (estado vigente/propietario), `docs/ROADMAP_CHAT_WORK.md` (etapas E0–E10, roles, prompts y puertas) y `docs/CONTINUIDAD.md` (historial técnico). Verificar después los HEAD/commits reales de `dev/karmany-core`, `feature/*`, PR abiertos, checks y últimas APK. Un texto con SHA antiguo o un comentario de chat nunca sustituye a GitHub.
+La auditoría `docs/AUDITORIA_DOS_LINEAS_2026-10-15.md` documentó el retroceso de Preview32 (dos regiones/12 etapas) a cuatro etapas en otra línea. La recuperación editable y su integración están resueltas en Preview38; consultar `docs/UNIFICACION_JADE_BOSQUE.md`. **No volver a partir de la línea de cuatro etapas ni perder regiones, criaturas, arte, flujos, migraciones, relevo E1 o motor E2.** No presentar GDC como fuente editable ni recrear contenido ya recuperado. Los bundles y evidencias se conservan.
 
-- Cuando el creador diga «continúa», identificar primero la etapa activa y **su dueño único de escritura** según `docs/ROADMAP_ESTADO.md`. Si no te toca programar, revisar, especificar, auditar o explicar el bloqueo sin duplicar trabajo de otro agente.
-- Chat suele ser responsable de diseño, decisiones, balance, auditoría y QA; Work de programación de bloques, compilación y APK. La prioridad es la **fase del tablero**, no el tipo de agente. La asignación puede cambiar expresamente por el creador; registrar el traspaso antes de modificar código.
-- Solo **una rama funcional escribible** para los mismos archivos; lecturas simultáneas sí. No permitir doble edición de `AGENTS.md`, `CONTINUIDAD.md`, `ROADMAP_ESTADO.md`, código compartido o archivos de reglas mientras otro es dueño.
-- Tras cada avance, fallo, interrupción, prueba o traspaso, **el dueño de la rama** actualiza `docs/ROADMAP_ESTADO.md` y `docs/CONTINUIDAD.md` en esa misma rama. Anotar fase, estado real, responsable, SHA, PR, CI, release/APK, validación física (o pendiente) y siguiente acción. No marcar `aprobado` por CI verde.
-- Solo cuando el creador valide explícitamente la APK/cambio, el dueño verifica historial, CI y contratos; **integra por fast-forward si es seguro**, verifica `dev/karmany-core`, cierra PR y actualiza ambos documentos de estado en `dev`. Si `dev` avanzó por documentación, incorporar `dev` a la feature de manera trazable antes de intentar FF; no forzar ni reescribir historia.
-- No dar por terminado E1 por la publicación de Preview34: el relevo de Sakuromushi tiene observación humana pendiente. No iniciar implementación E2 sin cerrar ese bloqueo y adjudicar expresamente la escritura.
+## Coordinación Chat / Work
 
+Un único escritor por bloque y archivos compartidos. Chat analiza, especifica, revisa y controla calidad; Work implementa, prueba y compila cuando el bloque esté aprobado y asignado. Lecturas simultáneas sí; escrituras concurrentes sobre motor, reglas o documentos de estado no. La asignación expresa del creador tiene prioridad.
 
-## Escritura vigente de la convergencia
-El15/10/2026 el creador transfirió explícitamente la implementación y compilación a Work en feature/unificacion-jade-bosque; Chat solo analiza/revisa. Esta orden sustituye las esperas E1→E2 históricas para esta convergencia. Preview32 ya tiene recuperación editable trazable; ver docs/UNIFICACION_JADE_BOSQUE.md. No volver a partir de cuatro etapas ni integrar en dev antes de aprobar físicamente la candidata.
+Tras avances, fallos, interrupciones, validaciones o traspasos, el dueño actualiza `ROADMAP_ESTADO.md` y `CONTINUIDAD.md` en la misma rama: alcance real, responsable, SHA/PR/CI/APK, pruebas ejecutadas, aprobación, límites y siguiente acción. No declarar integrado antes de verificar GitHub.
+
+## Regla permanente de cierre y traspaso
+
+**Cada entrega de Chat o Work, incluso una revisión, corrección, bloqueo o cierre documental, debe terminar indicando el siguiente paso concreto, un responsable único (CHAT o WORK) y una instrucción lista para copiar al agente correspondiente.** No basta «continúa el roadmap». Esta regla es obligatoria por instrucción del creador del 15/10/2026.
+
+Formato mínimo:
+
+```text
+HECHO:
+RAMA/COMMIT/PR:
+CI:
+APK:
+PRUEBAS / RESULTADO:
+RIESGOS / VALIDACIÓN PENDIENTE:
+SIGUIENTE PASO: [acción concreta]
+RESPONSABLE: CHAT o WORK
+INSTRUCCIÓN PARA CONTINUAR:
+[texto completo copiable, con repositorio, etapa, baseline que debe verificarse,
+alcance, límites, entregables y condición para pasar al siguiente agente]
+```
+
+Si el paso está bloqueado, identificar la causa y el agente que debe resolverla. No autorizar implícitamente otra fase mediante el cierre de la anterior.
+
