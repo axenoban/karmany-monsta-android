@@ -85,6 +85,7 @@ func commit_profile(next_profile: Dictionary) -> bool:
 func start_journey() -> bool:
 	var next_profile:= profile.duplicate(true)
 	next_profile.first_session = preload("res://scripts/first_session.gd").fresh()
+	next_profile.r1_intro = {"version": 1, "status": "pending"}
 	next_profile.journey = {"started": true, "visited_jade": false}
 	next_profile.skill_tree = TreeModel.defaults()
 	next_profile.campaign = Campaign.defaults()
@@ -482,4 +483,13 @@ func dismiss_first_session(id: String) -> bool:
 	if load_failed or not session.automatic(profile, id): return false
 	var next := profile.duplicate(true)
 	next.first_session.seen.append(id)
+	return commit_profile(next)
+
+# Presentation acknowledgment only; the normal transaction owns all persistence.
+func finish_r1_intro(status: String) -> bool:
+	if load_failed or status not in ["completed", "skipped"] or not profile.has("r1_intro"): return false
+	if profile.r1_intro.status != "pending": return true
+	var next := profile.duplicate(true)
+	next.r1_intro.status = status
+	next.campaign.intro_seen = true
 	return commit_profile(next)

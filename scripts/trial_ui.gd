@@ -546,7 +546,7 @@ func _map_options() -> void :
 	content.add_child(_button("Viajar entre regiones", func():
 		_dismiss("MapOptions")
 		_regions()))
-	for entry in [["Equipo", "team"], ["Colección", "collection"], ["Árbol", "skill_tree"], ["Libro", "book"], ["Ezel y Axe", "intro"], ["Menú principal", "home"]]:
+	for entry in [["Equipo", "team"], ["Colección", "collection"], ["Árbol", "skill_tree"], ["Libro", "book"], ["Ezel · Perfil", "trainers"], ["Bestiario", "bestiary"], ["Ajustes", "settings"], ["Menú principal", "home"]]:
 		var target: String = entry[1]
 		content.add_child(_button(entry[0], func(): navigate.emit(target)))
 

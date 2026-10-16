@@ -78,6 +78,13 @@ jobs:
           set -o pipefail
           godot --headless --path . --script tests/playable_tests.gd 2>&1 | tee build/playable.log
           python3 ci/check_log.py build/playable.log
+      - name: Validate R1 navigation identity and prologue
+        run: |
+          set -o pipefail
+          godot --headless --path . --script tests/r1_tests.gd 2>&1 | tee build/r1.log
+          python3 ci/check_log.py build/r1.log
+          xvfb-run -a godot --rendering-method gl_compatibility --audio-driver Dummy --path . --script tests/r1_tests.gd -- --allow-ui-review 2>&1 | tee build/r1-render.log
+          python3 ci/check_log.py build/r1-render.log
       - name: Validate latest action display
         run: |
           set -o pipefail

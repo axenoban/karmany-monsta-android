@@ -14,6 +14,11 @@ const TrialUI = preload("res://scripts/trial_ui.gd")
 const Stage = preload("res://scripts/trial_stage.gd")
 const AdventureTheme = preload("res://scripts/adventure_theme.gd")
 var tree_scroll_position:= 0
+var tree_pan := Vector2.ZERO
+var intro_dismissed := false
+var intro_replay := false
+var prologue: Control
+const Portrait = preload("res://scripts/r1_portrait.gd")
 const TreeMap = preload("res://scripts/skill_tree_map.gd")
 var catalog:= Catalog.new()
 var books:= Books.new()
@@ -121,6 +126,7 @@ func _show(next_page: String) -> void :
 	scroll.add_child(body)
 	match page:
 		"home": _home()
+		"prologue": _prologue()
 		"map": _map()
 		"book": _book()
 		"settings": _settings()
@@ -166,21 +172,42 @@ func _button(text: String, action: Callable) -> Button:
 		action.call())
 	return button
 
-func _home() -> void :
-	_heading("Un viaje en Valle Jade")
-	_copy("Ezel y Axe · Karmany Monsta")
-	var row:= HBoxContainer.new()
-	row.add_theme_constant_override("separation", 14)
-	body.add_child(row)
-	var continue_button:= _button("Continuar", func(): _show("map"))
-	continue_button.disabled = not App.profile.journey.started
-	row.add_child(continue_button)
-	row.add_child(_button("Comenzar viaje", _new_journey))
-	row.add_child(_button("Ajustes", func(): _show("settings")))
-	body.add_child(_button("Diagnóstico", func(): _show("diagnostics")))
-	body.add_child(_button("Jugar en Valle Jade", func(): _show("jade_play" if App.profile.campaign.intro_seen else "intro")))
-	body.add_child(_button("Árbol de resonancias", func(): _show("skill_tree")))
-	_copy("Explora el valle, prepara tus resonancias y prueba el encuentro de Zephyr contra Tanugami.")
+func _home() -> void:
+	_heading("Karmany Monsta")
+	_copy("El viaje de Ezel · Zephyr, tu compañero · Axe, tu mentor")
+	var resume := _button("Continuar aventura", _continue_adventure)
+	resume.disabled = not App.profile.journey.started or App.load_failed
+	body.add_child(resume)
+	body.add_child(_button("Nueva partida", _new_journey))
+	body.add_child(_button("Ajustes", func(): _show("settings")))
+
+func _continue_adventure() -> void:
+	if not App.profile.journey.started: return
+	var encounter: Dictionary = App.profile.campaign.encounter
+	if not encounter.is_empty() and encounter.get("phase") in ["battle", "replacement", "capture"]:
+		_show("exploration" if App.profile.campaign.get("exploration", {}).get("scouting", false) else "battle")
+	elif not intro_dismissed and App.profile.get("r1_intro", {}).get("status") == "pending" and not App.profile.journey.visited_jade:
+		intro_replay = false
+		_show("prologue")
+	else: _show("map")
+
+func _prologue() -> void:
+	var scroll := body.get_parent()
+	var column := scroll.get_parent()
+	column.remove_child(scroll)
+	scroll.queue_free()
+	prologue = preload("res://scripts/r1_prologue.gd").new()
+	prologue.reduced = App.profile.settings.reduced_motion
+	prologue.large = App.profile.settings.large_text
+	prologue.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	column.add_child(prologue)
+	prologue.finished.connect(func(status: String):
+		var saved := true
+		if not intro_replay:
+			intro_dismissed = true
+			saved = App.finish_r1_intro(status)
+		_show("settings" if intro_replay else "map")
+		if not saved: toast.text = App.notice + " La introducción no se marcó como vista.")
 
 func _new_journey() -> void :
 	if App.profile.journey.started or App.load_failed:
@@ -190,30 +217,56 @@ func _new_journey() -> void :
 
 func _start() -> void :
 	if App.start_journey():
-		_show("map")
+		intro_dismissed = false
+		intro_replay = false
+		_show("prologue")
 	else:
 		toast.text = App.notice
 
-func _map() -> void :
-	body.add_child(_button("Entrar al valle jugable", func(): _show("jade_play" if App.profile.campaign.intro_seen else "intro")))
+func _map() -> void:
 	_heading("Shisai · Regiones")
-	_copy("Punto de partida de Ezel y Axe.")
-	var region:= ProgressRules.region("jade")
-	_copy("Acceso: entrenador Nv. %d · XP hasta Nv. %d por individuo" % [region.min_level, region.xp_cap])
-	var button:= _button("◆  Valle Jade   ·   " + ("Visitado" if App.profile.journey.visited_jade else "Visitar"), _visit)
-	body.add_child(button)
-	body.add_child(_button("Consultar el Libro", func(): _show("book")))
-	body.add_child(_button("Bestiario de Shisai", func(): _show("bestiary")))
-	body.add_child(_button("Entrenadores", func(): _show("trainers")))
-	body.add_child(_button("Árbol de resonancias", func(): _show("skill_tree")))
-	_copy("Puedes repetir las localizaciones desbloqueadas. El entrenamiento libre no concede experiencia.")
+	_copy("Elige una región. La stamina se gasta al entrar en una localización.")
+	for region_id in ["jade", "veil"]:
+		var id: String = region_id
+		var region := ProgressRules.region(id)
+		var panel := PanelContainer.new()
+		body.add_child(panel)
+		var card := VBoxContainer.new()
+		panel.add_child(card)
+		var art := TextureRect.new()
+		art.texture = Stage.texture("jade_point_1" if id == "jade" else "veil_bamboo")
+		art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		art.custom_minimum_size.y = 160
+		card.add_child(art)
+		var complete: int = preload("res://scripts/jade_route.gd").completions(App.profile.campaign.route, id).size()
+		card.add_child(_label("%s · %d/6 completadas" % [region.name, complete]))
+		var reason := ProgressRules.region_reason(App.profile.skill_tree, id)
+		var state := _label("Disponible" if reason.is_empty() else reason)
+		state.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		card.add_child(state)
+		var needs_buy: bool = int(region.cost) > 0 and id not in App.profile.skill_tree.unlocks
+		var open := _button("Desbloquear · %d punto" % int(region.cost) if needs_buy else "Explorar región", func(): _open_region(id, needs_buy))
+		open.disabled = App.load_failed or int(App.profile.skill_tree.level) < int(region.min_level) or _encounter_in_progress()
+		card.add_child(open)
+	if _encounter_in_progress(): body.add_child(_button("Retomar aventura", _continue_adventure))
+	for entry in [["Libro", "book"], ["Bestiario", "bestiary"], ["Ezel · Perfil", "trainers"], ["Equipo", "team"], ["Árbol de resonancias", "skill_tree"], ["Ajustes", "settings"]]:
+		var target: String = entry[1]
+		body.add_child(_button(entry[0], func(): _show(target)))
 
-func _visit() -> void :
-	if App.visit_jade():
-		_show("map")
-		toast.text = "Visita guardada."
-	else:
-		toast.text = App.notice
+func _open_region(id: String, buy: bool) -> void:
+	if buy:
+		var confirm := ConfirmationDialog.new()
+		confirm.dialog_text = "Desbloquear %s cuesta %d punto permanente del árbol." % [ProgressRules.region(id).name, int(ProgressRules.region(id).cost)]
+		add_child(confirm)
+		confirm.confirmed.connect(func():
+			if App.purchase_unlock(id): _open_region(id, false)
+			else: toast.text = App.notice
+			confirm.queue_free())
+		confirm.canceled.connect(confirm.queue_free)
+		confirm.popup_centered(Vector2i(620,240))
+	elif App.select_region(id): _show("jade_play")
+	else: toast.text = App.notice
 
 func _book() -> void :
 	_heading("El Libro")
@@ -269,19 +322,32 @@ func _confirm_redistribute() -> void :
 	confirm.canceled.connect(confirm.queue_free)
 	confirm.popup_centered(Vector2i(620, 240))
 
-func _trainers() -> void :
-	_heading("Entrenadores")
-	_copy("Las resonancias son habilidades del entrenador que apoyan a sus Karmany.")
-	if not structure.last_error.is_empty():
-		_copy(structure.last_error)
-		return
-	var rules:= structure.rules()
-	_copy("Equipo: hasta %d Karmany · %d activo" % [rules.team_capacity, rules.active_per_side])
-	_copy("Cada Karmany tendrá tres habilidades, incluida una insignia, y estadísticas de Vida, Ataque, Defensa y Velocidad.")
-	for role in rules.trainer_roles:
-		_copy(role.name + "\n" + role.purpose + ".")
-	_copy("El encuentro de prueba aplica Curación, Escudo, Potenciación, Control y Raíces experimentales a las resonancias equipadas. Sus valores están separados del canon.")
-	body.add_child(_button("Abrir árbol de resonancias", func(): _show("skill_tree")))
+func _portrait(id: String, hidden_species: bool = false) -> Control:
+	var art := Portrait.new()
+	art.setup(id, hidden_species)
+	return art
+
+func _trainers() -> void:
+	_heading("Ezel · Tu perfil")
+	body.add_child(_portrait("ezel"))
+	var tree := _tree_model()
+	_copy("Nivel %d · XP %d/%d · %d puntos disponibles" % [tree.state.level, App.profile.campaign.progression.trainer_xp, Progress.requirement(int(tree.state.level)), tree.points_available()])
+	_copy("Resonancias equipadas")
+	if tree.state.equipped.is_empty(): _copy("No hay resonancias equipadas.")
+	for id in tree.state.equipped:
+		_copy("%s · Rango %d" % [TreeModel.node_definition(id).name, int(tree.state.ranks[id])])
+	_copy("Tu equipo")
+	for member in App.profile.campaign.team.members:
+		var row := HBoxContainer.new()
+		body.add_child(row)
+		row.add_child(_portrait(member.species_id))
+		var text := _label("%s · %s\n%s" % [Roster.member_name(member), "Activo" if member.instance_id == App.profile.campaign.team.active_id else "Reserva", Progress.summary(App.profile.campaign, member.instance_id)])
+		text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_child(text)
+	for entry in [["Equipo", "team"], ["Árbol de resonancias", "skill_tree"], ["Libro", "book"]]:
+		var target: String = entry[1]
+		body.add_child(_button(entry[0], func(): _show(target)))
 
 func _tree_model() -> TrainerSkillTree:
 	var tree:= TreeModel.new()
@@ -296,6 +362,8 @@ func _skill_tree() -> void :
 	_copy("Equipa hasta cuatro resonancias. El encuentro usa tu selección al comenzar.")
 	var map:= TreeMap.new()
 	map.setup(TreeModel.specification(), tree.snapshot(), selected_tree_node, App.profile.settings.large_text)
+	map.pan = tree_pan
+	map.pan_changed.connect(func(value: Vector2): tree_pan = value)
 	map.node_selected.connect(_select_tree_node)
 	body.add_child(map)
 	var node:= TreeModel.node_definition(selected_tree_node)
@@ -385,25 +453,46 @@ func _bestiary() -> void :
 	_copy("%d especies" % entries.size())
 	for entry in entries:
 		var species_id: String = entry.id
-		body.add_child(_button(entry.name + "  ·  " + entry.rarity, func():
+		var known := _species_owned(species_id)
+		var row := HBoxContainer.new()
+		body.add_child(row)
+		row.add_child(_portrait(species_id, not known))
+		var button := _button(entry.name + " · " + entry.rarity + ("" if known else " · Sin vincular"), func():
 			selected_species = species_id
-			_show("species")))
+			_show("species"))
+		button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_child(button)
 
-func _species() -> void :
-	var entry:= catalog.find_species(selected_species)
+func _species_owned(id: String) -> bool:
+	for member in App.profile.campaign.collection:
+		if member.species == id: return true
+	return false
+
+func _species() -> void:
+	var entry := catalog.find_species(selected_species)
 	if entry.is_empty():
 		_copy("La ficha solicitada no está disponible.")
 		return
 	_heading(entry.name)
-	_copy(entry.epithet + " · " + entry.rarity)
-	_copy(entry.biology)
-	_copy("Fisiología\n" + entry.physiology)
-	_copy("Comportamiento\n" + entry.behavior)
-	_copy("Resonancia lumínica\n" + entry.resonance.luminous)
-	_copy("Resonancia sombría\n" + entry.resonance.shadow)
+	var known := _species_owned(selected_species)
+	body.add_child(_portrait(selected_species, not known))
+	_copy(entry.rarity)
+	if not known:
+		_copy("Vincula esta especie con el Libro para descubrir su ficha.")
+		return
+	_copy(entry.biome)
+	_copy(entry.physiology.split(". ")[0] + ". " + entry.behavior.split(". ")[0])
+	var stats := CombatCatalog.stats_at_level(selected_species, 1)
+	if stats.is_empty(): _copy("Datos de combate aún no disponibles")
+	else: _copy("Base Nv. 1 · Vida %d · Ataque %d · Defensa %d · Velocidad %d" % [stats.life, stats.attack, stats.defense, stats.speed])
 
 func _settings() -> void :
 	_heading("Ajustes")
+	body.add_child(_button("Ver introducción", func():
+		intro_replay = true
+		_show("prologue")))
+	body.add_child(_button("Diagnóstico", func(): _show("diagnostics")))
 	for key in ["large_text", "haptics", "sound", "reduced_motion"]:
 		var current_key: String = key
 		var title: String = {"large_text": "Texto grande", "haptics": "Vibración al tocar", "sound": "Efectos de sonido", "reduced_motion": "Movimiento reducido"}[key]
@@ -467,6 +556,9 @@ func _write_report(path: String) -> void :
 	toast.text = "Informe exportado." if handle.get_error() == OK else "No se pudo completar la exportación."
 
 func _back() -> void :
+	if page == "prologue" and is_instance_valid(prologue):
+		prologue.back()
+		return
 	for transition in get_tree().get_nodes_in_group("combat_transition"):
 		if transition.is_visible_in_tree():
 			transition.finish()
@@ -492,13 +584,13 @@ func _back() -> void :
 	elif page in ["battle", "intro", "collection", "team", "exploration"]:
 		_show("jade_play")
 	elif page == "jade_play":
-		_show("home")
+		_show("map")
 	elif page == "loadout":
 		_show("skill_tree")
 	elif page == "tree_lab":
 		_show("diagnostics")
 	elif page == "skill_tree":
-		_show("home")
+		_show("map")
 	elif page == "species":
 		_show("bestiary")
 	elif page == "bestiary" or page == "trainers":
@@ -519,6 +611,8 @@ func _unhandled_key_input(event: InputEvent) -> void :
 		get_viewport().set_input_as_handled()
 
 func _select_tree_node(node_id: String) -> void :
+	for child in body.get_children():
+		if child.has_signal("pan_changed"): tree_pan = child.pan
 	App.tap()
 	selected_tree_node = node_id
 	var scroll:= body.get_parent() as ScrollContainer
