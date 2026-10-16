@@ -178,6 +178,10 @@ jobs:
           python3 ci/check_log.py build/first-session.log
           xvfb-run -a godot --rendering-method gl_compatibility --audio-driver Dummy --path . --script tests/first_session_tests.gd -- --allow-ui-review 2>&1 | tee build/first-session-render.log
           python3 ci/check_log.py build/first-session-render.log
+          godot --headless --path . --script tests/help_persistence_tests.gd 2>&1 | tee build/help-persistence.log
+          python3 ci/check_log.py build/help-persistence.log
+          xvfb-run -a godot --rendering-method gl_compatibility --audio-driver Dummy --path . --script tests/help_persistence_tests.gd -- --allow-ui-review 2>&1 | tee build/help-persistence-render.log
+          python3 ci/check_log.py build/help-persistence-render.log
       - name: Export playable encounter APK
         run: |
           set -o pipefail
@@ -230,5 +234,5 @@ jobs:
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" "${ASSETS[@]}" --clobber
           else
-            gh release create "$TAG" "${ASSETS[@]}" --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Candidata E5 0.22.0: primera sesión autónoma, tarjetas contextuales y Ayuda, preservando Preview38. Pendiente prueba física; no integrada a dev."
+            gh release create "$TAG" "${ASSETS[@]}" --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Candidata E5 0.22.1: cierre de Ayuda no bloqueante ante fallo de guardado, persistencia protegida y regresiones completas. Pendiente prueba física; no integrada a dev."
           fi

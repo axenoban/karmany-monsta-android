@@ -1,5 +1,20 @@
 # ESTADO VIVO · Roadmap de Karmany Monsta (Chat + Work)
 
+## Corrección E5-REV-01 · Work · 15/10/2026
+
+- Revisión real: PR19 abierto/no integrado, feature `6e96396`, dev `08ed2e7`, main `9ef7af7`. Código candidata39 `e9795fc` con CI38829976270 correcta. Sin otra implementación E5. Contrato E5 y coordinación releídos.
+- Diagnóstico de Chat recuperado de la conversación: APTO CON CONDICIONES; E5-REV-01/P2, el fallo al guardar ayuda vista impedía cerrar y consumía Atrás. No hay comentario de revisión en el PR; no se inventa una referencia.
+- Reproducido antes de corregir: la prueba de cierre no bloqueante falla en el código39. El test anterior exigía conservar la tarjeta al fallar: ese comportamiento contradice AC-09 y se reemplaza por cierre + conservación del perfil. Se añaden pruebas más estrictas; no se elimina ninguna protección de estado.
+- Corregidos Cerrar, Atrás y Otra explicación: el reconocimiento se intenta sin impedir navegación. Error de escritura visible en una etiqueta no modal; no se finge guardado ni se cambia `seen` en memoria si falla. La explicación puede volver a aparecer en otra visita. Una llamada diferida ya cancelada tampoco reabre otra tarjeta.
+- Fuente afectada: únicamente `context_help.gd` y metadatos0.22.1-e5; sin cambios a Store/App, migraciones, motores, estadísticas, XP, regiones ni reglas. Work conserva escritura, sin E6 ni integración.
+- Regresión nueva `help_persistence_tests.gd`: fallos de archivo temporal y destino inexistente con botones reales/Atrás/Otra explicación, comparación de bytes primario+backup y perfil entero, cierre sin bucle, segundo Atrás, recarga/reintento exitoso y guardado antiguo sin campo E5. Suite completa local correcta: 5.149 checks Godot /28 suites +3 Python; incluye 103 de cierre/persistencia. Renders E5/regionales y aviso de error grande correctos. CI y nueva APK pendientes al registrar este avance; no se hereda aprobación física de39.
+
+**SIGUIENTE PASO:** terminar suite completa/render, CI y nueva APK candidata de corrección.
+**RESPONSABLE:** WORK.
+**INSTRUCCIÓN PARA CONTINUAR:** verificar feature/e5-primera-sesion y PR19; concluir regresiones y exportación0.22.1-e5, registrar SHA/CI/APK y pedir nueva prueba física. No integrar en dev/main ni iniciar E6.
+
+Los registros anteriores de Preview39 se mantienen como historia; su APK no contiene esta corrección.
+
 ## Entrega técnica E5 · Preview39 candidata · 15/10/2026
 
 - **HECHO:** doce intervenciones aprobadas implementadas; tarjetas pequeñas descartables, Ayuda contextual, tutorial solo nuevo perfil/viaje confirmado y resumen permanente de derrota/XP. No E6 ni reglas nuevas.

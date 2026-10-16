@@ -21,7 +21,7 @@ Contrato: [E5_PRIMERA_SESION.md](E5_PRIMERA_SESION.md), aprobado 15/10/2026. Wor
 
 `first_session.gd` es presentación de solo lectura; `context_help.gd` reutiliza Label, PanelContainer, ScrollContainer y Button. Una tarjeta por vez, sin ventana modal, sin robar foco ni bloquear acciones. `Ayuda` vuelve a abrir las explicaciones pertinentes al estado actual; `Otra explicación` recorre sus temas. No muestra mensajes de captura/encuentro pendiente en estados terminales. El texto de técnicas extenso se desplaza dentro de una tarjeta acotada.
 
-La extensión opcional de perfil `first_session: {version: 1, seen: [...]}` solo se activa en App cuando no hay perfil primario ni backup, o al confirmar un nuevo viaje (la confirmación destructiva previa ya existente se conserva). **Campo ausente no significa partida nueva.** Store mantiene schema3, defaults y migraciones históricas intactos; valida el campo solo si existe. Descartar guarda únicamente los identificadores vistos mediante la transacción normal; fallo de guardado deja tarjeta/progreso intactos. Abrir o consultar Ayuda no escribe. No se cambian motores, cifras, recursos, regiones, recompensas, tiradas, turnos ni captura.
+La extensión opcional de perfil `first_session: {version: 1, seen: [...]}` solo se activa en App cuando no hay perfil primario ni backup, o al confirmar un nuevo viaje (la confirmación destructiva previa ya existente se conserva). **Campo ausente no significa partida nueva.** Store mantiene schema3, defaults y migraciones históricas intactos; valida el campo solo si existe. Descartar guarda únicamente los identificadores vistos mediante la transacción normal; fallo de guardado conserva el progreso y permite cerrar la tarjeta, con aviso visible; la explicación no guardada puede repetirse. Abrir o consultar Ayuda no escribe. No se cambian motores, cifras, recursos, regiones, recompensas, tiradas, turnos ni captura.
 
 ## Validación técnica
 
@@ -47,3 +47,11 @@ La extensión opcional de perfil `first_session: {version: 1, seen: [...]}` solo
 10. Reabrir una partida E5 tras descartar tarjetas: no repite esas ayudas automáticamente, Ayuda permite consultarlas. Informar dispositivo, versión/build, pasos, esperado/real y asistencia recibida. Confirmar explícitamente **«prueba correcta»** únicamente sobre la APK/SHA probada si resulta aceptable.
 
 Pendiente: comprensión real por una persona novata, compatibilidad visual y ciclo de vida en dispositivo físico. No se declara validación humana ni se integra hasta la confirmación del creador.
+
+## E5-REV-01 · corrección posterior a candidata39
+
+El cierre de Ayuda dejó de depender del éxito de guardar su reconocimiento. Ante fallo, Cerrar/Atrás cierran y Otra explicación avanza; queda un aviso visible de almacenamiento, perfil y `seen` sin modificar. La explicación no guardada puede repetirse al volver; un segundo Atrás vuelve al mapa. La transacción y los respaldos de Store no se cambian. Se evita también la reapertura por oferta automática diferida cancelada.
+
+La prueba anterior de E5 esperaba que la tarjeta quedara visible al fallar. Esa expectativa incorrecta se sustituyó por el contrato no bloqueante, reproduciendo el fallo antes del cambio. La nueva suite ayuda/persistencia añade comparación exacta de perfil y bytes primario/respaldo, dos fallos reales de escritura, cierre por botones/Atrás, avance, interrupción/recarga, reintento y guardados antiguos. La suite completa y APK nuevas constan en los checkpoints más recientes.
+
+**Prueba física adicional obligatoria:** en la APK corregida abrir/cerrar Ayuda varias veces, probar Atrás una y dos veces, Otra explicación, suspender/cerrar/reabrir y comprobar la partida. No es necesario ni recomendable llenar el almacenamiento del dispositivo: el fallo de escritura se inyecta de forma reproducible en tests aislados. Se mantiene pendiente la prueba autónoma por una persona novata y nueva confirmación «prueba correcta» para la APK/SHA corregida; no se hereda de39.

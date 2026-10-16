@@ -9,6 +9,7 @@ var copy: Label
 var index := -1
 var help_button: Button
 var automatic_pending := true
+var save_warning: Label
 func setup(owner_node: Node, context: String, point_id: String = "") -> void:
 	host = owner_node
 	app = get_node("/root/App")
@@ -20,6 +21,12 @@ func setup(owner_node: Node, context: String, point_id: String = "") -> void:
 	help_button = button("Ayuda", open_help)
 	help_button.size_flags_horizontal = Control.SIZE_SHRINK_END
 	add_child(help_button)
+	save_warning = Label.new()
+	save_warning.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	save_warning.add_theme_font_size_override("font_size", 24 if app.profile.settings.large_text else 20)
+	save_warning.add_theme_color_override("font_color", Color("ffd0a0"))
+	save_warning.hide()
+	add_child(save_warning)
 	card = PanelContainer.new()
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color("163d3c")
@@ -66,7 +73,7 @@ func _process(_delta: float) -> void:
 	card.visible = index >= 0 and not blocked
 	if automatic_pending and not blocked and is_visible_in_tree(): _show_automatic()
 func _show_automatic() -> void:
-	if app.load_failed or busy() or not is_visible_in_tree(): return
+	if not automatic_pending or app.load_failed or busy() or not is_visible_in_tree(): return
 	automatic_pending = false
 	for i in range(entries.size()):
 		if Session.automatic(app.profile, entries[i].id):
@@ -83,18 +90,26 @@ func open_help() -> void:
 	automatic_pending = false
 	present(0)
 func next_help() -> void:
-	if index >= 0 and Session.automatic(app.profile, entries[index].id):
-		if not app.dismiss_first_session(entries[index].id): return
+	if busy(): return
+	_remember_current()
 	automatic_pending = false
 	present((index + 1) % entries.size())
 func close_card() -> void:
 	automatic_pending = false
 	index = -1
 	if card != null: card.hide()
+func _remember_current() -> void:
+	if index < 0 or not Session.automatic(app.profile, entries[index].id): return
+	if app.dismiss_first_session(entries[index].id):
+		save_warning.hide()
+	else:
+		# Never claim the acknowledgement was saved; closing remains independent.
+		# App keeps the original profile on failure, so this topic may appear again.
+		save_warning.text = app.notice
+		save_warning.show()
 func dismiss() -> void:
 	if index < 0: return
-	if Session.automatic(app.profile, entries[index].id):
-		if not app.dismiss_first_session(entries[index].id): return
+	_remember_current()
 	close_card()
 func handle_back() -> bool:
 	if index < 0 or card == null or not card.is_visible_in_tree(): return false

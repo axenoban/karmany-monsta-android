@@ -237,7 +237,7 @@ func run():
 	app.storage = Store.new("user://missing-e5-directory/profile.json")
 	before = app.profile.duplicate(true)
 	help.dismiss()
-	check(app.profile == before and help.card.visible, "failed tutorial save preserves progress and card")
+	check(app.profile == before and not help.card.visible and help.index == -1, "failed tutorial save preserves progress but never traps the player in help")
 	main.free()
 	clean()
 	print("FIRST SESSION: %d checks, %d failures" % [checks, failures])
