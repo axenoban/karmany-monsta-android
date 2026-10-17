@@ -1,5 +1,10 @@
 # Instrucciones de desarrollo de Karmany Monsta
 
+## Entrega vigente · R1.1 candidata pendiente de prueba física · 17/10/2026
+
+Preview45/v0.24.0-r1.1, código636565422baa63dd4cc0f5026e55361ccd8f4fe1, PR21 abierto/borrador, CI38955362578 correcta. SHA256701108382045758c013bb5ed5cceaddeae4e5f5970822770fb704b3c5242ef08. Implementados NAV-01 y QA-01;5.857 checks Godot/31 suites y3 Python, firma compatible. Consultar ROADMAP_ESTADO y R1_1_IMPLEMENTACION para evidencia y seis pruebas físicas. **CHAT revisa en lectura; creador prueba. No integrar dev/main hasta «prueba correcta, Preview45».** Dev29be7ba y main9ef7af7 permanecen intactos. No E6/R2–R4. Las entradas inferiores son históricas y no anulan esta entrega. Mantener el traspaso obligatorio.
+
+
 ## Estado vigente · R1.1 autorizada (16/10/2026)
 
 El creador aprobó expresamente implementar **R1.1 — NAV-01/Atrás contextual y QA-01/laboratorio aislado**. Contrato obligatorio: `docs/R1_1_NAVEGACION_LABORATORIO_QA.md`. **Work es único escritor de código** y debe iniciar rama `feature/r1-1-navegacion-qa` desde HEAD vigente de dev tras verificar Git/PR/CI. El laboratorio jamás toca `user://profile.json` ni sus respaldos: niveles1–15, equipos1–3, 12 puntos, perfil QA separado. **Solo contrato/documentos creados por Chat hasta ahora; ninguna APK/CI/PR funcional de R1.1 confirmada.** Baseline aprobado R1/Preview42 código `293ac5e`, CI38889069848, PR20 integrado; dev anterior `672684b`. Sin E6, R2, R3, R4, reglas, balance ni cambios en main/dev antes de validación física. Tras este encabezado, los apartados de R1 «no iniciar nuevas funcionalidades» son históricos y no invalidan la autorización explícita de R1.1. Más detalles de responsable/instrucción en docs/ROADMAP_ESTADO.md.

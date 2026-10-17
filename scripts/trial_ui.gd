@@ -1,6 +1,7 @@
 extends Control
 
 signal navigate(page: String)
+signal back_requested
 const AftermathScreen = preload("res://scripts/aftermath_screen.gd")
 var aftermath_screen: Control
 const ExperienceSummary = preload("res://scripts/experience_summary.gd")
@@ -54,7 +55,9 @@ func _button(text: String, action: Callable, disabled: bool = false) -> Button:
 	button.custom_minimum_size.y = 58
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.disabled = disabled or App.load_failed
+	var epoch: int = App.ui_epoch
 	button.pressed.connect( func():
+		if epoch != App.ui_epoch: return
 		App.tap()
 		action.call())
 	return button
@@ -96,9 +99,10 @@ func _build() -> void :
 	header.add_child(title)
 	if mode == "battle":
 		header.add_child(_button("Opciones", _options_menu))
-	elif mode == "map": header.add_child(_button("Opciones", _map_options))
+	elif mode in ["map", "exploration"]: header.add_child(_button("Opciones", _map_options))
 	else: header.add_child(_button("Mapa", func(): navigate.emit("jade_play")))
 	header.get_child(1).size_flags_horizontal = Control.SIZE_SHRINK_END
+	header.add_child(_button("Volver", func(): back_requested.emit()))
 	if mode != "intro": _help_in(column, mode)
 	if mode in ["intro", "map", "exploration"]:
 		_world()

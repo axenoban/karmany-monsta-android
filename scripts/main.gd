@@ -27,6 +27,7 @@ var catalog_rarity:= ""
 var selected_species:= ""
 var selected_tree_node:= "curacion"
 var page:= "home"
+var navigation := preload("res://scripts/navigation_history.gd").new()
 var body: VBoxContainer
 var dialog: ConfirmationDialog
 var export_dialog: FileDialog
@@ -34,6 +35,7 @@ var toast: Label
 
 func _ready() -> void :
 	App.combat_updated.connect(_refresh_combat)
+	App.profile_changed.connect(func(): navigation.reset())
 	if not catalog.load_file():
 		App.log_event(catalog.last_error)
 	if not books.load_file():
@@ -75,7 +77,7 @@ func _safe_margins() -> void :
 		return
 	var left:= 44
 	var right:= 44
-	var top:= 24
+	var top:= 66 if App.qa_active else 24
 	var bottom:= 24
 	if OS.get_name() == "Android":
 		var safe:= DisplayServer.get_display_safe_area()
@@ -92,7 +94,9 @@ func _safe_margins() -> void :
 	margin.add_theme_constant_override("margin_bottom", bottom)
 	queue_redraw()
 
-func _show(next_page: String) -> void :
+func _show(next_page: String, record_history: bool = true) -> void :
+	if next_page not in navigation.ROUTES: return
+	if record_history: navigation.visit(page, next_page)
 	page = next_page
 	var old:= get_node_or_null("Page")
 	if old != null:
@@ -108,6 +112,30 @@ func _show(next_page: String) -> void :
 	margin.add_child(column)
 	var header:= HBoxContainer.new()
 	column.add_child(header)
+	if App.qa_active:
+		var overlay := CanvasLayer.new()
+		overlay.layer = 100
+		margin.add_child(overlay)
+		var strip := ColorRect.new()
+		strip.color = INK
+		strip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		strip.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
+		strip.offset_bottom = 42
+		overlay.add_child(strip)
+		var banner := _label("LABORATORIO QA · NO AFECTA TU PARTIDA", 24, JADE)
+		banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		banner.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		banner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var bar := HBoxContainer.new()
+		strip.add_child(bar)
+		bar.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		banner.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		bar.add_child(banner)
+		if page != "tree_lab":
+			var lab_button := _button("Laboratorio QA", func(): _show("tree_lab"))
+			lab_button.custom_minimum_size.y = 40
+			lab_button.add_theme_font_size_override("font_size", 22)
+			bar.add_child(lab_button)
 	var brand:= _label("KARMANY MONSTA", 22, JADE)
 	brand.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(brand)
@@ -167,7 +195,9 @@ func _button(text: String, action: Callable) -> Button:
 	var button:= Button.new()
 	button.text = text
 	button.custom_minimum_size = Vector2(0, 64)
+	var epoch: int = App.ui_epoch
 	button.pressed.connect( func():
+		if epoch != App.ui_epoch: return
 		App.tap()
 		action.call())
 	return button
@@ -206,7 +236,7 @@ func _prologue() -> void:
 		if not intro_replay:
 			intro_dismissed = true
 			saved = App.finish_r1_intro(status)
-		_show("settings" if intro_replay else "map")
+		_show("settings" if intro_replay else "map", false)
 		if not saved: toast.text = App.notice + " La introducción no se marcó como vista.")
 
 func _new_journey() -> void :
@@ -217,9 +247,10 @@ func _new_journey() -> void :
 
 func _start() -> void :
 	if App.start_journey():
+		navigation.reset()
 		intro_dismissed = false
 		intro_replay = false
-		_show("prologue")
+		_show("prologue", false)
 	else:
 		toast.text = App.notice
 
@@ -414,23 +445,32 @@ func _tree_action(operation: String, node_id: String, return_page: String, expec
 	else:
 		toast.text = App.notice
 
-func _tree_lab() -> void :
-	_heading("Laboratorio del árbol")
-	var tree:= _tree_model()
-	_copy("Controles de prueba: simulan progreso del entrenador, sin añadir criaturas a una colección.")
-	_copy("Nivel %d/15 · %d especies simuladas · %d puntos disponibles" % [tree.state.level, tree.state.captured_species.size(), tree.points_available()])
-	_copy("Un punto por nivel. Bonificación de un punto a las 5, 10 y 15 especies distintas; repetir una especie no da puntos.")
-	body.add_child(_button("Simular subida de nivel", func(): _tree_action("level", "", "tree_lab")))
-	body.add_child(_button("Simular captura de otra especie", _simulate_tree_capture))
-	body.add_child(_button("Redistribuir puntos de prueba", func(): _tree_action("reset", "", "tree_lab")))
-	body.add_child(_button("Ir al árbol", func(): _show("skill_tree")))
+func _tree_lab() -> void:
+	if not App.qa_active or not App.qa_available():
+		_copy("El laboratorio requiere una sesión QA aislada en una build preview.")
+		return
+	_heading("Laboratorio QA")
+	var lab := preload("res://scripts/qa_lab.gd").new()
+	body.add_child(lab)
+	lab.launch.connect(func(point_id: String):
+		if App.start_route(point_id): _show("exploration")
+		else: lab.message.text = App.notice)
+	lab.leave.connect(_exit_qa)
 
-func _simulate_tree_capture() -> void :
-	for entry in catalog.all_entries():
-		if not App.profile.skill_tree.captured_species.has(entry.id):
-			_tree_action("capture", entry.id, "tree_lab")
-			return
-	toast.text = "Ya simulaste las 15 especies del catálogo."
+func _enter_qa() -> void:
+	var confirm := ConfirmationDialog.new()
+	confirm.dialog_text = "Entrar al laboratorio crea una sesión sintética separada. No afecta tu partida."
+	add_child(confirm)
+	confirm.confirmed.connect(func():
+		if App.enter_qa(): _show("tree_lab", false)
+		else: toast.text = App.notice
+		confirm.queue_free())
+	confirm.canceled.connect(confirm.queue_free)
+	confirm.popup_centered(Vector2i(620,260))
+
+func _exit_qa() -> void:
+	if App.exit_qa(): _show("map", false)
+	else: toast.text = App.notice
 
 func _bestiary() -> void :
 	_heading("Bestiario de Shisai")
@@ -537,7 +577,10 @@ func _diagnostics() -> void :
 	_heading("Diagnóstico")
 	_copy(App.diagnostic_report())
 	body.add_child(_button("Exportar informe", _export_report))
-	body.add_child(_button("Laboratorio del árbol", func(): _show("tree_lab")))
+	if App.qa_available():
+		body.add_child(_button("Laboratorio QA", func():
+			if App.qa_active: _show("tree_lab")
+			else: _enter_qa()))
 	body.add_child(_button("Copiar informe", func():
 		DisplayServer.clipboard_set(App.diagnostic_report())
 		toast.text = "Informe copiado."))
@@ -547,6 +590,9 @@ func _export_report() -> void :
 	export_dialog.popup_centered_ratio(0.8)
 
 func _write_report(path: String) -> void :
+	if App.qa_active:
+		toast.text = "La exportación está desactivada en QA."
+		return
 	var handle:= FileAccess.open(path, FileAccess.WRITE)
 	if handle == null:
 		toast.text = "No se pudo exportar. Puedes copiar el informe."
@@ -556,6 +602,7 @@ func _write_report(path: String) -> void :
 	toast.text = "Informe exportado." if handle.get_error() == OK else "No se pudo completar la exportación."
 
 func _back() -> void :
+	if _close_modal(self): return
 	if page == "prologue" and is_instance_valid(prologue):
 		prologue.back()
 		return
@@ -577,29 +624,24 @@ func _back() -> void :
 		if summary.visible:
 			summary._finish()
 			return
-	if export_dialog.visible:
-		export_dialog.hide()
-	elif dialog.visible:
-		dialog.hide()
-	elif page in ["battle", "intro", "collection", "team", "exploration"]:
-		_show("jade_play")
-	elif page == "jade_play":
-		_show("map")
-	elif page == "loadout":
-		_show("skill_tree")
-	elif page == "tree_lab":
-		_show("diagnostics")
-	elif page == "skill_tree":
-		_show("map")
-	elif page == "species":
-		_show("bestiary")
-	elif page == "bestiary" or page == "trainers":
-		_show("map")
-	elif page != "home":
-		_show("home")
-	else:
+	if page == "home" and navigation.entries.is_empty():
 		App.log_event("Salida solicitada.")
 		get_tree().quit()
+		return
+	var fallback := "jade_play" if page in ["battle", "exploration", "intro", "team", "collection"] else "map"
+	_show(navigation.previous(page, fallback), false)
+
+func _close_modal(node: Node) -> bool:
+	# Reverse traversal closes the topmost popup, without confirming its action.
+	var children := node.get_children()
+	children.reverse()
+	for child in children:
+		if child is Window and child.visible:
+			child.hide()
+			if child != dialog and child != export_dialog: child.queue_free()
+			return true
+		if _close_modal(child): return true
+	return false
 
 func _notification(what: int) -> void :
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST or what == NOTIFICATION_WM_CLOSE_REQUEST:
@@ -632,6 +674,7 @@ func _playable() -> void :
 	trial.custom_minimum_size = Vector2(0, 500)
 	parent.add_child(trial)
 	trial.navigate.connect(_show)
+	trial.back_requested.connect(_back)
 
 func _collection() -> void :
 	_heading("Colección")
@@ -719,6 +762,9 @@ func _team() -> void :
 	body.add_child(_button("Añadir desde la colección", func(): _show("collection")))
 	body.add_child(_button("Volver al valle", func(): _show("jade_play")))
 
+func refresh_current() -> void:
+	_show(page, false)
+
 func _refresh_combat() -> void :
 	if page in ["battle", "jade_play", "team", "exploration"]:
-		_show(page)
+		refresh_current()

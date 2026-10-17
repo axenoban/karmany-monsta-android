@@ -85,6 +85,13 @@ jobs:
           python3 ci/check_log.py build/r1.log
           xvfb-run -a godot --rendering-method gl_compatibility --audio-driver Dummy --path . --script tests/r1_tests.gd -- --allow-ui-review 2>&1 | tee build/r1-render.log
           python3 ci/check_log.py build/r1-render.log
+      - name: Validate R1.1 contextual navigation and isolated QA
+        run: |
+          set -o pipefail
+          godot --headless --path . --script tests/r11_tests.gd 2>&1 | tee build/r11.log
+          python3 ci/check_log.py build/r11.log
+          xvfb-run -a godot --rendering-method gl_compatibility --audio-driver Dummy --path . --script tests/r11_ui_tests.gd 2>&1 | tee build/r11-ui.log
+          python3 ci/check_log.py build/r11-ui.log
       - name: Validate latest action display
         run: |
           set -o pipefail
@@ -241,5 +248,5 @@ jobs:
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" "${ASSETS[@]}" --clobber
           else
-            gh release create "$TAG" "${ASSETS[@]}" --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Candidata R1 0.23.0: prólogo Ezel/Axe/Zephyr, navegación regional, Bestiario visual, perfil y árbol táctil. Guardados compatibles y regresiones completas. Pendiente prueba física; no integrada a dev."
+            gh release create "$TAG" "${ASSETS[@]}" --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Candidata R1.1 0.24.0: navegación Atrás contextual y laboratorio QA aislado. Guardados compatibles y regresiones completas. Pendiente prueba física; no integrada a dev."
           fi
