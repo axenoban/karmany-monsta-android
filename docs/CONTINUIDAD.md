@@ -1,5 +1,23 @@
 # Continuidad de Karmany Monsta
 
+## R1.1 · Preview45 candidata entregable · 17/10/2026
+
+**Implementación y validación técnica terminadas. Pendientes revisión Chat y prueba física del creador. NO integrada.**
+
+- Rama `feature/r1-1-navegacion-qa`, [PR21](https://github.com/axenoban/karmany-monsta-android/pull/21) abierto/borrador, código funcional **`636565422baa63dd4cc0f5026e55361ccd8f4fe1`**. El commit documental de esta entrega no modifica código ni APK.
+- **Preview45 / v0.24.0-r1.1**, [descargar APK](https://github.com/axenoban/karmany-monsta-android/releases/download/android-preview-45/karmany-monsta-preview.apk),83.404.111 bytes, paquete `com.axenoban.karmanymonsta.preview`, versionCode1045.
+- **SHA-256:** `701108382045758c013bb5ed5cceaddeae4e5f5970822770fb704b3c5242ef08`. Descarga completa contrastada con `apk.sha256`; metadatos internos confirman código6365654/build45.
+- [CI38955362578](https://github.com/axenoban/karmany-monsta-android/actions/runs/38955362578) correcta: **5.857 comprobaciones en31 suites Godot**, sin duplicar renders de suites repetidas;3 tests Python. R1.1:233 comprobaciones funcionales/aislamiento y32 de interfaz;8 renders nuevos. Export y firma v2/v3 correctos. Certificado SHA256 `756c8c1a8136ae2e80987c540d805641d7bfd2d5b657d1f04584f0074ac61bf8`, igual aPreview42.
+- APK comparada conPreview42:11 JSON de juego idénticos y122 entradas de recursos gráficos/audio/importación idénticas. Solo3 scripts existentes cambian (App/Main/TrialUI) y4 scripts nuevos implementan navegación/QA. Sin pruebas/documentos/CI empaquetados. Evidencia: `docs/R1_1_CANDIDATA_VERIFICACION.json`.
+- NAV-01 y QA-01 implementados; guardado QA fijo y protegido, presets1–15/equipo1–3/12 etapas, reinicio y callbacks aislados. Se corrigieron durante validación la conservación del preset, preferencias visuales y espacio de botones. Preview43/44 quedan como iteraciones superadas, no candidatas finales.
+- **Dev sigue en29be7ba3d30ea72e860f62ec4f0c8aa766e6d1b4; main en9ef7af778ee59a47f62bdfbfd5eb0786ce787213.** No E6/R2–R4, reglas, balance, canon ni PS persistentes modificados. No se atribuye ninguna prueba física dePreview45.
+- Instalar sobrePreview42 sin desinstalar y ejecutar las seis comprobaciones de `docs/R1_1_IMPLEMENTACION.md`: regreso contextual, botón/gesto, encuentro conservado, QA Velo6/equipo3, salida sin contaminación y reapertura normal/letras grandes. Solo **«prueba correcta, Preview45»** autoriza preparar integración segura.
+
+**SIGUIENTE PASO:** Chat revisa PR21/contrato/evidencias en lectura y acompaña la prueba física dePreview45.
+**RESPONSABLE:** CHAT.
+**INSTRUCCIÓN PARA CONTINUAR:** En axenoban/karmany-monsta-android revisa en lectura R1.1/PR21, código636565422baa63dd4cc0f5026e55361ccd8f4fe1, CI38955362578 y Preview45/SHA701108382045758c013bb5ed5cceaddeae4e5f5970822770fb704b3c5242ef08. Contrasta docs/R1_1_NAVEGACION_LABORATORIO_QA.md, R1_1_IMPLEMENTACION.md y R1_1_CANDIDATA_VERIFICACION.json; acompaña las seis pruebas físicas. No modifiques código ni integres dev/main antes de confirmación explícita «prueba correcta, Preview45». No E6/R2–R4.
+
+
 ## R1.1 · implementación Work en validación · 16/10/2026
 
 - Rama `feature/r1-1-navegacion-qa`, base `29be7ba3d30ea72e860f62ec4f0c8aa766e6d1b4`; Work único escritor. Baseline Preview42/293ac5e conservado. Dev y main sin modificar; sin integración autorizada.
