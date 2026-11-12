@@ -1,5 +1,12 @@
 # Instrucciones de desarrollo de Karmany Monsta
 
+## Consolidación documental · 12/11/2026
+
+Punto de entrada portable: `docs/DOCUMENTO_MAESTRO_ANDROID.md` (rama docs/documento-maestro-android). Reúne bases, estado real, contratos, datos exactos y guía de recuperación/compilación. Sin cambios funcionales ni integración de PR21: dev29be7ba, candidata6365654. CI histórica38955362578 correcta; no se ejecutaron nuevas pruebas de juego en esta consolidación. La recuperación de otros chats registra pruebas físicas satisfactorias, pero GitHub mantiene PR21 abierto; conciliar autorización y cierre antes de integrar.
+
+SIGUIENTE PASO: revisar el documento y la evidencia de cierre R1.1. RESPONSABLE: CHAT. INSTRUCCIÓN PARA CONTINUAR: Revisa DOCUMENTO_MAESTRO_ANDROID.md y PR21/Preview45 en axenoban/karmany-monsta-android; concilia aprobación física y estado de GitHub sin modificar código ni iniciar E6/R2–R4.
+
+
 ## Entrega vigente · R1.1 candidata pendiente de prueba física · 17/10/2026
 
 Preview45/v0.24.0-r1.1, código636565422baa63dd4cc0f5026e55361ccd8f4fe1, PR21 abierto/borrador, CI38955362578 correcta. SHA256701108382045758c013bb5ed5cceaddeae4e5f5970822770fb704b3c5242ef08. Implementados NAV-01 y QA-01;5.857 checks Godot/31 suites y3 Python, firma compatible. Consultar ROADMAP_ESTADO y R1_1_IMPLEMENTACION para evidencia y seis pruebas físicas. **CHAT revisa en lectura; creador prueba. No integrar dev/main hasta «prueba correcta, Preview45».** Dev29be7ba y main9ef7af7 permanecen intactos. No E6/R2–R4. Las entradas inferiores son históricas y no anulan esta entrega. Mantener el traspaso obligatorio.

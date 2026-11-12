@@ -1,5 +1,12 @@
 # ESTADO VIVO · Roadmap de Karmany Monsta (Chat + Work)
 
+## Consolidación documental · 12/11/2026
+
+Punto de entrada portable: `docs/DOCUMENTO_MAESTRO_ANDROID.md` (rama docs/documento-maestro-android). Reúne bases, estado real, contratos, datos exactos y guía de recuperación/compilación. Sin cambios funcionales ni integración de PR21: dev29be7ba, candidata6365654. CI histórica38955362578 correcta; no se ejecutaron nuevas pruebas de juego en esta consolidación. La recuperación de otros chats registra pruebas físicas satisfactorias, pero GitHub mantiene PR21 abierto; conciliar autorización y cierre antes de integrar.
+
+SIGUIENTE PASO: revisar el documento y la evidencia de cierre R1.1. RESPONSABLE: CHAT. INSTRUCCIÓN PARA CONTINUAR: Revisa DOCUMENTO_MAESTRO_ANDROID.md y PR21/Preview45 en axenoban/karmany-monsta-android; concilia aprobación física y estado de GitHub sin modificar código ni iniciar E6/R2–R4.
+
+
 ## R1.1 · Preview45 candidata entregable · 17/10/2026
 
 **Implementación y validación técnica terminadas. Pendientes revisión Chat y prueba física del creador. NO integrada.**
