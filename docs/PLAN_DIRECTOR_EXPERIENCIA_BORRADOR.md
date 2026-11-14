@@ -1,6 +1,6 @@
 # Karmany Monsta Android · Plan director de experiencia (BORRADOR)
-**Versión:** 0.12 · 14 de noviembre de 2026 (D-28: finales dobles con captura persistente; fórmula XP por captura propuesta)  
-**Estado:** decisiones D-24/D-25/D-27/D-28 documentadas; **fórmula cuantitativa de XP por captura pendiente de aprobación**, así como recursos, pausa y técnicas; **NO aprobado como implementación**.  
+**Versión:** 0.13 · 14 de noviembre de 2026 (D-29: XP por captura P5 aprobada; siguiente fase: fuentes de sellos)  
+**Estado:** decisiones D-24/D-25/D-27/D-28/D-29 documentadas; **P5 aprobada como regla**, pero recursos, pausa y técnicas aún por definir; **NO aprobado como implementación**.  
 **Objeto:** definir la experiencia objetivo antes de continuar desarrollando gameplay, interfaces o animaciones. Las propuestas de esta versión NO constituyen reglas nuevas.
 
 ## 1. Referencias y estado real
@@ -1027,7 +1027,7 @@ ENCUENTRO ACTIVO · rival vivo
 **Estado de ejecución:** Plan Director v0.11, **solo documentación**. El comportamiento real del APK Preview73 permanece como antes; D-27 NO está implementada. No hacer merge en dev; PR26 continúa draft y PR27 sigue pendiente de aprobación física.
 
 
-## 28. D-28 — Finales dobles: conservar captura y experiencia propia de vínculo (PARCIALMENTE APROBADA)
+## 28. D-28 — Finales dobles: conservar captura y experiencia propia de vínculo (F1 APROBADA; XP P5 CERRADA EN D-29)
 
 **Declaración expresa del creador (14/11/2026):** «Obviamente se conserva la captura, por ello considero que capturar también de experiencia, analiza la cantidad correcta que debe dar, analiza las cantidades que debe otorgar recordando que esto es progresivo por nivel, mientras más nivel, más experiencia se necesita para subir de nivel, por ende la experiencia por capturar no debe ser fija, por último apliquemos tu recomendación final también».
 
@@ -1035,7 +1035,7 @@ ENCUENTRO ACTIVO · rival vivo
 - Se **aprueba F1** de §24.2 para finales de dos rivales: puede intentarse vincular al **primero o al segundo**; el jugador debe resolver **ambos** para ganar la etapa regional; **solo puede obtener un vínculo por encuentro**, con hasta **3 intentos compartidos** (D-27). Una captura satisfactoria del primer rival lo resuelve y abre el segundo combate conservando continuidad de HP, turnos y efectos según E2.
 - Se **aprueba la permanencia de la criatura vinculada al primer rival** aunque el segundo derrote al equipo. No se elimina la captura legítima por perder la etapa ni se fuerza a repetir ese vínculo.
 - Se **aprueba el principio de XP por captura**, **distinta** de la XP por victoria de la etapa: conseguir un Karmany otorga una recompensa propia aun si luego se pierde contra el segundo. D-25 garantiza victoria/XP/avance *correspondientes al encuentro resuelto*: en un doble encuentro, vencer o capturar al primero **no equivale a completar la etapa**, que exige ambos rivales.
-- **No se aprueba todavía ninguna cifra ni fórmula concreta**, ni nuevos topes regionales, reparto por beneficiario, bonus por rareza, victoria por cada rival, ni nuevas tasas de sellos. §28.3 presenta una fórmula recomendada para deliberación, **no canon ejecutable**.
+- **Nota histórica del momento D-28:** las cifras y el reparto se presentaron inicialmente para deliberación. **La decisión posterior D-29 aprueba P5 = 5% del requisito del nivel de cada receptor**, sin nuevos topes, bonus por rareza, victorias por rival ni tasas de sellos. La fórmula sigue **sin implementar**.
 
 ### 28.1 Flujo aprobado y contabilidad sin doble victoria
 
@@ -1073,7 +1073,7 @@ Rival 2:
 
 **Observación de balance:** las primeras victorias ya dan cantidades elevadas frente al requisito de nivel (400 XP cuando en Nv.1 se precisan 100 para Nv.2; premios altos posteriores). La XP por captura no debe convertirse en un segundo premio regional completo ni en una economía acumulativa que evite el combate. La comparación debe hacerse principalmente contra \`repeat_xp\`, no solo contra \`first_xp\`.
 
-### 28.3 Propuesta de balance XP por captura (PENDIENTE DE APROBACIÓN)
+### 28.3 Fórmula XP por captura P5 (APROBADA DESPUÉS, D-29; AÚN NO IMPLEMENTADA)
 
 **Propuesta técnica P5:** para cada receptor elegible \`r\` (entrenador y miembros actuales del equipo del encuentro, excluyendo recién capturado), determinar su **nivel efectivo antes de conceder la recompensa del evento**, \`L_r\`; el bono nominal sería:
 
@@ -1084,7 +1084,7 @@ XP_{\mathrm{captura},r} = \operatorname{round}(0.05\times XP_{\mathrm{siguiente}
 XP_{\mathrm{siguiente}}(L_r) = 100\times L_r.
 \]
 
-Esta cifra es **5% del requisito del propio nivel del receptor**, no 5% de la XP total acumulada, del nivel del enemigo ni 5% del premio de primera victoria. No representa una tasa de captura ni aumenta chances del Libro. Los 5% y el reparto son **PROPUESTA**, no canon.
+Esta cifra es **5% del requisito del propio nivel del receptor**, no 5% de la XP total acumulada, del nivel del enemigo ni 5% del premio de primera victoria. No representa una tasa de captura ni aumenta chances del Libro. **El 5% y su reparto individual fueron aprobados expresamente en D-29; la tabla P10 es solo comparación histórica.**
 
 | Nivel del receptor | XP para siguiente nivel (vigente) | Captura P5 (propuesta) | Si se propusiera P10=10% (comparativa) |
 |---:|---:|---:|---:|
@@ -1097,7 +1097,7 @@ Esta cifra es **5% del requisito del propio nivel del receptor**, no 5% de la XP
 
 **Comparación con etapas reales:** Jade punto 1 ofrece 400 primera / 100 repetición: para un receptor Nv.1, P5=5 XP extra (1,25% de primera, 5% de repetición); Jade final 750 primera / 300 repetición: Nv.10 P5=50 XP nominal (6,7% / 16,7%) **pero si ya está al tope Jade10 recibe 0 XP real**; Velo final 950 primera / 325 repetición: Nv.15 P5=75 nominal (7,9% / 23,1%), pero si ya alcanzó el tope Velo15 recibe **0 real**. Quien entra con Nv.10 en Velo sí puede percibir P5=50. Los premios no deben sumar XP más allá del máximo regional.
 
-**Justificación P5 vs P10:** P5 da un incentivo creciente y visible sin eclipsar la victoria regional, conserva la curva del jugador en todas las regiones y reduce abuso por repetición; P10 puede acercarse a la mitad del premio repetible de Velo final para niveles altos antes del tope. La fórmula porcentual **no está validada mediante telemetría ni pruebas físicas**; deberá simularse con el nivel real de las criaturas, rutas, caps y frecuencia de sellos antes de aprobarla.
+**Justificación P5 vs P10:** P5 da un incentivo creciente y visible sin eclipsar la victoria regional, conserva la curva del jugador en todas las regiones y reduce abuso por repetición; P10 puede acercarse a la mitad del premio repetible de Velo final para niveles altos antes del tope. La fórmula **ya está aprobada por decisión del creador**, pero sigue sin validación de telemetría ni prueba física; deberán ejecutarse simulaciones y regresiones con niveles, rutas, topes y disponibilidad real de sellos antes de implementarla o integrarla.
 
 **Casos de cobro propuestos:**
 - Captura de rival 1 en final doble, derrota posterior ante rival 2: conservar captura **+ P5 efectiva**; 0 XP de etapa, 0 bono de primera victoria y punto sin completar.
@@ -1107,7 +1107,7 @@ Esta cifra es **5% del requisito del propio nivel del receptor**, no 5% de la XP
 - Fallo 3/3 y victoria por daño: **solo** premio regional vigente, sin P5; 3/3 fallidos nunca producen XP de captura.
 - A tope regional: XP real capturada puede ser 0 aunque la fórmula nominal sea positiva, como sucede con otras recompensas. No forzar niveles artificiales ni romper validación.
 
-**Alternativa de diseño aún abierta:** calcular P5 con el **nivel del entrenador solamente** y dar el mismo monto al equipo, como ocurre con \`award()\`. Eso hace más fácil el recibo pero paga un porcentaje distinto a criaturas de niveles dispares. El modelo recomendado calcula **por receptor** y se ajusta mejor a «progresivo por nivel»; se requiere aprobación expresa del creador antes de adoptarlo.
+**Alternativa evaluada y descartada por D-29:** usar solo el nivel del entrenador para todos. **La decisión aprobada es calcular el 5% individualmente según el nivel actual de cada receptor** (entrenador y miembros elegibles del equipo), excluyendo al recién vinculado y respetando topes regionales.
 
 ### 28.4 Implicaciones de persistencia y arquitectura (IMPORTANTE)
 
@@ -1139,6 +1139,69 @@ El motor **no admite hoy este flujo**. No basta agregar un número a \`LevelProg
 
 **Aprobado:** F1 (elegir capturar primero o segundo, ambos rivales necesarios, un vínculo, tres intentos compartidos); captura del primero **persiste aunque haya derrota contra segundo**; captura otorga XP **propia y progresiva**, adicional a la XP por completar la etapa; ningún premio de etapa por captura del primer rival.
 
-**Pendiente de aprobación:** **P5 vs otra proporción/base de cálculo**; concretar si XP por captura llega tanto al entrenador como a los integrantes elegibles del equipo; modo de transición de nivel durante combate; criterios de elegibilidad PS; cantidades/tasas de sellos y semántica de Pausa. No fijar valores en \`data/level_progression.json\` ni tocar el motor por esta documentación. Las cifras P5 son **propuesta**, sujetas a decisión del creador y después a regresiones.
+**Actualización por D-29:** P5 queda aprobada y sus beneficiarios son entrenador + integrantes elegibles del equipo, con cálculo por nivel individual y topes regionales; recién capturado comienza con XP0. **Pendientes:** cuándo se hacen efectivos cambios de estadísticas dentro del combate, elegibilidad de vínculo por PS, economía de sellos y Pausa. No fijar valores en \`data/level_progression.json\` ni tocar el motor por esta documentación. D-29 requiere pruebas de regresión antes de integrar.
 
 **Protección:** solo PR26 documental; PR27/Preview73 sin aprobación, \`main\` y \`dev/karmany-core\` intactos. No integrar ni generar APK hasta que el contrato de captura completo esté acordado.
+
+
+## 29. D-29 — XP por captura P5 y reparto por receptor (APROBADO COMO REGLA; SIN IMPLEMENTACIÓN)
+
+**Respuesta del creador (14/11/2026):** «Ok está bien, se aprueba la experiencia del 5%, pasemos a definir lo que sigue», tras la propuesta expresa de calcular **5% por nivel de entrenador y cada Karmany del equipo participante**, respetando límites regionales y partiendo el recién vinculado con XP0. Por continuidad inmediata, el porcentaje **y el reparto individual** quedan aprobados.
+
+### 29.1 Contrato aprobado
+
+1. **Evento:** una **captura exitosa única** genera su propia bonificación de XP (evento \`capture_reward\` conceptual); no hay XP por intentar capturar ni por cada intento fallido.
+2. **Beneficiarios:** el entrenador y cada miembro del equipo participante en ese encuentro que sea elegible por las reglas de progresión vigentes, incluso una reserva derrotada, como en el modelo de recompensa regional. **El recién vinculado queda excluido**: su XP inicial sigue en 0.
+3. **Cantidad nominal por receptor \`r\`:** \`capture_xp(r) = 5 * nivel(r)\`. Es igual al **5% de \`requirement(nivel(r)) = 100 * nivel(r)\`**. El nivel se toma **inmediatamente antes de conceder esa bonificación**, nunca del nivel enemigo ni del nivel del entrenador para todos.
+4. **Límites:** aplicar la función de progreso existente y su tope por región. En Jade Nv10 y Velo Nv15, un receptor que ya está en el tope gana **0 XP efectiva**, aunque el bono nominal sea 50 o 75, respectivamente. La UI muestra XP efectiva, no XP descartada como ganada.
+5. **Independencia:** en encuentro simple, vínculo exitoso completa etapa y otorga por separado la bonificación P5 y la recompensa regional aprobada **exactamente una vez**. En final doble F1, vínculo del primero conserva criatura y P5 aunque luego se pierda con el segundo; la recompensa regional solo llega si ambos rivales se resuelven.
+6. **Idempotencia:** cada \`encounter.id\` tiene como máximo **un vínculo exitoso**; no duplicar ni XP P5, ni criatura, ni premio regional tras cierre, doble toque, reinicio o fallo de escritura. Registro de captura y XP debe ser transacción persistente única; recibo de victoria queda separado.
+7. **No cambiar:** tablas \`first_xp\`/\`repeat_xp\`, requisitos \`100*L\`, límite de nivel, Libro/rareza/porcentaje, stamina, drops existentes, número de sellos, costes ni técnicas.
+
+**Cifra aprobada ilustrativa:** Nv1→5 XP, Nv3→15, Nv5→25, Nv8→40, Nv10→50 nominal (0 efectivo en Jade si está en su tope), Nv15→75 nominal (0 efectivo si está en el tope de Velo). **La fórmula es canon de diseño aprobado**, pero aún **no ejecutable en las APK existentes**.
+
+### 29.2 Precisión temporal pendiente, sin inventarla
+
+- **Decisión aún abierta:** si una subida de nivel ganada por capturar al primero debe cambiar las estadísticas, Vida máxima y recargas **en medio** del segundo enfrentamiento, o quedar reflejada solo en progresión persistida y aplicarse a **futuras batallas**. Recomendación técnica: congelar stats del encuentro actual para proteger el combate ya iniciado; necesita contrato explícito antes de programar.
+- Las migraciones de \`TrialCampaign.collection.size() <= victories\`, identidad de capturas, recibos \`last_reward\` y guardados antiguos descritas en §28.4 son obligatorias; una captura exitosa antes del segundo rival no es una victoria regional ficticia.
+- Los porcentajes de sellos, cantidades iniciales y fuentes renovables **no quedan aprobados por D-29**.
+
+### 29.3 Verificaciones de recepción para la fase de código, todavía no autorizada
+
+- Niveles mixtos entrenador / equipo 1–3: calculadora de XP P5 individual, reserva caída elegible, recién capturado XP0.
+- Umbrales multi-nivel, cap Jade10/Velo15 y recibos con XP efectiva, valores \`before\`/\`after\` coherentes.
+- Simple con captura y victoria (dos eventos, un solo progreso de ruta); final doble con captura primero y derrota posterior (solo P5 + colección).
+- Reanudación, doble toque, error de persistencia y pruebas E2/Preview32: sin doble XP, sellos ni duplicación de especies.
+
+## 30. Siguiente fase de diseño: economía de sellos normales (PROPUESTAS PARA DECIDIR)
+
+**Base ya decidida:** el Sello de Vínculo normal es la opción de diseño inicial (denominación narrativa provisional); solo para usar el Libro con **máximo tres intentos por encuentro** (D-27). Si los tres fallan, continuar combate para optar a victoria por daño. El sello premium permanece idea futura **sin monetización ni implementación**.
+
+### 30.1 Recompensa renovable principal: alternativas
+
+| Clave | Contrato propuesto (NO APROBADO) | Ventajas | Riesgos |
+|---|---|---|---|
+| **G1: un sello normal garantizado por victoria regional**, también en repetición | Siempre \`+1\` sello cuando se gana *la etapa completa* (por ataque o captura). No premiar rival 1 por separado en un final doble. | Fuente transparente, renovable y predecible; permite farmear combates ordinarios con sus costes de stamina; no requiere misión ni tienda al inicio. | La población de sellos aumenta al ganar sin intentar capturar; habrá que observar ritmo y stock máximo. |
+| **G2: probabilidad de sello por victoria regional** | Si hay victoria, determinar una tirada de drop con porcentaje por definir y persistirla. | Mayor incertidumbre, puede reducir acumulación. | Rachas sin sellos, frustración y mayor presión para comprar; requiere porcentaje aprobado y prueba de distribución. |
+| **G3: bonificación fija por primera victoria + fuente repetible alternativa** | Sello por estreno de etapa; repetición por misión/bonos programados. | Controla inflación y permite objetivos. | Requiere sistema de misiones y cadencia aún inexistentes; alto alcance para primer prototipo. |
+
+**Recomendación para discusión: G1** con un sello normal garantizado por **victoria completa**, no por captura inicial que luego termine en derrota. El gasto por intentos seguiría siendo de una unidad por intento; conseguir sello no restituye una acción ya gastada. Si se gana capturando y no hay sellos para otra pelea, G1 puede reponer un sello; el balance por tasa de captura, stamina y repetición todavía debe simularse.
+
+### 30.2 Stock de inicio y continuidad (también PENDIENTE)
+
+- **Propuesta I3:** partida nueva con **3 sellos normales**, lo que permite usar los hasta tres intentos del primer encuentro, pero no garantiza captura. La cifra requiere aprobación y simulación; no fijar cantidades a perfiles existentes ni partidas históricas sin una política de migración.
+- **Alternativa I1:** iniciar con 1 sello y obtener los demás al ganar. Reduce la oportunidad de probar el Libro al comienzo y aumenta fricción de primeros encuentros.
+- **Stock máximo:** no definido; no inventar límites ni pérdidas de excedentes en inventario.
+- **Repetir encuentros:** ya existe replay y un coste de stamina; G1 sería renovable bajo las reglas actuales de acceso y victoria. Si se capta demasiado recurso sin gasto, medir antes de establecer topes artificiales.
+- **Otras fuentes:** misiones, tienda pagada en divisa de juego e ítem premium **no se implementarán en el primer bloque** sin contratos propios; siguen en roadmap. El propósito comercial no debe obligar a pagar para acceder al bucle básico de colección.
+
+### 30.3 Integración/QA que vendrían después (sin autorización actual)
+
+- El motor de recompensa debe guardar \`encounter.id\`, revisión, inventario y sello ganado **en la misma transacción de victoria**, evitando doble cobro o doble drop.
+- Ganar por captura simple vs ataque concede el mismo sello de victoria si se aprueba G1; capturar al primero del doble pero perder contra el segundo **no** da sello de victoria regional, aunque conserva criatura y P5.
+- Aplicar reglas regionales/cap y recompensas existentes sin reinterpretar capturas antiguas.
+- En un fallo de escritura, no acreditar falsa ganancia de sello ni consumo de inventario.
+- Para usuarios que cargan un perfil previo sin inventario, diseñar migración sin sobrescribir su progreso, y definir cuántos sellos (si alguno) entregar al migrar.
+- Probar escenarios con stock 0/1/2/3/10, victoria repetida, primer final doble, derrota tras captura, pausa/reinicio y necesidad de un sello en cada intento.
+
+**Decisión pendiente prioritaria:** escoger G1/G2/G3 para la **fuente principal renovable**. Después determinar cantidad inicial I3/I1, migración y umbral de inventario si corresponde. Todas las cifras de §30 son recomendaciones, no contenido canónico adoptado. **No implementar cambios en PR27 ni integración en dev antes de cerrar el contrato.**
