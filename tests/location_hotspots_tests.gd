@@ -74,7 +74,7 @@ func run() -> void:
 		await frames()
 		check(main.page == "battle", "search enters existing combat")
 		check(app.profile.campaign.encounter.get("id", "") == pending_id, "search retains encounter identity")
-		check(int(app.profile.campaign.exploration.value) == int(after_entry.campaign.exploration.stamina), "search does not charge entrance twice")
+		check(int(app.profile.campaign.exploration.value) == int(after_entry.campaign.exploration.value), "search does not charge entrance twice")
 	app.response_timer.stop()
 	main.queue_free()
 	await frames()
