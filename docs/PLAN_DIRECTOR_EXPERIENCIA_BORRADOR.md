@@ -1,5 +1,5 @@
 # Karmany Monsta Android · Plan director de experiencia (BORRADOR)
-**Versión:** 0.8 · 14 de noviembre de 2026 (D-25: vínculo exitoso concede victoria/XP/avance; finales dobles e intentos pendientes)  
+**Versión:** 0.9 · 14 de noviembre de 2026 (D-26 en estudio: sello consumible para vínculo, economía e intentos sin aprobar)  
 **Estado:** dirección de producto parcialmente definida y diagnósticos técnicos verificados; **NO aprobado como implementación ni modificación canónica**.  
 **Objeto:** definir la experiencia objetivo antes de continuar desarrollando gameplay, interfaces o animaciones. Las propuestas de esta versión NO constituyen reglas nuevas.
 
@@ -841,3 +841,84 @@ El límite actual de \`CaptureSession.MAX_ATTEMPTS=3\` es un hecho implementado 
 4. Pausa «Reiniciar» y «Salir», ruta de Detalles, y rediseño de habilidades por especie.
 
 **Restricción explícita:** implementación nueva de captura/XP requiere contrato aprobado para todos esos puntos, sin tocar fases estables ni degradar tests. Hasta entonces, solo documentación en PR26; PR27/Preview73 no aprobados; \`dev/karmany-core\` y \`main\` siguen sin modificaciones.
+
+
+## 25. D-26 — Propuesta de consumible asociado al Libro (EN ESTUDIO; NO CANON APROBADO)
+
+**Origen explícito del creador (14/11/2026):** plantea un **ítem de captura** acorde con el mundo y el Libro, con nombre sugerido «sello de captura» o similar; el entrenador tendría existencias limitadas obtenibles mediante escenarios derrotados, misiones o una tienda. Solicita comparar **un único tipo de ítem** y **variantes con probabilidades superiores**.
+
+**Estado:** solicitud de diseño, no aprobación de nombre, stock inicial, tasas de obtención, moneda, precios, número de variantes, probabilidades adicionales ni sustitución del antiguo límite de tres intentos. **No implementar ni completar valores por inferencia.** Preservar D-24 (consume acción Karmany y puede responder rival al fallo) y D-25 (vínculo exitoso da victoria/XP/avance correspondientes).
+
+### 25.1 Encaje narrativo y alternativa recomendada
+
+**Etiqueta provisional:** **Sello de Vínculo**, entendido como **consumible que permite utilizar el Libro**, no como un sustituto del Libro. La expresión es una idea de UX/lore propuesta; **no se afirma que exista un sello con este nombre en la enciclopedia canónica**. El arte, materiales, símbolos, nombre definitivo y origen narrativo necesitan confirmación del creador y documentación fuente antes de convertirse en canon.
+
+| Enfoque | Modo de uso propuesto | Evaluación |
+|---|---|---|
+| **S1: un sello genérico + niveles permanentes de Libro** | Cada intento elegible gasta un sello; **el Libro sigue fijando el acceso a rarezas y su probabilidad** con \`book_levels.json\` | **Preferido para primer prototipo**: una sola economía, interfaz clara, preserva progresión existente |
+| S2: sellos básico/mejorado/superior | Cada variante podría modificar tasas y/o rarezas | Más coleccionables y decisiones, pero duplica el árbol de mejoras y exige una tabla completa de apilamiento, acceso por rareza, fuentes y costes |
+| S3: sello único inicial y variantes en fase posterior | Primero implementar S1, añadir variantes después de métricas y balance | Evolución sostenible sin migrar los porcentajes o inventario ahora; **las variantes NO quedan aprobadas** |
+
+**Probabilidades vigentes (no modificar por esta propuesta):**
+- Libro inicial: **Común 45%**.
+- Mejora 1 (nivel 4, 1 punto, requiere progreso previo): **Común 60%; Raro 30%**.
+- Mejora 2 (nivel 8, 2 puntos, previa adquirida): **Común 75%; Raro 45%; Épico 20%**.
+
+La rareza no autorizada por el Libro sigue bloqueada. Un sello genérico no reemplaza ni elude las mejoras, no escala solo por vida restante del enemigo y **no aumenta esas tasas por sí mismo**. No se propone fórmula de multiplicación, suma de probabilidades o nivel adicional del Libro.
+
+### 25.2 Bucle de uso propuesto, sin prometer nuevas reglas
+
+\`\`\`text
+Batalla: enemigo salvaje vivo + Libro compatible + sellos disponibles
+    │ Opcional: entrenador utiliza primero una resonancia válida
+    ▼
+Pulsar «Vincular» en el HUD táctico
+    │ Comprobar PS/rareza, stock, cupo del Karmany, encuentro/revisión/turno
+    ▼
+Registrar atómicamente: -1 sello, -1 cupo Karmany, intento y resultado
+    ├── éxito → D-25: captura/victoria/XP/avance correspondientes (sin duplicar)
+    └── fallo → D-24: respuesta rival si el encuentro sigue abierto
+          └── resultado del último intento: PENDIENTE Q2/T1 o Q2/T2
+\`\`\`
+
+**Regla de seguridad para una futura implementación (sin autorización todavía):** un botón inválido/no elegible o una escritura fallida no debe consumir ni sello ni turno ni tirada; un intento **confirmado y persistido** los consume independientemente de su éxito. Animaciones, reanudación y dos toques no vuelven a gastar. El «stock» es un recurso persistido por perfil, no se debe reconstruir a partir de UI.
+
+### 25.3 Fuentes de obtención: propuestas comerciales/UX, no contenido existente
+
+| Origen expresado por el creador | Situación real del proyecto | Decisión que falta |
+|---|---|---|
+| Recompensa por derrotar escenarios | Existen bonos regionales y un recuperador de stamina con reglas específicas | ¿Premio fijo, porcentaje o hitos? ¿Primera victoria, repeticiones o ambas? Cifras y reglas nuevas, no adjudicar |
+| Misiones | No se ha verificado un **sistema jugable de misiones con premios de sellos** | ¿Objetivos, repetición, seguimiento, canje? La misión no se considera existente por mencionarla |
+| Tienda | No se ha verificado una **tienda funcional ni una moneda de compra de sellos** | Definir primero inventario, divisa, fuentes renovables, precios, límites y si compra solo con recursos del juego |
+
+**Problema de diseño:** bloquear el progreso de colección por no tener sellos suficientes puede degradar la retención; antes de un balance final debe existir una vía de reposición **renovable y no obligatoriamente pagada**, con coste de tiempo y frecuencia expresamente aprobados. La economía no debe convertirse en un premio automático infinito ni en un bloqueo permanente. **No asumir** compras con dinero real, anuncios ni porcentajes de drops.
+
+### 25.4 ¿El inventario reemplaza o complementa los tres intentos? DECISIÓN PRIORITARIA
+
+El motor existente \`CaptureSession.MAX_ATTEMPTS = 3\` y \`TacticalEncounter.state.rolls\` fijan tres tiradas de captura. En el modelo nuevo, el **stock** limita intentos globales; eso **no determina por sí solo** cuántos pueden gastarse contra un mismo salvaje.
+
+| Variante pendiente | Ejemplo de comportamiento con 2 sellos / 10 sellos | Impacto |
+|---|---|---|
+| **L1 — STOCK y límite de tres por encuentro (preferencia técnica)** | Dos sellos → máximo 2 intentos; diez sellos → máximo 3 en ese encuentro. Intentos = \`min(stock, intentos restantes)\`. | Conserva el límite histórico y la estructura de tres tiradas; menor abuso y migración más contenida |
+| **L2 — solo STOCK, sin tope por encuentro** | Dos sellos → máximo 2; diez sellos → hasta 10 mientras rival vivo/combate vigente. | Mayor gasto y libertad, altera tasas acumuladas y requiere RNG/estado de captura extensible; alto riesgo de trivializar el vínculo |
+| **L3 — tope diferente por tipo de encuentro** | Distinción entre encuentros simples y final doble | Requiere canon nuevo, no seleccionar sin necesidad |
+
+**L1 es recomendación de arquitectura, NO decisión registrada.** El «tercer fallo» Q2/T1 o Q2/T2 sigue abierto; si se agota stock antes del tercero, ya no se puede pulsar Libro por falta de sellos, pero no se inventa un escape automático ni una derrota. En finales dobles, está igualmente pendiente si el límite es **compartido entre ambos rivales**. No asumir tres tiradas nuevas al pasar de primer rival al segundo.
+
+### 25.5 Impacto técnico previsto y aceptación futura
+
+- Añadir un **inventario validado** con un contador de sellos (o modelo de recursos) a \`TrialCampaign\`/\`SaveStore\`, manteniendo compatibilidad de perfiles \`schema 3\` y partidas en curso; el estado inicial **no puede asignarse arbitrariamente** a jugadores nuevos o antiguos. Un inventario sin campo antiguo debe recibir migración explícita y tests.
+- Añadir gasto transaccional **junto** a \`App.trial_action()\`, \`SharedCombatTurn\` y \`CaptureSession\`: un sello, un cupo Karmany, una tirada y revisión por intento. Sin fallo de persistencia que deje un sello consumido sin intento.
+- \`BookCapturePolicy\` y \`data/book_levels.json\` siguen siendo la fuente de chances aprobadas. Si se elige S2, crear otro contrato de combinación de item+nivel de Libro y casos QA para todas las rarezas antes de aplicar cifras.
+- Descartar únicamente **para el nuevo contrato aprobado**, no para saves anteriores, la fase de Libro ofrecida tras HP rival 0; la transición D-25 debe representar captura de vivo sin simular que fue derrotado.
+- Las fuentes de obtención **reales** y la futura tienda deben crear movimientos de inventario persistentes e idempotentes: evitar cobrar dos veces, reclamar dos veces una misión o recibir dos sellos por un único recibo de victoria.
+- Proteger \`Preview32/E2\` y el guardado previo a Preview73: no reinterpretar tiradas y sesiones ya iniciadas como compras retroactivas de sellos.
+- Tests previstos: stock 0/1/2/3/10, rarezas bloqueadas, victorias iniciales/repetidas, sello ganado y gastado en igual transacción, doble toque, escritura fallida, cierre en intento/contraataque, inventario durante final doble, QA aislado, libro mejorado, tercera falla según contrato final.
+
+### 25.6 Estado y orden de decisión
+
+**Solicitado, no aprobado aún:** introducir consumible de vínculo, potencialmente llamado «Sello de Vínculo», y obtenerlo por combate/misiones/tienda. **Recomendación sometida a elección:** **S1 + L1**, un tipo de sello que habilita el Libro y conserva un máximo de tres intentos por encuentro; sin alterar probabilidades del Libro. No introducir tienda/misiones sin contrato real.
+
+**Primero resolver:** ¿S1 (sello único) o S2 (múltiples categorías)? Después L1/L2 (límite por encuentro). Una vez decidido, volver a Q2 T1/T2 y Q3 F1/F2/F3, además de existencias iniciales y fuentes de reposición. Antes de codificar se requiere acuerdo completo sobre compatibilidad de guardados y confirmación de implementación.
+
+**Protección:** documentación en PR26, únicamente; PR27/Preview73 no se considera aprobada. No tocar gameplay, \`data/\`, \`dev\` o \`main\`.
