@@ -700,6 +700,15 @@ func _back() -> void :
 		if summary.visible:
 			summary._finish()
 			return
+	# Combat Back opens the same reversible menu as the HUD, instead of leaving
+	# the scene without showing the player's navigation choices.
+	if page == "battle" and App.profile.campaign.encounter.get("phase") in ["battle", "replacement"]:
+		var combat_ui := get_node_or_null("Page")
+		if combat_ui != null:
+			var battle_view := combat_ui.find_child("PlayerBattleUI", true, false)
+			if battle_view != null:
+				battle_view._options_menu()
+				return
 	if page == "home" and navigation.entries.is_empty():
 		App.log_event("Salida solicitada.")
 		get_tree().quit()
@@ -745,6 +754,7 @@ func _playable() -> void :
 	parent.remove_child(scroll)
 	scroll.queue_free()
 	var trial:= TrialUI.new()
+	trial.name = "PlayerBattleUI" if page == "battle" else "PlayerRouteUI"
 	trial.mode = "intro" if page == "intro" else ("map" if page == "jade_play" else ("exploration" if page == "exploration" else "battle"))
 	trial.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	trial.custom_minimum_size = Vector2(0, 500)
