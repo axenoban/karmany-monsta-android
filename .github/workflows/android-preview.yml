@@ -2,7 +2,7 @@ name: Android Preview
 
 on:
   pull_request:
-    branches: [main, dev/karmany-core, docs/documento-maestro-android]
+    branches: [main, dev/karmany-core, docs/documento-maestro-android, feature/jade-nocturno]
   workflow_dispatch:
     inputs:
       ui_review:
@@ -98,6 +98,11 @@ jobs:
           xvfb-run -a godot --rendering-method gl_compatibility --audio-driver Dummy --path . --script tests/jade_ui_tests.gd -- --allow-ui-review 2>&1 | tee build/jade-visual.log
           python3 ci/check_log.py build/jade-visual.log
           python3 -m zipfile -c build/ui-review.zip build/jade-review
+      - name: Validate interactive Jade exploration prototype
+        run: |
+          set -o pipefail
+          xvfb-run -a godot --rendering-method gl_compatibility --audio-driver Dummy --path . --script tests/location_hotspots_tests.gd 2>&1 | tee build/location-hotspots.log
+          python3 ci/check_log.py build/location-hotspots.log
       - name: Validate latest action display
         run: |
           set -o pipefail
