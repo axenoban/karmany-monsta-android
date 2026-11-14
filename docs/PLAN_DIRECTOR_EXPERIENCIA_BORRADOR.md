@@ -1,6 +1,6 @@
 # Karmany Monsta Android · Plan director de experiencia (BORRADOR)
-**Versión:** 0.11 · 14 de noviembre de 2026 (D-27: tres intentos por encuentro; tercer fallo permite seguir combatiendo)  
-**Estado:** dirección de producto parcialmente definida y diagnósticos técnicos verificados; **NO aprobado como implementación ni modificación canónica**.  
+**Versión:** 0.12 · 14 de noviembre de 2026 (D-28: finales dobles con captura persistente; fórmula XP por captura propuesta)  
+**Estado:** decisiones D-24/D-25/D-27/D-28 documentadas; **fórmula cuantitativa de XP por captura pendiente de aprobación**, así como recursos, pausa y técnicas; **NO aprobado como implementación**.  
 **Objeto:** definir la experiencia objetivo antes de continuar desarrollando gameplay, interfaces o animaciones. Las propuestas de esta versión NO constituyen reglas nuevas.
 
 ## 1. Referencias y estado real
@@ -1025,3 +1025,120 @@ ENCUENTRO ACTIVO · rival vivo
 - **D-23 — Habilidades:** matriz de Golpe + Ataque especial por especie y árbol del entrenador sin eliminar canon antiguo arbitrariamente.
 
 **Estado de ejecución:** Plan Director v0.11, **solo documentación**. El comportamiento real del APK Preview73 permanece como antes; D-27 NO está implementada. No hacer merge en dev; PR26 continúa draft y PR27 sigue pendiente de aprobación física.
+
+
+## 28. D-28 — Finales dobles: conservar captura y experiencia propia de vínculo (PARCIALMENTE APROBADA)
+
+**Declaración expresa del creador (14/11/2026):** «Obviamente se conserva la captura, por ello considero que capturar también de experiencia, analiza la cantidad correcta que debe dar, analiza las cantidades que debe otorgar recordando que esto es progresivo por nivel, mientras más nivel, más experiencia se necesita para subir de nivel, por ende la experiencia por capturar no debe ser fija, por último apliquemos tu recomendación final también».
+
+**Interpretación explícita y limitada de lo autorizado:**
+- Se **aprueba F1** de §24.2 para finales de dos rivales: puede intentarse vincular al **primero o al segundo**; el jugador debe resolver **ambos** para ganar la etapa regional; **solo puede obtener un vínculo por encuentro**, con hasta **3 intentos compartidos** (D-27). Una captura satisfactoria del primer rival lo resuelve y abre el segundo combate conservando continuidad de HP, turnos y efectos según E2.
+- Se **aprueba la permanencia de la criatura vinculada al primer rival** aunque el segundo derrote al equipo. No se elimina la captura legítima por perder la etapa ni se fuerza a repetir ese vínculo.
+- Se **aprueba el principio de XP por captura**, **distinta** de la XP por victoria de la etapa: conseguir un Karmany otorga una recompensa propia aun si luego se pierde contra el segundo. D-25 garantiza victoria/XP/avance *correspondientes al encuentro resuelto*: en un doble encuentro, vencer o capturar al primero **no equivale a completar la etapa**, que exige ambos rivales.
+- **No se aprueba todavía ninguna cifra ni fórmula concreta**, ni nuevos topes regionales, reparto por beneficiario, bonus por rareza, victoria por cada rival, ni nuevas tasas de sellos. §28.3 presenta una fórmula recomendada para deliberación, **no canon ejecutable**.
+
+### 28.1 Flujo aprobado y contabilidad sin doble victoria
+
+\`\`\`text
+FINAL DOBLE (un encounter_id, una etapa de ruta)
+Rival 1 vivo:
+    ├── Derrotado (0 PS) -> Rival 2; ya no vinculable
+    └── Vinculado con Libro -> guardar captura y derecho a XP de captura;
+                               Rival 2; Libro deshabilitado por vínculo único.
+Rival 2:
+    ├── Derrotado / vinculado si todavía no hubo vínculo ->
+    │      los dos rivales resueltos -> UNA victoria regional,
+    │      XP normal de etapa, avance, drop y bono de primera victoria
+    └── Derrota del equipo / retirada antes de resolverlo ->
+           NO victoria de etapa ni XP de victoria;
+           CONSERVAR el Karmany y XP de captura ya conseguidos.
+\`\`\`
+
+- **Máximo una criatura vinculada** por el total de dos rivales; la captura en el primero bloquea nuevos intentos frente al segundo, aunque sobren sellos o intentos.
+- **Hasta tres intentos para el encuentro total**, no tres por rival. Si se gastan contra el primero, los restantes (si queda rival elegible) son los únicos disponibles contra el segundo. Tras el tercer fallo, permanece la pelea y no el Libro (D-27).
+- Cada intento consume **un sello normal (cuando su inventario esté especificado) y la acción del Karmany** (D-24). Si falla, el enemigo puede responder. Vínculo de PS=0 no vuelve a estar disponible bajo el diseño solicitado (D-22), aunque faltan criterios finales para PS reducidos.
+- El Karmany capturado se incorpora a la colección y al progreso de especies **de forma persistente e irrevocable por la derrota posterior**, con nivel del enemigo capturado y XP inicial cero según la base E2 vigente. **No entra de manera automática a combatir como refuerzo durante ese encuentro**: eso sería una nueva regla no solicitada.
+- La XP por captura es diferente de XP de victoria regional. En un encuentro simple, vínculo exitoso resuelve el único rival, causa victoria y genera ambas recompensas según contrato futuro. En final doble, vínculo del primero **solo** da captura + XP de captura inmediatamente asegurada; la recompensa de etapa llega cuando el segundo también queda resuelto.
+- Derrota o retirada tras vincular al primero no puede borrarle la criatura ni la recompensa por captura al usuario, pero tampoco puede entregar una victoria de etapa ni bono de primera victoria no obtenido. Evitar devolver stamina de entrada sin regla nueva.
+- No redefinir recompensas de captura en entrenamientos, especies ineligibles ni regiones sin contrato propio: la regla explícita trata de encuentros regionales jugables.
+
+### 28.2 Fuentes cuantitativas reales verificadas (no aproximaciones)
+
+**Fuente de código:** \`scripts/level_progression.gd\`: \`requirement(level) = 100 * level\`, XP acumulada parcial y subidas sucesivas hasta el máximo regional. \`scripts/level_progression.gd::award()\` concede **el mismo monto de victoria** al entrenador y a cada integrante elegible del equipo real del encuentro, incluso reserva derrotada. El recién vinculado se inicializa con **XP0** y no recibe retroactivamente la victoria que lo originó (docs/NIVELES_LIBRO_19.md). \`data/level_progression.json\`: \`victory_xp=25\` heredado, **tope Jade Nv.10**, **Velo Nv.15**. En encuentros regionales activados, el bono por etapa lo sustituye por \`first_xp\`/ \`repeat_xp\` específico, congelado a la entrada.
+
+**Fuentes de datos de rutas** \`data/jade_route.json\` y \`data/veil_route.json\`:
+- Jade, seis puntos: primeros premios \`400, 500, 600, 650, 700, 750 XP\`; repetición \`100, 125, 160, 200, 240, 300 XP\`.
+- Velo, seis puntos: primeros \`700, 750, 800, 850, 900, 950 XP\`; repetición \`175, 210, 240, 260, 290, 325 XP\`.
+- El tope por región **descarta XP excedente** y los receptores al tope de nivel ganan 0 XP efectiva. La XP de captura debería respetar exactamente esta política, sin permitir superar el límite regional.
+
+**Observación de balance:** las primeras victorias ya dan cantidades elevadas frente al requisito de nivel (400 XP cuando en Nv.1 se precisan 100 para Nv.2; premios altos posteriores). La XP por captura no debe convertirse en un segundo premio regional completo ni en una economía acumulativa que evite el combate. La comparación debe hacerse principalmente contra \`repeat_xp\`, no solo contra \`first_xp\`.
+
+### 28.3 Propuesta de balance XP por captura (PENDIENTE DE APROBACIÓN)
+
+**Propuesta técnica P5:** para cada receptor elegible \`r\` (entrenador y miembros actuales del equipo del encuentro, excluyendo recién capturado), determinar su **nivel efectivo antes de conceder la recompensa del evento**, \`L_r\`; el bono nominal sería:
+
+\[
+XP_{\mathrm{captura},r} = \operatorname{round}(0.05\times XP_{\mathrm{siguiente}}(L_r)) = 5\times L_r,
+\]
+\[
+XP_{\mathrm{siguiente}}(L_r) = 100\times L_r.
+\]
+
+Esta cifra es **5% del requisito del propio nivel del receptor**, no 5% de la XP total acumulada, del nivel del enemigo ni 5% del premio de primera victoria. No representa una tasa de captura ni aumenta chances del Libro. Los 5% y el reparto son **PROPUESTA**, no canon.
+
+| Nivel del receptor | XP para siguiente nivel (vigente) | Captura P5 (propuesta) | Si se propusiera P10=10% (comparativa) |
+|---:|---:|---:|---:|
+| 1 | 100 | 5 | 10 |
+| 3 | 300 | 15 | 30 |
+| 5 | 500 | 25 | 50 |
+| 8 | 800 | 40 | 80 |
+| 10 | 1000 | 50 | 100 |
+| 15 | 1500 | 75 | 150 |
+
+**Comparación con etapas reales:** Jade punto 1 ofrece 400 primera / 100 repetición: para un receptor Nv.1, P5=5 XP extra (1,25% de primera, 5% de repetición); Jade final 750 primera / 300 repetición: Nv.10 P5=50 XP nominal (6,7% / 16,7%) **pero si ya está al tope Jade10 recibe 0 XP real**; Velo final 950 primera / 325 repetición: Nv.15 P5=75 nominal (7,9% / 23,1%), pero si ya alcanzó el tope Velo15 recibe **0 real**. Quien entra con Nv.10 en Velo sí puede percibir P5=50. Los premios no deben sumar XP más allá del máximo regional.
+
+**Justificación P5 vs P10:** P5 da un incentivo creciente y visible sin eclipsar la victoria regional, conserva la curva del jugador en todas las regiones y reduce abuso por repetición; P10 puede acercarse a la mitad del premio repetible de Velo final para niveles altos antes del tope. La fórmula porcentual **no está validada mediante telemetría ni pruebas físicas**; deberá simularse con el nivel real de las criaturas, rutas, caps y frecuencia de sellos antes de aprobarla.
+
+**Casos de cobro propuestos:**
+- Captura de rival 1 en final doble, derrota posterior ante rival 2: conservar captura **+ P5 efectiva**; 0 XP de etapa, 0 bono de primera victoria y punto sin completar.
+- Captura de rival 1 y victoria contra rival 2: captura **+ P5 efectiva** + **premio regional vigente solo una vez**.
+- Derrotar rival 1 y capturar rival 2: captura **+ P5 efectiva** + **premio regional vigente solo una vez**.
+- Encuentro individual, vínculo exitoso: captura **+ P5 efectiva** + **premio regional vigente solo una vez**.
+- Fallo 3/3 y victoria por daño: **solo** premio regional vigente, sin P5; 3/3 fallidos nunca producen XP de captura.
+- A tope regional: XP real capturada puede ser 0 aunque la fórmula nominal sea positiva, como sucede con otras recompensas. No forzar niveles artificiales ni romper validación.
+
+**Alternativa de diseño aún abierta:** calcular P5 con el **nivel del entrenador solamente** y dar el mismo monto al equipo, como ocurre con \`award()\`. Eso hace más fácil el recibo pero paga un porcentaje distinto a criaturas de niveles dispares. El modelo recomendado calcula **por receptor** y se ajusta mejor a «progresivo por nivel»; se requiere aprobación expresa del creador antes de adoptarlo.
+
+### 28.4 Implicaciones de persistencia y arquitectura (IMPORTANTE)
+
+El motor **no admite hoy este flujo**. No basta agregar un número a \`LevelProgression.award()\`:
+- \`TrialCampaign.valid()\` comprueba \`collection.size() <= victories\`, y \`collection\` usa \`encounter.id\` como identidad única. **Capturar al primero sin victoria de etapa** rompe ese invariante en perfiles válidos; debe desacoplarse colecciones de victorias, crear identidad inequívoca por rival/instancia y preparar migraciones E2/Preview32 para registros previos. No maquillar \`victories\` con una falsa victoria regional.
+- \`LevelProgression.award()\` tiene recibo único \`last_reward\` por \`encounter.id\`; ahora se necesitan **dos eventos independientes e idempotentes**, «captura» y «finalización de etapa», incluso dentro del mismo \`encounter.id\`. Proponer claves de evento diferenciadas (identificador concreto pendiente), no sobreescribir recibo de captura al persistir victoria ni reotorgar XP al reabrir UI.
+- Si el premio de captura se concede **antes de pelear contra el segundo**, actualizar niveles persistidos puede afectar stats en un encuentro activo o dejar incongruencias entre \`campaign.progression\`, \`encounter.members\` y PS. **Propuesta técnica:** preservar los stats congelados del combate; registrar premio e inventario/colección de manera atómica, y permitir que la mejora surta efecto **en un encuentro posterior**. Requiere contrato de persistencia y tests, no implementación unilateral.
+- Respetar la política de topes por región y el esquema de registro \`before\`/\`after\`, incluida la experiencia multi-nivel y el recibo exacto mostrado al usuario. En un encuentro simple con éxito instantáneo, calcular captura a partir del nivel antes de la recompensa y luego regional sin duplicación.
+- \`CaptureSession\` actualmente exige enemigo derrotado y tercer fallo es \`escaped\`, y \`TacticalEncounter.valid()\` exige enemigo PS=0 para captura; es necesario reestructurar estados y compatibilidad simultáneamente.
+- \`TrialCampaign.valid\`, \`JadeRoute.valid\`, \`SaveStore\` y \`AftermathFlow\` deben permitir un Karmany capturado con encuentro aún pendiente, una derrota posterior con colección preservada y un recibo de XP parcial aunque \`victories\` no aumente. La pérdida de equipo no revierte la colección ni la bonificación P5.
+- Sellos: consumo de inventario (pendiente de definición) solo al intento realmente persistido; capturar al primero bloquea segundo sello/vínculo. Mantener tres tiradas compartidas y no reabrir otro contador al cambiar rival.
+
+### 28.5 Pruebas que exige el nuevo contrato
+
+| Caso | Resultado exigido |
+|---|---|
+| D28-01: final doble, capturar primero y perder segundo | Se conserva criatura y XP por captura; cero victoria regional y cero XP regional |
+| D28-02: capturar primero y derrotar segundo | Una captura, 1 bono captura, 1 premio victoria, etapa completa |
+| D28-03: derrotar primero y capturar segundo | Una captura, 1 bono captura, 1 premio victoria, etapa completa |
+| D28-04: fallos distribuidos entre dos rivales | Máximo tres intentos compartidos, sin reset de contador ni cuarto sello |
+| D28-05: capturar primero y querer usar Libro en segundo | Acceso bloqueado; no consumo extra de sello ni cupo Karmany |
+| D28-06: perfil con 0 victorias y 1 criatura capturada en doble pendiente | \`SaveStore.valid=true\`; reanudar sin alterar colección ni progreso de ruta |
+| D28-07: recompensa XP de equipo con niveles mixtos | Fórmula **que se apruebe**, tope regional, recibos correctos; recién vinculado XP0 |
+| D28-08: doble toque, cierre, fallo de escritura tras primera captura | Sin duplicar criatura/XP/recibos/sello; no perder captura ya guardada |
+| D28-09: partidas guardadas antiguas y vencidos con posterior Libro | Compatibilidad válida sin reinterpretar captures anteriores o conceder XP retroactiva |
+| D28-10: repetición de etapa y primer premio agotado | Premio \`repeat_xp\` vigente solo al resolver etapa; captura da bono propio únicamente si hubo éxito |
+
+### 28.6 Estado y siguiente decisión
+
+**Aprobado:** F1 (elegir capturar primero o segundo, ambos rivales necesarios, un vínculo, tres intentos compartidos); captura del primero **persiste aunque haya derrota contra segundo**; captura otorga XP **propia y progresiva**, adicional a la XP por completar la etapa; ningún premio de etapa por captura del primer rival.
+
+**Pendiente de aprobación:** **P5 vs otra proporción/base de cálculo**; concretar si XP por captura llega tanto al entrenador como a los integrantes elegibles del equipo; modo de transición de nivel durante combate; criterios de elegibilidad PS; cantidades/tasas de sellos y semántica de Pausa. No fijar valores en \`data/level_progression.json\` ni tocar el motor por esta documentación. Las cifras P5 son **propuesta**, sujetas a decisión del creador y después a regresiones.
+
+**Protección:** solo PR26 documental; PR27/Preview73 sin aprobación, \`main\` y \`dev/karmany-core\` intactos. No integrar ni generar APK hasta que el contrato de captura completo esté acordado.
