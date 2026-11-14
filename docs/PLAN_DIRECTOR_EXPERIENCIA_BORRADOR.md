@@ -1,5 +1,5 @@
 # Karmany Monsta Android · Plan director de experiencia (BORRADOR)
-**Versión:** 0.5 · 14 de noviembre de 2026 (resultados integrados con vínculo destacado, dirección y flujos documentados)  
+**Versión:** 0.6 · 14 de noviembre de 2026 (retroalimentación física Preview73: HUD, pausa y propuesta de revisión canónica)  
 **Estado:** dirección de producto parcialmente definida y diagnósticos técnicos verificados; **NO aprobado como implementación ni modificación canónica**.  
 **Objeto:** definir la experiencia objetivo antes de continuar desarrollando gameplay, interfaces o animaciones. Las propuestas de esta versión NO constituyen reglas nuevas.
 
@@ -605,3 +605,68 @@ Reutilizar \`ExperiencePanel\` y muestreo multinivel, \`AftermathFlow\` como fue
 **Todavía por decidir:** si los cambios estadísticos y niveles se ven siempre o bajo «Ver detalle» (como mínimo XP individual y nivel ganado serán visibles); selección de técnica de animación D-10 tras prototipos comparables; maquetas artísticas D-19+D-20 y requisitos de pantalla móvil; rutas opcionales y pools variables; dificultad y stamina. No abrir un bloque de jugabilidad por estas decisiones UX.
 
 **Siguiente revisión sugerida:** definir la jerarquía de información del resumen XP y preparar un piloto comparativo de animación de un personaje existente. \`PR26\` se mantiene **draft documental**, no se integrará a dev ni producirá APK por esta modificación.
+
+
+## 22. Revisión tras prueba física Preview73 — simplificación del combate y posibles reglas nuevas
+
+**Origen:** observaciones expresas del creador tras revisar la APK Preview73 del PR27. La candidata \`feature/ux-combate-resultados-continuos@6b8d61426eb1179a2311c7243affaf3df6baae25\` pasó la CI y produjo la release \`android-preview-73\`, pero **NO recibió aprobación «prueba correcta»**. PR27 sigue draft; su CI no implica aprobación del nuevo diseño.
+
+### 22.1 UX solicitada: combatir sin navegación administrativa visible (D-21)
+
+**Dirección expresamente solicitada (diseño visual):** ocultar controles ajenos a la decisión táctica. En primer plano dejar **acciones del Karmany**, **Entrenador** y **Equipo**; si el vínculo durante el combate resulta aprobado, también el **Libro** como acción táctica disponible. El escenario y las criaturas son protagonistas. No mostrar ayuda, Ajustes, opciones generales ni accesos redundantes de salida en el HUD.
+
+**Composición conceptual, pendiente de maqueta y aprobación de la operativa del menú:**
+- **HUD mínimo:** PS, enemigo, turno, estado y notificación breve de acción; acciones tácticas reales. El botón Atrás Android/«Pausa» abre un menú superpuesto sin cambiar de ruta ni instancia del encuentro.
+- **Menú de pausa (fuera del HUD de combate):** Reanudar, Opciones, Ayuda, Reiniciar y Salir. **Estos nombres son intención UX, no semántica aprobada**:
+  - *Reanudar*: cerrar la capa y recuperar el mismo \`encounter.id\`, \`revision\`, PS y turno.
+  - *Opciones/Ayuda*: configuraciones o explicación en segundo nivel, retornando siempre al mismo combate. D-16 mantiene la ayuda bajo demanda; no mostrar tarjeta E5 automática sobre combate sin resolver compatibilidad.
+  - *Reiniciar*: **no definido**: podría reiniciar pelea actual, volver al checkpoint antes de pagar entrada o reiniciar toda la aventura. Todas esas variantes tienen consecuencias distintas sobre stamina, HP, random, rewards y guardados. No implementar un botón con semántica arbitraria.
+  - *Salir*: **no definido**: volver a Inicio conservando encuentro, ir al mapa conservándolo o abandonar definitivamente la pelea. El motor distingue \`retreat\` de navegación sin abandono; no fusionarlos.
+  - *Pausa real*: definir si se suspende \`response_timer\`, SFX, animaciones y taps durante el menú. La pausa debe mantener colas de respuesta y no conceder otra acción al reanudar, incluso después de ir a segundo plano.
+- **Opciones ya visibles en Preview73:** \`TrialUI._build()\` crea «Volver», «Opciones» y \`ContextHelp\`; \`_battle()\` presenta acciones \`golpe/guardia/insignia\`, Entrenador/Detalles/Equipo. \`_options_menu()\` usa \`AcceptDialog\`. Esta dispersión explica la queja de espacio y navegación.
+- **Decisión pendiente:** «Detalles» ya fue aceptado como panel sobre combate en D-19. La nueva preferencia «solo habilidades, Equipo y Entrenador» sugiere mover Detalles a Entrenador/Equipo o Pausa→Opciones. Confirmar destino antes de eliminarlo: sigue siendo necesario mostrar cooldowns y estados de técnicas sin obligar al jugador a abandonar combate.
+
+### 22.2 Mecánica propuesta del Libro: vincular mientras el rival sigue vivo (D-22, CAMBIO CANÓNICO)
+
+**Petición del creador:** permitir intentar vínculo en pleno combate; si el Karmany salvaje queda debilitado a 0 PS/derrotado, ya no puede capturarse.
+
+**Choque con canon vigente:** \`DOCUMENTO_MAESTRO_ANDROID.md\` §5 y anexos; el motor \`TacticalEncounter.valid()\` exige \`enemy.hp == 0\` en \`capture/captured/escaped\`, y \`App.trial_action()\` concede victoria y XP al entrar a \`capture\` tras último rival derrotado. Finales regionales ofrecen elegir uno de **dos derrotados** para un vínculo posterior. La captura durante batalla no puede representarse simplemente moviendo el botón: modificaría invariantes, transacciones de campaña, checkpoints \`AftermathFlow\`, recompensas, economía de encuentro, balance, guardados históricos y regresiones.
+
+**Consecuencias de diseño por resolver antes de código:**
+1. ¿Intentar vínculo consume la acción del Karmany del turno compartido, una resonancia del entrenador o una acción independiente? ¿Ante fallo el rival contraataca?
+2. ¿El intento de vínculo puede hacerse con el rival a cualquier PS mayor que cero? El Libro actual usa probabilidad por rareza/mejora; **no** introducir bonificación por PS restantes sin contrato nuevo.
+3. ¿Éxito termina encuentro y acredita victoria, XP y progreso regional aunque el rival no haya sido derrotado? O ¿captura y victoria son resultados distintos? Sin respuesta, no se pueden mantener XP y ruta de forma coherente.
+4. ¿Qué sucede después del tercer fallo cuando el rival permanece vivo? El contrato actual termina en escape; debe definirse si escapa, continúa el combate o se bloquea solo Libro.
+5. En jefes/finales de dos enemigos consecutivos, ¿se intenta vínculo en el primer rival, solo contra el último, o después de decidir cuál? No es válida la selección histórica entre dos ya derrotados.
+6. ¿Qué ocurre con Karmany salvajes no elegibles por Libro y con un rival derrotado antes de usar Libro? No provocar pantalla vacía ni encuentro perpetuo.
+7. Migraciones: no reinterpretar capturas guardadas de Preview32/E2 ni borrar datos vigentes. Diseñar política de compatibilidad y fixtures antes de editar motor.
+
+**Estado D-22:** solicitud de cambio de reglas recibida. **No aprobada como contrato implementable** porque faltan semánticas de turno, victoria/XP, finales dobles y fallos. No modificar \`tactical_encounter.gd\`, \`app.gd\`, \`capture_session.gd\`, \`book_capture_policy.gd\`, \`aftermath_flow.gd\`, \`data/\` ni probabilidades hasta resolverlas expresamente.
+
+### 22.3 Roles propuestos: Karmany ofensivo y entrenador de soporte (D-23, CAMBIO CANÓNICO)
+
+**Petición:** Karmany con dos habilidades básicas visibles —**Golpe** y **Ataque especial**—; efectos como curación o control proceden únicamente de resonancias del entrenador/árbol.
+
+**Choque con canon vigente:** las fichas aprobadas de \`data/tactical_combat.json\` y el documento maestro §7 definen acciones \`golpe\`, \`guardia\` e \`insignia\`, con técnicas especiales de diversos tipos. Ejemplos reales: **Tanugami** cura y protege; **Kitsunibi** debilita; **Sakuromushi** ataca, releva al siguiente activo y le da bonificación temporal. Quitar apoyo/control a las Insignias o eliminar \`guardia\` cambia 13 especies y el contrato E1/E2 de Sakuromushi, así como pruebas y dificultad.
+
+**Aspectos por decidir:**
+- ¿Las Insignias actuales se convierten en «Ataque especial» **conservando efectos secundarios**, o se rediseñan como ataque de daño puro? La segunda opción requiere definir reemplazos canónicos por especie y reequilibrar, no es un cambio de etiquetas.
+- ¿\`guardia\` deja de existir completamente, queda como acción común secundaria, o pasa a ser una resonancia de Ezel? No inventar resonancias ni puntos de árbol.
+- ¿Qué hacer con la curación/protección/debilitamiento/relevo actualmente particulares de cada Karmany? Antes de eliminar mecánicas históricas estables, preservar una matriz de migración por especie aprobada.
+- La división entre entrenador y Karmany ya existe como turnos compartidos con resonancia opcional antes de habilidad del Karmany. Si el nuevo Libro es una acción adicional, definir cómo interactúan los tres cupos para no regalar turnos extra.
+
+**Estado D-23:** preferencia de diseño explícita, **aún no contrato canónico completo**. Prioridad a preservar balance/identidad de especie y tests hasta recibir reglas exactas. No degradar tests ni forzar conversiones genéricas.
+
+### 22.4 Propuesta de fase y pruebas — sin implementación de reglas
+
+**Bloque A (UX, tras definir pausa/Salir/Reiniciar):** HUD simplificado; un menú de pausa con foco, opciones/ayuda secundarias, flujo Atrás coherente y respeto a \`reduced_motion\`, texto grande y vista horizontal. Conservar los controles tácticos ya existentes durante la transición. Rama feature dependiente de PR27, sin integración directa en \`dev\`.
+
+**Bloque B (reglas Libro):** contrato canónico nuevo para captura con rival vivo; simular encuentros individuales y finales de dos rivales, luego modificar conjuntamente motor/captura/guardado y reconstrucción UI, con regresiones de idempotencia de recompensas, doble toque, respuesta rival y legado.
+
+**Bloque C (roles y técnicas):** matriz aprobada por especie y árbol de entrenador, revisión de efectos y recargas, migraciones si fueran necesarias, QA de diez o más encuentros y preservación de balance comprobable. No implementar como simples cambios de botones.
+
+**Validación mínima cuando se autorice:** no hay controles secundarios permanentes; Pausa/Reanudar sin pérdida del encuentro ni acción; Atrás Android prioriza panel/pausa antes de abandonar; reinicio/salida no explotan stamina; Libro nunca captura criatura debilitada si esa regla se aprueba; tiradas y recompensas únicas; finales dobles válidos; Sakuromushi y técnicas de todas las especies alineadas con el contrato; partidas históricas recuperables; accesibilidad móvil y arte claro.
+
+**Próximo punto de decisión necesario:** elegir **qué acción consume un intento de vínculo durante combate y qué respuesta tiene el rival si falla**. Es la primera regla que bloquea el motor; luego resolver éxito/XP y finales dobles. En paralelo, elegir el significado preciso de «Reiniciar» y «Salir» antes de añadir esos botones.
+
+**Nota de protección:** no marcar Preview73 como «prueba correcta» ni integrar PR27; el creador ha solicitado cambios adicionales. Esta v0.6 solo documenta hallazgos y conflictos, no implementa jugabilidad.
