@@ -25,9 +25,9 @@ func run() -> void:
 	scene.setup(Stage.texture(info.background), info)
 	root.add_child(scene)
 	var inspections: Array[String] = []
-	var searches := 0
+	var searches: Array[int] = []
 	scene.inspected.connect(func(text: String): inspections.append(text))
-	scene.encounter_requested.connect(func(): searches += 1)
+	scene.encounter_requested.connect(func(): searches.append(1))
 
 	for dimensions in [Vector2i(1280, 720), Vector2i(960, 540)]:
 		root.size = dimensions
@@ -47,7 +47,7 @@ func run() -> void:
 		check(inspections.size() > 1 and inspections.back() == info.description, "inspection shows existing canonical description")
 
 	scene.get_node("HotspotEncounter").pressed.emit()
-	check(searches == 1, "single search signal without persistence")
+	check(searches.size() == 1, "single search signal without persistence")
 	scene.queue_free()
 	await frames()
 
@@ -74,7 +74,7 @@ func run() -> void:
 		await frames()
 		check(main.page == "battle", "search enters existing combat")
 		check(app.profile.campaign.encounter.get("id", "") == pending_id, "search retains encounter identity")
-		check(int(app.profile.campaign.exploration.stamina) == int(after_entry.campaign.exploration.stamina), "search does not charge entrance twice")
+		check(int(app.profile.campaign.exploration.value) == int(after_entry.campaign.exploration.stamina), "search does not charge entrance twice")
 	app.response_timer.stop()
 	main.queue_free()
 	await frames()
