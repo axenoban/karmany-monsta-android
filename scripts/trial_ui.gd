@@ -21,6 +21,7 @@ var combat_busy:= false
 const CombatTransitionScreen = preload("res://scripts/combat_transition_screen.gd")
 const Stage = preload("res://scripts/trial_stage.gd")
 const Locations = preload("res://scripts/location_visuals.gd")
+const JadeUI = preload("res://scripts/jade_ui.gd")
 var mode:= "battle"
 var column: VBoxContainer
 var message: Label
@@ -52,6 +53,8 @@ func _label(text: String, font_size: int = 24) -> Label:
 func _button(text: String, action: Callable, disabled: bool = false) -> Button:
 	var button:= Button.new()
 	button.text = text
+	preload("res://scripts/adventure_theme.gd").decorate(button)
+	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	button.custom_minimum_size.y = 58
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.disabled = disabled or App.load_failed
@@ -96,13 +99,16 @@ func _build() -> void :
 	var title:= _label("COMBATE · Turno %d" % int(App.profile.campaign.encounter.get("round", 1)) if mode == "battle" else ProgressRules.region(App.profile.campaign.get("route", {}).get("selected", "jade")).name.to_upper() + " · Exploración", 26)
 	if mode == "battle" and App.profile.campaign.encounter.has("regional") and App.profile.campaign.encounter.get("phase") in ["capture", "captured", "escaped"]: title.text = "VÍNCULO · EL LIBRO"
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	header.add_child(_button("Volver", func(): back_requested.emit()))
 	header.add_child(title)
 	if mode == "battle":
 		header.add_child(_button("Opciones", _options_menu))
 	elif mode in ["map", "exploration"]: header.add_child(_button("Opciones", _map_options))
 	else: header.add_child(_button("Mapa", func(): navigate.emit("jade_play")))
-	header.get_child(1).size_flags_horizontal = Control.SIZE_SHRINK_END
-	header.add_child(_button("Volver", func(): back_requested.emit()))
+	header.get_child(0).autowrap_mode = TextServer.AUTOWRAP_OFF
+	header.get_child(2).autowrap_mode = TextServer.AUTOWRAP_OFF
+	header.get_child(0).size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	header.get_child(2).size_flags_horizontal = Control.SIZE_SHRINK_END
 	if mode != "intro": _help_in(column, mode)
 	if mode in ["intro", "map", "exploration"]:
 		_world()
@@ -117,13 +123,14 @@ func _stage(stage_mode: String, dead_player: bool = false, dead_enemy: bool = fa
 	var stage:= Stage.new()
 	stage.mode = stage_mode
 	stage.draw_background = stage_mode != "battle"
+	stage.show_trainers = stage_mode != "battle"
 	stage.player_defeated = dead_player
 	stage.enemy_defeated = dead_enemy
 	if stage_mode == "battle":
 		stage.background_id = Locations.background_for(App.profile.campaign)
 		stage.ally_species = App.profile.campaign.encounter.get("ally_species", "zephyr")
 		stage.enemy_species = App.profile.campaign.encounter.get("enemy_species", "tanugami")
-	stage.custom_minimum_size = Vector2(0, 130 if stage_mode == "battle" and App.profile.campaign.encounter.get("phase") in ["capture", "captured", "escaped", "defeat", "retreated"] else 170)
+	stage.custom_minimum_size = Vector2(0, 130 if stage_mode == "battle" and App.profile.campaign.encounter.get("phase") in ["capture", "captured", "escaped", "defeat", "retreated"] else 140)
 	stage.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	column.add_child(stage)
 	if stage_mode == "battle" and App.pending_transition.is_empty() and App.consume_animation(App.profile.campaign.encounter):
@@ -175,6 +182,7 @@ func _world() -> void :
 			if active: _open_encounter()
 			else: _rivals()))
 		points.add_child(_button("Regiones", _regions))
+		points.add_child(_button("Equipo", func(): navigate.emit("team")))
 
 func _act(operation: String, id: String, revision: int, target_id: String = "") -> void :
 	if binding_busy or combat_busy: return
@@ -254,11 +262,12 @@ func _battle() -> void :
 				if tactical and chosen == "insignia" and (Catalog.action(state.ally_species, "insignia").has("grant_boost") or Catalog.action(state.ally_species, "insignia").has("relay_boost")): _support(state, revision)
 				else: _act("karmany", chosen, revision), not reason.is_empty()))
 			var technique_button:= actions.get_child(actions.get_child_count() - 1) as Button
-			technique_button.modulate = Color("e2c9ff") if id == "insignia" else (Color("a9e8ff") if id == "guardia" else Color("bdffe3"))
+			technique_button.theme_type_variation = "JadePrimary" if id == "golpe" else "Button"
 			if tactical: actions.get_child(actions.get_child_count() - 1).tooltip_text = Catalog.action(state.ally_species, id).description + (" " + reason if not reason.is_empty() else "")
 		var secondary:= HBoxContainer.new()
 		column.add_child(secondary)
 		secondary.add_child(_button("Entrenador", _trainer_menu))
+		secondary.add_child(_button("Detalles", _details))
 		if tactical: secondary.add_child(_button("Equipo", _team_menu))
 		if state.enemy_pending and not App.response_error.is_empty():
 			secondary.add_child(_button("Reintentar respuesta", App.retry_enemy_response))
@@ -355,6 +364,7 @@ func _support(state: Dictionary, revision: int) -> void :
 	dialog.popup_centered(Vector2i(580, 300))
 
 func _details() -> void :
+	_dismiss("OptionsMenu")
 	if get_node_or_null("CombatDetails") != null: return
 	var dialog:= Details.new()
 	if not dialog.setup(App.profile.campaign.encounter, App.profile.settings.large_text):
@@ -368,10 +378,9 @@ func _continue_route(encounter_id: String, revision: int) -> void :
 	else: _notice()
 
 func _health_bar(parent: HBoxContainer, id: String, caption: String, hp: int, maximum: int) -> void :
-	var box:= VBoxContainer.new()
-	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	parent.add_child(box)
-	box.add_child(_label("%s · %d/%d PS" % [caption, hp, maximum], 23))
+	var box := JadeUI.panel(parent)
+	box.get_parent().add_theme_stylebox_override("panel", preload("res://scripts/adventure_theme.gd").box(Color("103c34"), Color("638b76"), 8))
+	box.add_child(_label("%s · %d/%d PS" % [caption, hp, maximum], 20))
 	var bar:= ProgressBar.new()
 	bar.name = id
 	bar.max_value = maximum
@@ -423,7 +432,7 @@ func _trainer_menu() -> void :
 	if not model.restore(App.profile.campaign.encounter): return
 	var state: Dictionary = model.state
 	if state.loadout.is_empty():
-		var hint:= _label("Sin resonancias equipadas. Puedes actuar con tu Karmany.")
+		var hint:= _label("Sin resonancias equipadas. Actúa con tu Karmany.")
 		hint.name = "TrainerHint"
 		content.add_child(hint)
 	for id in state.loadout:

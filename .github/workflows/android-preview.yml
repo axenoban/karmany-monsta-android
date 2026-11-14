@@ -2,7 +2,7 @@ name: Android Preview
 
 on:
   pull_request:
-    branches: [main, dev/karmany-core]
+    branches: [main, dev/karmany-core, docs/documento-maestro-android]
   workflow_dispatch:
     inputs:
       ui_review:
@@ -92,6 +92,12 @@ jobs:
           python3 ci/check_log.py build/r11.log
           xvfb-run -a godot --rendering-method gl_compatibility --audio-driver Dummy --path . --script tests/r11_ui_tests.gd 2>&1 | tee build/r11-ui.log
           python3 ci/check_log.py build/r11-ui.log
+      - name: Validate Jade nocturno layouts and touch details
+        run: |
+          set -o pipefail
+          xvfb-run -a godot --rendering-method gl_compatibility --audio-driver Dummy --path . --script tests/jade_ui_tests.gd -- --allow-ui-review 2>&1 | tee build/jade-visual.log
+          python3 ci/check_log.py build/jade-visual.log
+          python3 -m zipfile -c build/ui-review.zip build/jade-review
       - name: Validate latest action display
         run: |
           set -o pipefail
@@ -214,7 +220,7 @@ jobs:
           if ! command -v xvfb-run >/dev/null; then sudo apt-get update -qq && sudo apt-get install -y xvfb; fi
           xvfb-run -a godot --audio-driver Dummy --path . --script tests/render_smoke.gd -- --allow-ui-review 2>&1 | tee build/ui.log
           python3 ci/check_log.py build/ui.log
-          python3 -m zipfile -c build/ui-review.zip build/screenshots
+          python3 -m zipfile -c build/ui-review.zip build/screenshots build/jade-review
       - name: Upload APK and diagnostic logs
         if: always()
         uses: actions/upload-artifact@v4
@@ -248,5 +254,5 @@ jobs:
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" "${ASSETS[@]}" --clobber
           else
-            gh release create "$TAG" "${ASSETS[@]}" --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Candidata R1.1 0.24.0: navegación Atrás contextual y laboratorio QA aislado. Guardados compatibles y regresiones completas. Pendiente prueba física; no integrada a dev."
+            gh release create "$TAG" "${ASSETS[@]}" --target "$BUILD_COMMIT" --prerelease --title "Android Preview ${BUILD_NUMBER}" --notes "Candidata Jade nocturno 0.25.0: sistema visual propio, nuevas composiciones y detalles táctiles. Basada en R1.1; pendiente validación física. No integrada a dev."
           fi
