@@ -4,7 +4,7 @@ signal dismissed
 
 var content: VBoxContainer
 var tabs: TabContainer
-var _shell: PanelContainer
+var _shell: Panel
 var _large := false
 var _closing := false
 var _status: Label
@@ -22,7 +22,9 @@ func setup(caption: String, large_text: bool = false) -> void:
 	add_child(scrim)
 	scrim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
-	_shell = PanelContainer.new()
+	# Panel (no PanelContainer) no expande su rectangulo por el minimum_size
+	# de las pestañas; el contenido largo se desplaza dentro del scroll.
+	_shell = Panel.new()
 	_shell.name = "PanelSurface"
 	_shell.mouse_filter = Control.MOUSE_FILTER_STOP
 	var style := StyleBoxFlat.new()
@@ -35,6 +37,12 @@ func setup(caption: String, large_text: bool = false) -> void:
 	add_child(_shell)
 
 	var vertical := VBoxContainer.new()
+	vertical.name = "PanelLayout"
+	vertical.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	vertical.offset_left = 14.0
+	vertical.offset_right = -14.0
+	vertical.offset_top = 14.0
+	vertical.offset_bottom = -14.0
 	vertical.add_theme_constant_override("separation", 10)
 	_shell.add_child(vertical)
 	var heading := HBoxContainer.new()
@@ -53,6 +61,8 @@ func setup(caption: String, large_text: bool = false) -> void:
 	vertical.add_child(line)
 	var scroll := ScrollContainer.new()
 	scroll.name = "PanelScroll"
+	scroll.custom_minimum_size = Vector2.ZERO
+	scroll.clip_contents = true
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	vertical.add_child(scroll)
