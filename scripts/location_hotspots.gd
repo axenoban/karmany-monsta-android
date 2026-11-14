@@ -3,7 +3,7 @@ extends Control
 signal inspected(description: String)
 signal encounter_requested
 
-const Theme = preload("res://scripts/adventure_theme.gd")
+const AdventureTheme = preload("res://scripts/adventure_theme.gd")
 
 var environment := ""
 var description := ""
@@ -50,7 +50,7 @@ func _add_hotspot(id: String, caption: String, center: Vector2, action: Callable
 	spot.tooltip_text = caption
 	spot.add_theme_font_size_override("font_size", 23 if large_text else 20)
 	spot.custom_minimum_size.y = 60
-	Theme.decorate(spot)
+	AdventureTheme.decorate(spot)
 	if id == "HotspotEncounter":
 		spot.theme_type_variation = "JadePrimary"
 	spot.pressed.connect(action)
