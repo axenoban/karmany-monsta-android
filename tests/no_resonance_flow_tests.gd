@@ -46,7 +46,7 @@ func _run() -> void:
 		_check(overlay != null and overlay.tabs == null, "empty trainer opens light overlay, large=%s" % large)
 		overlay.close_panel()
 		await process_frame
-		_button(main, "Opciones").pressed.emit()
+		_button(main, "Menú").pressed.emit()
 		await process_frame
 		var finish := _button(main, "Abandonar")
 		_check(finish.get_global_rect().end.y < 690 and finish.size.y >= 58, "retreat remains accessible inside options, large=%s" % large)
