@@ -1,5 +1,17 @@
 # ESTADO VIVO · Roadmap de Karmany Monsta (Chat + Work)
 
+## Kit Jade Nocturno · Cristal vivo 02 · recursos en revisión · 14/11/2026
+
+Nueva rama **feature/jade-cristal-vivo-kit**, basada exclusivamente en feature/jade-nocturno@2591d0538d05b594b713a7a8aac32a6ec6b64deb. Entrega 401 SVG originales parametrizados (53 familias y 21 guías), en docs/diseno/jade-nocturno/imagenes, más script reproductor y registro. Corregidos símbolos propios en acciones Golpe / Protección / Insignia y navegación Equipo / Libro / Bestiario. 805 controles estructurales locales correctos y aserciones de semántica para botones, sin ejecución de tests Godot ni prueba física nueva.
+
+**ESTADO:** solo propuesta de recursos. No aprobados por separado; ni Preview46 ni PR23 quedan aprobados aquí. No se cambia lógica, export, guardados, canon, ni assets activos. dev/karmany-core y main permanecen sin cambios; PR21/22/23 pendientes y no se integran.
+
+SIGUIENTE PASO: revisar con el creador el lenguaje visual del kit maestro; corregir los componentes que no alcancen la fidelidad gráfica aprobada antes de integrar de forma incremental. RESPONSABLE: CHAT (revisión de propuesta); WORK será escritor de implementación posterior solo tras autorización de aprobación visual.
+
+INSTRUCCIÓN PARA CONTINUAR: «Revisa la rama feature/jade-cristal-vivo-kit y el manifiesto en docs/diseno/jade-nocturno/imagenes/cristal-vivo-02/. Valida primero botones, marcos, paneles, iconos y estados frente al concepto Cristal vivo 02. No integrar dev/main ni alterar reglas, guardados ni APK; espera aprobación visual explícita para trasladar recursos a Godot».
+
+
+
 ## Jade nocturno · revisión artística y archivo de diseños · 14/11/2026
 
 El creador considera insuficiente la fidelidad visual de Preview46 respecto al concepto elegido y solicita registrar el inventario/manual antes de generar los diseños. Preview46 sigue siendo una primera adaptación técnica, sin aprobación artística final. No integrar por esta petición documental.

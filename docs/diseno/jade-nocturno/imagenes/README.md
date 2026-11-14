@@ -28,3 +28,7 @@ Conservar originales y editables; no guardar cachés, temporales ni renders dupl
 
 ## Primera referencia
 jn-referencia-estilo-v001.png es la imagen adjunta aportada por Axe el14/11/2026. Su dirección Jade nocturno fue elegida; no otorga aprobación individual de componentes ni cambia el canon.
+
+## Propuesta 02: Cristal vivo
+
+Se han incorporado 401 fuentes SVG a las cuatro carpetas `propuestas/cristal-vivo-02/svg/`. Los archivos siguen siendo propuestas sin aprobación individual; consulta [el README del paquete](cristal-vivo-02/README.md) y el [manifiesto](cristal-vivo-02/manifiesto.csv). No se han movido a `assets/ui`.
