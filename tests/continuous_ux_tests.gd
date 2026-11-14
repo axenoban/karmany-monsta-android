@@ -69,6 +69,8 @@ func _run() -> void:
 	check(Flow.step(app.profile.campaign) == "victory", "victory checkpoint persisted")
 	var earned: Dictionary = app.profile.campaign.progression.last_reward.duplicate(true)
 	var wins := int(app.profile.campaign.victories)
+	# Aísla el avance de checkpoint de la cinematografía de entrada, que se prueba aparte.
+	app.pending_transition = {}
 	main._show("battle")
 	await process_frame
 	trial = main.get_node("Page").get_child(0).get_child(1)
