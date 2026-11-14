@@ -1,5 +1,5 @@
 # Karmany Monsta Android · Plan director de experiencia (BORRADOR)
-**Versión:** 0.9 · 14 de noviembre de 2026 (D-26 en estudio: sello consumible para vínculo, economía e intentos sin aprobar)  
+**Versión:** 0.10 · 14 de noviembre de 2026 (D-26: sello normal priorizado y sello premium reservado como hipótesis futura)  
 **Estado:** dirección de producto parcialmente definida y diagnósticos técnicos verificados; **NO aprobado como implementación ni modificación canónica**.  
 **Objeto:** definir la experiencia objetivo antes de continuar desarrollando gameplay, interfaces o animaciones. Las propuestas de esta versión NO constituyen reglas nuevas.
 
@@ -922,3 +922,47 @@ El motor existente \`CaptureSession.MAX_ATTEMPTS = 3\` y \`TacticalEncounter.sta
 **Primero resolver:** ¿S1 (sello único) o S2 (múltiples categorías)? Después L1/L2 (límite por encuentro). Una vez decidido, volver a Q2 T1/T2 y Q3 F1/F2/F3, además de existencias iniciales y fuentes de reposición. Antes de codificar se requiere acuerdo completo sobre compatibilidad de guardados y confirmación de implementación.
 
 **Protección:** documentación en PR26, únicamente; PR27/Preview73 no se considera aprobada. No tocar gameplay, \`data/\`, \`dev\` o \`main\`.
+
+
+## 26. D-26A — Sello normal primero; sello premium de pago solo como IDEA FUTURA
+
+**Declaración del creador (14/11/2026):** «podríamos mantener el sello de vínculo normal, y uno premium para aquellas personas que se quedan sin sellos normales y están dispuestos a pagar por no dejar escapar al karmany, podríamos ponerlo como idea a futuro si aún no consideras implementarlo».
+
+### 26.1 Alcance de la decisión y propuesta de producto
+
+- **Dirección preferida para el primer sistema:** centrar la captura en un **Sello de Vínculo normal**, vinculado al Libro. El nombre es **provisional** hasta la confirmación canónica; se debe definir stock inicial, fuentes de obtención, relación con el límite de intentos y economía antes de implementarlo.
+- **Sello de Vínculo premium:** **idea de monetización registrada expresamente para una fase futura**, no aprobada como objeto del juego, ni como compra integrada, ni como oferta emergente durante un combate. El objetivo planteado es poder adquirir consumibles cuando se agota el saldo normal; no se ha fijado precio, moneda, canal, paquete, rareza, porcentaje ni posibilidad de uso.
+- El **Libro**, no el consumible, mantiene de momento el control de elegibilidad/rareza y las probabilidades ya aprobadas en \`data/book_levels.json\`. Si el premium altera tasa o elegibilidad se trataría de un **cambio canónico de balance independiente**.
+- **D-24 y D-25 siguen vigentes:** cada intento válido consume una acción del Karmany, con posible respuesta rival al fallar; un vínculo exitoso da captura única, victoria, XP y avance correspondientes. El carácter comprado del consumible no cambia esa garantía.
+- No interpretar esta propuesta como aprobación de compras con dinero real, anuncios, tienda, pases, precios o mecanismos comerciales: todos requieren autorización específica y análisis del producto.
+
+### 26.2 Evaluación objetiva de monetización
+
+| Factor | Valor potencial | Riesgo que exige mitigación |
+|---|---|---|
+| Escasez de sellos normales | Recompensas de juego significativas y posibilidad de una compra opcional futura | Bloquear el bucle central de colección para forzar pagos o abandono |
+| Pago al agotarse los sellos en un encuentro raro | Satisface una necesidad inmediata del jugador; monetización contextual | **Presión de compra/FOMO** al temer perder al Karmany; especial riesgo de percepción abusiva y mala retención |
+| Premium con **misma probabilidad** que sello normal | Conserva la progresión del Libro y evita salto directo de tasa por pago | Comprar más consumibles aumenta los **intentos disponibles** y la probabilidad acumulada de capturar si no hay otro límite |
+| Premium con **probabilidad superior** | Mayor valor aparente | Ventaja de pago sobre el juego y sobre las mejoras del Libro, balance de PvE/colección y eventuales modos comparativos |
+| Límite de intentos por encuentro | Limita compra hasta capturar y preserva tensión | Definir L1/L2 primero; el premium **no debe resetear ni eludir automáticamente** un límite por rival/encuentro |
+
+**Recomendación (no decisión del creador):** si se estudia una tienda real en el futuro, el premium debería distinguirse **por método de adquisición/conveniencia**, no por tasa de éxito ni por rarezas, y en caso de aprobar L1 **nunca añadir oportunidades por encima del mismo límite**. La progresión del Libro permanece alcanzable jugando. No activar ofertas forzosas, cuentas regresivas, bloqueo falso de opciones ni confirmación automática de pago cuando un salvaje está por escapar.
+
+**Importante:** «mismo porcentaje por intento» **no equivale a «sin ventaja»**. Un jugador que compra stock adicional puede intentar vincular más veces en más encuentros. Esa ventaja de comodidad/tiempo y la percepción pay-to-win deben evaluarse con métricas y con el contexto competitivo del juego; no afirmar equilibrio sin pruebas.
+
+### 26.3 Diseño de primera fase recomendado (sin código)
+
+1. **Prototipo solo con sello normal**, adquirido por una fuente jugable renovable y verificable (todavía sin cantidades ni porcentajes). Usar el Libro mejorado como fuente de probabilidades y de permiso de rareza.
+2. Resolver **L1 vs L2**, T1 vs T2 y F1/F2/F3, además de cuánto stock se guarda y cómo recuperarlo al cerrar una app durante la pelea.
+3. Instrumentar en QA local/analítica consentida, si se decide, frecuencia de agotamiento, encuentros perdidos, progreso de colección y tiempo medio de reposición; no utilizar escasez artificial como presión.
+4. **Reevaluar el premium en una fase comercial posterior** solo con una vía gratuita funcional, balance probado y contrato independiente de pagos, compras reversibles/reembolsos, fallos de red, sin duplicación del inventario y reglas de plataforma aplicables. No hace falta diseñar la pasarela de cobros ahora.
+
+### 26.4 Decisiones diferidas y criterios de aceptación futura
+
+- **No decidido:** si el premium se adquiere con dinero real, divisa premium ganable o alguna otra vía; no asumir cuenta de cobro, equivalencia monetaria ni monetización autorizada.
+- **No decidido:** si el premium puede usarse durante un combate en curso después de agotar normales, o solo puede comprarse/administrarse desde una tienda fuera del encuentro; el segundo reduce presión comercial y complejidad de transacción.
+- **No decidido:** tipos de sello, posible paquete, precios, probabilidad, límite por encuentro, rarezas y agotamiento en finales dobles.
+- **No decidido:** cómo se muestran inventario normal/premium y reposición al jugador sin sobrecargar el HUD minimizado (D-21).
+- **Prueba contractual futura:** no cobrar o gastar dos veces por toques simultáneos, desconexión y cierre de app. Compras realizadas no deben desaparecer ante error de persistencia. Ningún premio/captura se duplica; ninguna compra eleva el máximo de intentos/rareza por accidente.
+
+**Estado:** idea premium **APARCADA / NO IMPLEMENTAR EN ESTE BLOQUE**. Este registro no convierte el sello normal ni la economía propuesta en contenido canónico implementable; conserva la dirección del creador y evita que se diseñe la tienda antes de probar el núcleo de juego. **PR26 documental solamente; PR27, dev y main sin modificaciones.**
