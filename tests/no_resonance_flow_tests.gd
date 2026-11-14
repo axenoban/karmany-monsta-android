@@ -42,7 +42,9 @@ func _run() -> void:
 		await process_frame
 		var hint: Label = trial.find_child("TrainerHint", true, false)
 		_check(hint.size.x > 500 and hint.size.y < 80, "empty-loadout menu hint wraps horizontally, large=%s" % large)
-		trial.get_node("TrainerMenu").get_ok_button().pressed.emit()
+		var overlay := trial.get_node("CombatContextPanel")
+		_check(overlay != null and overlay.tabs == null, "empty trainer opens light overlay, large=%s" % large)
+		overlay.close_panel()
 		await process_frame
 		_button(main, "Opciones").pressed.emit()
 		await process_frame
