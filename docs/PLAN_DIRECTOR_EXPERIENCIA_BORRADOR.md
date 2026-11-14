@@ -1,5 +1,5 @@
 # Karmany Monsta Android · Plan director de experiencia (BORRADOR)
-**Versión:** 0.3 · 14 de noviembre de 2026 (rondas 1 y 2; diagnóstico de navegación y composición, decisión de ronda 3 sobre fricción)  
+**Versión:** 0.4 · 14 de noviembre de 2026 (dirección de combate por panel, composición y flujos documentados)  
 **Estado:** dirección de producto parcialmente definida y diagnósticos técnicos verificados; **NO aprobado como implementación ni modificación canónica**.  
 **Objeto:** definir la experiencia objetivo antes de continuar desarrollando gameplay, interfaces o animaciones. Las propuestas de esta versión NO constituyen reglas nuevas.
 
@@ -108,6 +108,7 @@ Los bloques de ejecución se redefinirán en unidades medianas tras las decision
 | D-16 | Ayuda | **Sección de ayuda en menú principal y Opciones** | Sin botón persistente ni ventanas automáticas de explicación dentro de gameplay; preservar acceso a información necesaria |
 | D-17 | Continuidad UX | **Mayor fluidez entre diferentes vistas** | Auditar transiciones, continuidad visual, cantidad de pasos y regreso sin pérdida de contexto |
 | D-18 | Prioridad de navegación (ronda 3 parcial) | **Ambas: demasiadas pantallas/ventanas y cambios visuales bruscos** | Atacar simultáneamente la fragmentación de tareas y la discontinuidad visual; no se reduce a añadir Tween |
+| D-19 | Navegación de combate (ronda 3) | **Panel sobre el combate** para Equipo, Entrenador y Detalles | La escena sigue de fondo mientras se consulta; las decisiones de juego conservan validaciones y efectos actuales |
 
 La ronda 2 no aprobó ningún cambio de código, cambios de reglas o sustitución del arte. No confundir dirección de diseño con especificación implementable.
 
@@ -257,10 +258,10 @@ No mantener todo el equipo, mapa y combate como nodos activos invisibles por def
 
 ## 14. Decisiones pendientes y puerta de cierre
 
-**Confirmado:** dirección de las rondas 1–2; redibujo conservando identidad; comparación de técnicas de animación; ayuda bajo demanda desde Inicio y Opciones; doble prioridad en navegación (reducir pasos y brusquedad).
+**Confirmado:** dirección de las rondas 1–2; redibujo conservando identidad; comparación de técnicas de animación; ayuda bajo demanda desde Inicio y Opciones; doble prioridad en navegación (reducir pasos y brusquedad); **D-19: panel superpuesto al combate para Equipo/Entrenador/Detalles**.
 
 **Aún requieren decisión/validación:**
-1. ¿Presentar Equipo/Entrenador/Detalles como panel sobre escena o navegación completa en determinadas operaciones? Un prototipo con teléfono y texto grande debe validar la alternativa.
+1. **RESUELTO D-19:** Equipo, Entrenador y Detalles durante combate se consultarán en **panel superpuesto** (no navegación a pantalla completa). Pendiente validar dimensiones, desplazamiento, legibilidad y ubicación exacta mediante maqueta/prueba real.
 2. ¿Compactar automáticamente resultados rutinarios o permitir modo resumen/expandido? La elección de vincular debe permanecer explícita.
 3. ¿Un shell B parcial aporta mejora respecto a A suficiente para justificar complejidad? La recomendación no es autorización.
 4. Elegir personaje, fondos, escala y técnica final de animación por comparación; **sprites actuales no reemplazados**.
@@ -269,6 +270,214 @@ No mantener todo el equipo, mapa y combate como nodos activos invisibles por def
 
 **No cerrar el Plan Director ni iniciar cambios ejecutables** hasta contar con diseño/prototipos o autorización específica. No tocar `main`, `dev/karmany-core`, PR21–25, arte, gameplay, validadores ni guardados durante este trabajo documental. Los criterios numéricos de tiempo/FPS dependerán de mediciones y hardware.
 
-**SIGUIENTE PASO:** revisión con el creador de paneles contextuales y resumen de resultados; luego ilustrar comparativamente los dos patrones de flujo sobre una misma escena (maqueta no ejecutable) y plan de validación de animaciones.  
+**SIGUIENTE PASO:** paneles contextuales ya elegidos por el creador; revisar maqueta y flujo especificado en las secciones 15–19, contrastarlo en capturas/dispositivo y decidir tratamiento de resultados; después comparar animaciones.  
 **RESPONSABLE:** CHAT documenta/proyecta alternativas; creador aprueba arquitectura y cambios de UX; implementación solo en fase expresamente autorizada.
-**INSTRUCCIÓN PARA CONTINUAR:** Lee `docs/PLAN_DIRECTOR_EXPERIENCIA_BORRADOR.md` en `feature/plan-director-experiencia-juego` y PR26; verifica GitHub real, documentación maestra y PR21–25. D-18 indica reducir fricción de pantallas y cambios bruscos de forma conjunta. No modificar sistemas ni publicar una APK hasta autorización.
+**INSTRUCCIÓN PARA CONTINUAR:** Lee `docs/PLAN_DIRECTOR_EXPERIENCIA_BORRADOR.md` en `feature/plan-director-experiencia-juego` y PR26; verifica GitHub real, documentación maestra y PR21–25. D-18 prioriza reducir pasos y cambios bruscos; D-19 fija Equipo/Entrenador/Detalles como panel sobre combate. Revisar especificación de la sección 15 y su validación antes de pedir autorización de implementación. No modificar sistemas ni publicar una APK.
+
+
+## 15. Decisión aprobada D-19: consulta de combate en panel sobre la escena
+
+**Fuente:** respuesta expresa del creador el 14/11/2026: «Para el Plan Director ... elijo la navegación de combate: Panel sobre el combate. Desarrolla una propuesta detallada de composición y flujo de pantallas; actualiza el borrador sin implementar todavía». El mensaje se repitió sin cambiar el sentido: se registra como **una sola decisión**.
+
+**Aceptado en términos de diseño:** en el combate las consultas **Entrenador, Equipo y Detalles** deben abrir un panel superpuesto, manteniendo visible una parte del combate. No se requiere salir a otras rutas ni abrir tres ventanas nativas diferentes para estas operaciones. La vista del mundo y la identidad de criaturas conservan prioridad.
+
+**No aprobado todavía:** proporciones definitivas del HUD, ubicación lateral/inferior, duración de transiciones, material gráfico, estructura de nodos, modalidad de las confirmaciones, rediseño de menús fuera del combate ni implementación.
+
+### 15.1 Evidencia técnica actual y límites
+
+- En \`scripts/trial_ui.gd::_battle()\` se muestran PS de ambos contendientes, \`Stage\`, texto de última acción, tres acciones principales y botones Entrenador/Detalles/Equipo. \`_trainer_menu()\` y \`_team_menu()\` usan ventanas \`AcceptDialog\`; \`_details()\` crea una ventana \`CombatDetails\` con pestañas.
+- \`CombatDetails.setup()\` depende de \`combat_readout.gd\` y separa Activos, Equipo, Técnicas y Resonancias. Es una vista de solo lectura. Su contenido es candidato a reutilización, NO a duplicar la fórmula de estadísticas en UI.
+- \`_support()\` también solicita elegir destinatario para ciertas Insignias. Su función real afecta al turno cuando el jugador **confirma la habilidad**, no al abrir el selector. No inventar un nuevo costo por usar el panel.
+- \`_act()\` delega en \`App.trial_action()\`; la validez depende de \`encounter.revision\` y del estado actual. No ejecutar una acción con una revisión capturada antes de una respuesta rival o cambio de fase.
+- \`main.gd::_back()\` cierra primero ventanas modales; \`NavigationHistory\` conserva rutas, no instancias de nodos. Los paneles en el mismo combate deberán cerrarse localmente, **antes** de consumir una entrada del historial. Conservar prioridad de confirmaciones/animaciones vigente.
+- **Precisión de auditoría:** \`main.gd::_playable()\` oculta la cabecera global al pasar a \`TrialUI\`; por tanto **no se ha demostrado que existan dos cabeceras visibles simultáneamente durante el combate**. El trabajo busca consistencia y espacio aprovechado, no reparar un solapamiento inexistente.
+- \`AftermathScreen\` y \`BindingStage\` son fases especiales con controles/animaciones propios: D-19 **no autoriza** comprimir, omitir ni modificar las decisiones de victoria, XP y vínculo.
+
+### 15.2 Composición base de combate — wireframe textual para maqueta (NO dimensiones aprobadas)
+
+\`\`\`text
+┌────────────────────────── CABECERA DISCRETA ──────────────────────────┐
+│ [Volver]  Ubicación / Combate · Turno actual              [Opciones] │
+├────────────────────────────── HUD ────────────────────────────────────┤
+│ [Karmany activo · Nivel · PS ●──────]  [Rival · Nivel · PS ●──────]  │
+├────────────────────────── ESCENARIO DOMINANTE ────────────────────────┤
+│                                                                      │
+│      [Criatura aliada animada]         [Criatura rival animada]      │
+│                   efectos / feedback breve de acción                │
+│                                                                      │
+├────────────────────────── ACCIONES PRINCIPALES ───────────────────────┤
+│           [Golpe]           [Protección]           [Insignia]         │
+├────────────────────────── CONSULTAS RÁPIDAS ─────────────────────────┤
+│              [Entrenador]       [Equipo]       [Detalles]            │
+└──────────────────────────────────────────────────────────────────────┘
+\`\`\`
+
+Las tres etiquetas de acción representan sus **definiciones reales** del catálogo; no autorizan renombrar técnicas individuales. El turno, nombres, PS y estado de acciones serán datos vivos, nunca valores incrustados en ilustraciones. La última acción se mostrará como una franja/caption temporal con acceso al historial informativo existente si lo hay; no inventar historial nuevo.
+
+**Propuesta de equilibrio visual a probar:** el escenario debe conservar la mayor área utilizable. En 1280×720 horizontal, estudiar un panel lateral que ocupe aproximadamente **un tercio** y deje los contendientes reconocibles; en 960×540 o con texto grande, replegar en un panel inferior o más ancho con área de lectura desplazable. Estos números son **hipótesis de diseño**, no restricciones aprobadas. El criterio real es legibilidad/targets táctiles y animaciones a escala real.
+
+### 15.3 Cuando se abre un panel
+
+\`\`\`text
+┌──────────────────────────── CONTEXTO COMBATE ────────────────────────┐
+│ [Volver]       Turno / PS actuales                         [Opciones]│
+│                                                                      │
+│    ESCENARIO VISIBLE                ┌── PANEL CONTEXTUAL ────────────┐│
+│    Aliado ↔ Rival                   │  Entrenador | Equipo | Detalles ││
+│    (sin cambiar de ruta)            │  título · Cerrar              ││
+│                                     │  CONTENIDO DESPLAZABLE        ││
+│                                     │  acciones o lectura actual    ││
+│                                     │  motivos de bloqueo          ││
+│                                     └───────────────────────────────┘│
+│  Acciones principales: protegidas mientras panel monopoliza foco    │
+└──────────────────────────────────────────────────────────────────────┘
+\`\`\`
+
+El fondo visible es **referencia contextual, no una segunda superficie activa**. Mientras un panel interactivo está abierto, bloquear pulsaciones sobre botones subyacentes para impedir ataques accidentales. Los indicadores esenciales del turno siguen visibles o accesibles en el propio panel. No basar seguridad en oscurecer el escenario, ni esconder datos por transparencia extrema.
+
+- **Panel lateral**: preferencia a comparar en horizontal amplio; apertura corta desde borde, sin desplazar los personajes bruscamente fuera del escenario.
+- **Panel inferior**: variante responsiva para altura/ancho limitados; queda una porción de criaturas y PS visibles; contenido con scroll independiente y botones decisivos siempre visibles.
+- **Un panel a la vez**: abrir Equipo mientras está Entrenador sustituye su contenido sin apilar ventanas. Cerrar devuelve foco a botón iniciador o al HUD sensato; al cambiar de fase, cerrar el panel.
+- **No cerrar por tocar fuera** cuando exista selección o confirmación que pueda perder intención; utilizar Cerrar/Atrás. Tocar fuera puede descartar una consulta puramente informativa **solo si se valida con usuarios**.
+- **Ayuda**: no aparece como barra permanente; sección desde Inicio y Opciones conforme a D-16. No obligar a abrir Ayuda para saber quién está activo, cuánto HP tiene o qué acción puede elegir.
+
+### 15.4 Contrato de los tres paneles
+
+| Panel | Consulta visible | Acciones permitidas con semántica actual | Acciones NO permitidas |
+|---|---|---|---|
+| **Entrenador** | Resonancias actualmente equipadas, efectos reales, recarga, disponibilidad y causa de bloqueo | Seleccionar una resonancia válida, ejecutándola mediante la acción del motor; cierre posterior y actualización de turno | Equipar/comprar resonancias en combate, saltar orden de turnos, usar más de una acción permitida |
+| **Equipo** | Hasta tres individuos actuales, activo/reservas, PS por miembro, nivel, efectos de combate y disponibilidad | Elegir una reserva viva para cambio voluntario; mantener confirmación y acción consumida; ante caída del activo, usar flujo existente de **reemplazo obligatorio** sin ataque extra | Agregar/retirar miembros de colección durante combate, cambiar miembro caído, transferir curación/recargas |
+| **Detalles** | Resumen real de Activos, Equipo, Técnicas y Resonancias, con estadísticas/recargas actuales obtenidas de \`CombatReadout\` | Solo leer/desplazar/cambiar pestaña; cerrar sin alterar partida | Ejecutar técnicas, comprar puntos, registrar turnos, persistir un estado de «visto» |
+
+**Selector de objetivo de Insignia:** puede reutilizar el **mismo contenedor de panel** como subestado \`target_selection\` para acciones que ya requieren destinatario. Elegir destinatario sigue siendo paso previo a ejecutar \`App.trial_action\`. No cambiar el efecto ni el requisito del objetivo; permitir cancelar sin gasto. Esto es recomendación de UX y queda pendiente de confirmación en la prueba.
+
+**Confirmaciones:** cambiar Karmany o abandonar combate conserva confirmaciones actuales cuando existan; estas se tratan como diálogos críticos separados y con prioridad sobre el panel. No usar el panel de Detalles para mutaciones.
+
+### 15.5 Contrato de estados y eventos propuesto — interfaz, no cambios de reglas
+
+Estados UI efímeros (no en \`profile.json\`): \`closed\`, \`trainer\`, \`team\`, \`details\`, \`target_selection\`. Un bloqueo crítico de captura/transición/recompensa/confirmación **prevalece** y puede cerrar o suspender la consulta; no se mantiene un overlay con acciones pendientes durante una cinemática.
+
+| Evento | Antes | Después en UI | Efecto en motor |
+|---|---|---|---|
+| Pulsar Entrenador/Equipo/Detalles | \`closed\` | Panel correspondiente | **Ninguno** |
+| Cambiar pestaña Detalles o desplazar | \`details\` | Misma consulta | **Ninguno** |
+| Cambiar de pestaña rápida | Otro panel abierto | Nuevo contenido, sin apilar ventanas | **Ninguno** |
+| Cerrar / botón Atrás Android | Panel abierto, sin confirmación superior | \`closed\`; foco al combate | **Ninguno** |
+| Pulsar resonancia disponible | \`trainer\` | Validación del motor y resultado actual de acción | La **acción vigente** del entrenador, una vez |
+| Elegir destinatario de Insignia | \`target_selection\` | Confirmar ejecución de habilidad | La **acción vigente** del Karmany, una vez |
+| Cambiar voluntariamente de Karmany | \`team\` | Diálogo de confirmación existente; luego nuevo estado | Consumir acción y permitir respuesta rival conforme a modelo |
+| Rival pasa a responder o revisión cambia | Cualquier panel | Refrescar lectura; deshabilitar acciones obsoletas; cerrar si escena crítica | **Ninguna acción adicional** |
+| Animación crítica / fin de encuentro | Cualquier panel | Cierre de consulta, capa crítica visible | Flujo ya registrado por motor |
+| Nueva partida, cambio QA/perfil, teardown | Cualquier panel | Descartar nodo UI/sus señales/foco | No reusar IDs/revisión anteriores |
+
+El panel muestra un **snapshot fresco** del encuentro. Cada CTA de acción debe reconsultar \`App.profile.campaign.encounter\`, verificar \`encounter.id\`, \`revision\`, \`phase\`, \`App.ui_epoch\`, disponibilidad y transición pendiente **antes** de delegar una única acción; un clic sobre botón obsoleto se rechaza con explicación, no se interpreta como acción para otro turno. Evitar conexiones/closures hacia nodos liberados, procesos y temporizadores que sobrevivan al desmontaje.
+
+### 15.6 Regreso, gestos y superposición segura
+
+Orden de prioridad **de diseño** al pulsar Volver/Atrás, manteniendo las reglas actuales de escenarios especiales:
+
+1. Si hay una **confirmación o diálogo crítico abierto**, resolver/cerrar ese diálogo conforme a su contrato, sin ejecutar la acción por cancelación.
+2. Si hay una animación cinematográfica/transición con tratamiento de Atrás aprobado, respetar el método de finalizar/omitir ya existente; no duplicar callbacks.
+3. Si hay **panel de consulta**, cerrarlo y permanecer exactamente en el mismo \`encounter.id\`, turno, fase y modo.
+4. Si no hay panel ni diálogo, invocar \`NavigationHistory\` y la semántica contextual R1.1 existente.
+5. Distinguir explícitamente **Volver**, **Ir al mapa** (conserva encuentro pendiente cuando el contrato lo permite) y **Abandonar pelea** (termina sin recompensa): no son sinónimos.
+
+Al abrir/cerrar consultas no escribir guardados, no sumar historial de páginas, no ejecutar \`App.trial_action\`, no consumir \`stamina\`, no cambiar HP/XP, no lanzar efectos SFX de combate ni producir un segundo \`CombatTransitionScreen\`. Pueden sonar respuestas de UI si ya están admitidas por preferencias, sin fingir acciones de combate.
+
+### 15.7 Flujo principal de combate y casos excepcionales (propuesta)
+
+\`\`\`text
+Mapa → Localización → Exploración → Encuentro → COMBATE
+                                                 │
+                                   ┌─────────────┼─────────────┐
+                                   ▼             ▼             ▼
+                              Entrenador        Equipo       Detalles
+                                   │             │             │
+                             consultar/usar  consultar/     solo leer
+                              resonancia      cambiar         │
+                                   │             │             │
+                                   └─────────────┼─────────────┘
+                                                 ▼
+                                        MISMO COMBATE
+                                     turno y estado real
+                                                 │
+                                 ┌───────────────┼───────────────┐
+                                 ▼               ▼               ▼
+                         Respuesta rival     Reemplazo         Victoria
+                                 │           si cae activo        │
+                                 └───────────────┤               ▼
+                                                 │          XP → Libro
+                                                 └───────────────┘
+\`\`\`
+
+**Caso 1 — Consultar sin actuar:** tocar Detalles → Equipo → cerrar → Golpe: sigue el mismo turno, no hay gasto intermedio.
+
+**Caso 2 — Acción del entrenador:** abrir Entrenador, elegir resonancia disponible (opcional), cerrar/regresar a acciones del Karmany según modelo y después respuesta enemiga. No permitir ejecutar otra resonancia si el turno ya la consumió.
+
+**Caso 3 — Cambio voluntario:** Equipo → reserva viva → confirmar → acción de cambio y respuesta rival, conservando estadísticas/efectos/recargas del miembro activo y del entrante. Cancelar confirma **cero** cambios.
+
+**Caso 4 — Reemplazo por derrota:** cuando cae el activo y hay reserva, interfaz ofrece el reemplazo obligatorio actual. No exigir una selección de Equipo por la misma ruta del cambio voluntario ni cobrar respuesta rival gratuita.
+
+**Caso 5 — Insignia dirigida:** Insignia → selector de destinatario (solo cuando lo exige el efecto real) → acción o cancelar. Un botón del panel no debe ejecutar la habilidad dos veces.
+
+**Caso 6 — Respuesta rival pendiente:** los paneles informativos pueden abrirse si no interfieren con la animación, pero cualquier CTA obsoleto o acción prohibida queda deshabilitada. Si la respuesta llega mientras el panel se lee, refrescar lectura o cerrar con feedback; nunca dejar un turno antiguo seleccionable.
+
+**Caso 7 — Victoria y vínculo:** cerrar consultas, ejecutar la secuencia vigente de resultado/XP/Libro, sin repetir recibos ni cambiar límites de intento. La futura compactación de resultados **no** está aprobada por D-19.
+
+**Caso 8 — Pausa, reinicio y Atrás:** abrir panel, ir a segundo plano o cerrar app; al reabrir se restaura encuentro real según guardado, sin requerir restaurar el panel. Atrás Android cierra primero la consulta, no abandona combate por accidente.
+
+## 16. Contrato técnico candidato y límites arquitectónicos (NO autorizado para implementación)
+
+**Acoplamiento previsto sin romper R1.1:** un componente presentacional \`CombatContextPanel\` (nombre de trabajo) y un controlador local de \`TrialUI\` que gestione el subestado UI. Mantener \`App\` como fuente única de verdad y \`NavigationHistory\` para cambios **entre** páginas; no introducir los paneles en el historial de rutas. Mantener \`CombatReadout\` y demás modelos como fuente para valores y restricciones, sin cálculos independientes de daño, costo, cooldown, rareza o probabilidad.
+
+- **Deuda técnica que evitar:** hacer persistentes todas las vistas de \`main.gd\`, crear tres diálogos vivos ocultos, mantener conexiones a \`TrialUI\` tras \`queue_free()\`, guardar \`Control\` en perfil, o crear un nuevo sistema de turnos para la UI.
+- **Transición y movimiento reducido:** animación sutil de entrada/salida de panel, reversible e interrumpible; \`reduced_motion\` evita desplazamientos y no retrasa acceso. Duración y easing se decidirán mediante prueba.
+- **Diseño Jade:** usar la dirección Jade Nocturno acordada y comparar las piezas propuestas de PR24; no convertir SVG todavía no aprobados en arte final. Paneles y botones deben tener estados presionado, seleccionado, foco, deshabilitado y mensajes de error claros.
+- **Escalado y legibilidad:** diseño horizontal de referencia 1280×720 y 960×540, más teléfono real, texto grande. Contenido de Detalles puede crecer; scroll interno dentro de safe area, foco de teclado y blancos táctiles medidos en Android. Si un panel tapara absolutamente toda la escena para leer texto grande, registrar esa contradicción para decidir excepción.
+- **Overlays críticos:** ventana de confirmación de cambio/abandono por encima del panel; durante transición de encuentro o vínculo prevalece la capa cinematográfica. El cierre no debe dejar un cuadro sin dueño.
+- **Testing y protocolo:** validar primero una maqueta estática de composición; después, si el creador autoriza la implementación, una rama feature aislada con pruebas del motor y UI; PR y APK con número/commit/CI verificados, sin merge hasta aprobación física.
+
+### 16.1 Superficies que cambiarían, si se autoriza
+
+\`scripts/trial_ui.gd\` (entrada y presentación); \`scripts/combat_details.gd\` (separar datos de ventana, sin duplicar \`combat_readout.gd\`); nuevo control de panel; \`scripts/main.gd\` únicamente si se requiere la prioridad Atrás/UI compartida; \`scripts/context_help.gd\` y menús Inicio/Opciones en **otro bloque** para D-16. Evitar tocar \`tactical_encounter.gd\`, \`app.gd\`, \`save_store.gd\`, \`data/*.json\`, \`aftermath_flow.gd\` o \`binding_stage.gd\` sin necesidad técnica demostrable. Definir tests separados antes de cualquier edición.
+
+## 17. Matriz de aceptación futura para D-19
+
+| ID | Prueba requerida | Resultado esperado |
+|---|---|---|
+| UX-CB-01 | Abrir/cerrar cada uno de los tres paneles repetidamente | Misma escena y turno; ausencia de ventanas adicionales y movimientos abruptos |
+| UX-CB-02 | Encadenar Entrenador → Equipo → Detalles → cerrar | Un solo panel visible; retorno directo al combate; sin entradas nuevas en \`NavigationHistory\` |
+| UX-CB-03 | Ver Detalles y cancelar Equipo/Entrenador | \`campaign.encounter\`, XP, stamina, vínculo y guardados invariantes |
+| UX-CB-04 | Resonancia opcional y luego habilidad Karmany | Solo las acciones permitidas; misma respuesta rival que antes |
+| UX-CB-05 | Seleccionar cambio de equipo y cancelar/confirmar | Cancelar no hace nada; confirmar una vez consume acción, rival responde; relevo obligatorio distinto |
+| UX-CB-06 | Insignia con selección de objetivo | Cerrar/cancelar no consume acción; selección válida dispara una sola transacción |
+| UX-CB-07 | Cambiar \`revision\` mientras panel abierto o recibir respuesta rival | Botones obsoletos invalidados; ningún doble turno o nodo huérfano |
+| UX-CB-08 | Abrir panel, pulsar Atrás Android, luego Volver | Primer Atrás cierra panel; siguiente ejecuta navegación contextual segura |
+| UX-CB-09 | Animación crítica de ataque/victoria/vínculo y panel | Nunca solapamiento inseguro ni duplicación de efectos/XP/captura |
+| UX-CB-10 | Texto grande y movimiento reducido en 1280×720, 960×540 y teléfono | Contenido desplazable, botones legibles y focus correcto; sin tapar permanentemente toda la escena |
+| UX-CB-11 | 20 ciclos de apertura/cierre, pausa/reanudación y cambio QA | Sin crecimiento no acotado de nodos/señales/audio; guardado normal intacto y QA aislado |
+| UX-CB-12 | Test usuario novato en un encuentro | Diferencia acción de consulta y acción de combate; sabe cómo cerrar panel sin salir de pelea |
+
+**La evidencia exigida:** capturas/video de la escena con cada panel, métricas de toques y cambio de modo, logs de regresión y confirmación física en Android. El prototipo sin implementación no certifica ninguno de estos tests.
+
+## 18. Paquetes de implementación futura (solo planificación)
+
+**Bloque UX-C1 — HUD y consultas de combate**: aproximadamente 8–12 componentes comportamentales/visuales coherentes: shell de combate, cabecera/PS, escena, barra acciones, barra consultas, panel, encabezado/cierre, pestañas de Detalles, listado Equipo, lista Entrenador, bloqueo/foco y respuesta de estado. Separar activos gráficos de cambios lógicos cuando proceda. Estimar después de maqueta.
+
+**Bloque UX-C2 — Continuidad entre exploración y combate:** transición corta, ficha local contextual, eliminación de pasos intermedios, Back y conservación de escenario en el flujo. Solo una vez revisado el contrato con la historia principal y la variante Jade1; no ampliar nuevas rutas aquí.
+
+**Bloque UX-C3 — Resultados y vínculo:** evaluar compactación de victoria/XP/vínculo como propuesta aparte. Los pasos actuales no se fusionan sin decisión del creador.
+
+**Bloque UX-C4 — Ayuda de consulta manual:** Inicio + Opciones, migración no destructiva de \`first_session\` cuando corresponda. Eliminar tutorial automático requiere pruebas de aprendizaje, no solo ocultar \`ContextHelp\`.
+
+El orden de producción se ajustará a la validación previa del lenguaje visual y de animación (D-09/D-10) y a la reconciliación de PR21–25. Estos paquetes son **propuestas de trabajo**, no fases autorizadas.
+
+## 19. Decisiones todavía abiertas después de D-19
+
+- **Resueltos:** la consulta de Equipo/Entrenador/Detalles ocurre **encima del combate**, con escena visible; intención de reducir pasos y brusquedad; ayudas manuales en Inicio/Opciones; demás elecciones generales de rondas 1 y 2.
+- **Para maqueta visual:** panel lateral frente a inferior según resolución; cantidad exacta de escenario visible; barra superior/inferior y manejo de texto grande.
+- **Para futura autorización técnica:** A simplificada vs B parcial, transición específica y lifecycle; no exigir una escena completamente persistente por la sola preferencia de panel.
+- **Para decisión separada:** compactación victoria/XP/Libro; animación híbrida vs otras técnicas; rutas secundarias, encuentros variables, comportamiento rival, stamina, contenido narrativo y arte de personajes.
+- **Límite:** ningún fragmento de esta v0.4 modifica reglas, datos, estado del repositorio integrado, gameplay ni UI; el PR26 sigue documental y draft.
+
+**SIGUIENTE PASO:** revisar con el creador la maqueta para el panel superpuesto, observar en vídeo/capturas el combate real, y seleccionar la siguiente decisión sobre resultados antes de autorizar un primer bloque implementable.
