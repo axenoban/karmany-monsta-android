@@ -76,8 +76,15 @@ func run() -> void:
 		check(app.profile.campaign.encounter.get("id", "") == pending_id, "search retains encounter identity")
 		check(int(app.profile.campaign.exploration.value) == int(after_entry.campaign.exploration.value), "search does not charge entrance twice")
 	app.response_timer.stop()
+	# El test termina inmediatamente después de entrar en combate.
+	# Detener las voces evita dejar playbacks de enter.wav vivos al cerrar Godot.
+	for audio in get_nodes_in_group("effect_audio"):
+		audio.stop()
 	main.queue_free()
 	await frames()
 	check(app.exit_qa(), "normal profile restored without QA leakage")
+	for audio in get_nodes_in_group("effect_audio"):
+		audio.stop()
+	await create_timer(0.2).timeout
 	print("JADE HOTSPOTS: %d checks, %d failures" % [checks, failures])
 	quit(1 if failures else 0)
