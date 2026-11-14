@@ -183,7 +183,7 @@ func _run() -> void:
 	await app.response_timer.timeout
 	await process_frame
 	check(hp_bar(main, "AllyHP").value == 74 and app.profile.campaign.encounter.player_hp == 74, "player PS bar updates on incoming damage")
-	find_button(main.get_node("Page"), "Opciones").pressed.emit()
+	find_button(main.get_node("Page"), "Menú").pressed.emit()
 	await process_frame
 	check(find_button(main.get_node("Page"), "Volver al mapa") != null and find_button(main.get_node("Page"), "Abandonar pelea") != null, "options menu exposes navigation and withdrawal")
 	find_button(main.get_node("Page"), "Volver al mapa").pressed.emit()
@@ -191,7 +191,7 @@ func _run() -> void:
 	check(main.page == "jade_play" and app.profile.campaign.encounter.phase == "battle", "map navigation keeps encounter")
 	find_button(main.get_node("Page"), "Retomar encuentro").pressed.emit()
 	await process_frame
-	find_button(main.get_node("Page"), "Opciones").pressed.emit()
+	find_button(main.get_node("Page"), "Menú").pressed.emit()
 	await process_frame
 	find_button(main.get_node("Page"), "Abandonar pelea").pressed.emit()
 	await process_frame
@@ -200,7 +200,7 @@ func _run() -> void:
 	confirmations[0].get_cancel_button().pressed.emit()
 	await process_frame
 	check(app.profile.campaign.encounter.phase == "battle", "cancelled withdrawal preserves fight")
-	find_button(main.get_node("Page"), "Opciones").pressed.emit()
+	find_button(main.get_node("Page"), "Menú").pressed.emit()
 	await process_frame
 	find_button(main.get_node("Page"), "Abandonar pelea").pressed.emit()
 	await process_frame
