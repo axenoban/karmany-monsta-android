@@ -1,5 +1,5 @@
 # Karmany Monsta Android · Plan director de experiencia (BORRADOR)
-**Versión:** 0.15 · 14 de noviembre de 2026 (D-31: un único resultado de botín aleatorio por victoria; contratos de objetivos, inventario y fabricación)  
+**Versión:** 0.16 · 14 de noviembre de 2026 (D-32: objetivos únicos de historia/secundarios; prueba UX sin alterar mecánicas)  
 **Estado:** decisiones D-24/D-25/D-27/D-28/D-29/D-30/D-31 documentadas; **botín exclusivo por victoria aprobado**, con objetivos como fuente adicional; porcentajes nuevos, inventario, fabricación, equipo pasivo, pausa y técnicas aún por definir; **NO aprobado como implementación**.  
 **Objeto:** definir la experiencia objetivo antes de continuar desarrollando gameplay, interfaces o animaciones. Las propuestas de esta versión NO constituyen reglas nuevas.
 
@@ -1365,3 +1365,49 @@ Los siguientes son **límites de arquitectura y preguntas de producto**, no obje
 **QA previsto (no ejecutado):** una victoria entrega 0 o 1 premio aleatorio según tabla aprobada; recuperador mantiene 20%, premios exclusivos; final doble no duplica tirada; recompensa por objetivo se conserva aparte; guardar/reabrir no vuelve a sortear; caída del segundo rival cierra la única victoria; inventario nunca negativo; recetas inválidas no consumen; equipo sin receta ni pasivo definido no aparece en partida; guardados antiguos mantienen recuperadores.
 
 **Prioridad de decisión para el próximo turno:** política de **objetivos únicos/repetibles/mixtos** y necesidad de fuente renovable de sellos. Después decidir la opción «sin botín» y pesos de la tabla sin tocar el 20% existente. **Solo documento PR26; sin implementación, recompensas nuevas, datos, misiones, recetas, equipamiento ni APK.**
+
+
+## 34. D-32 — Objetivos ÚNICOS y fase de prueba de UX jugable (DECIDIDO / INTEGRACIÓN NO AUTORIZADA)
+
+**Fuente expresa (14/11/2026):** «objetivos únicos, según historia y misiones secundarias como capturar Karmany específico o derrotar x cantidad de veces x Karmany y así, esas cosas se pueden implementar fácilmente, quiero enfocarme en mejorar el diseño UX del jugador, quiero una prueba de APK con estas mejoras».
+
+### 34.1 Contrato de objetivos aprobado como dirección
+
+- **Solo objetivos únicos** ligados al relato principal o a misiones secundarias canónicas. No añadir misiones repetibles, diarias o semanales por inferencia. Esta decisión **reemplaza** la recomendación histórica de objetivos mixtos en §33.
+- **Tipos de condición admitidos en principio** por el creador: vincular/capturar una especie determinada; vencer una especie determinada un número de veces. Son **plantillas de criterio**, no misiones concretas aprobadas. La identidad de especie, el número objetivo, la localización, el prerequisito, el texto de historia, el NPC (si lo hubiera), los premios y el orden narrativo siguen SIN DEFINIR.
+- Cada objetivo tiene identidad estable, ámbito de contabilización, progreso acumulado validado, estado de completado y **recompensa única reclamable una sola vez**. No duplicar capturas/derrotas por revisiones UI, cerrar app, repetir un recibo o mover el equipo.
+- Las derrotas/acciones previas a aceptar la misión, los Karmany vinculados históricamente y la repetición de un encuentro necesitan **política canónica de retroactividad** por tipo de objetivo. No imponer silenciosamente «desde que se aceptó» o «todo el historial».
+- Los **premios por objetivo** son independientes de la tabla de **una sola recompensa de botín aleatorio por victoria** (D-31). No convertir un premio de objetivo en segunda tirada de botín.
+- No se han aprobado objetivos con especies concretas ni contadores, objetos de fabricación, pasivos, materiales o recompensas. **No activar misiones vacías ni inventar contenido placeholder como si fuera historia real.**
+
+**Riesgo económico:** objetivos únicos se agotan. La adquisición de sellos depende entonces de botín aleatorio/repeticiones de etapa y puede sufrir malas rachas. Antes de monetizar un premium, comprobar mediante simulaciones que exista reposición gratuita practicable; no cambiar la decisión a objetivos repetibles sin nueva autorización.
+
+### 34.2 Alcance de la prueba UX Android solicitada
+
+**Autorizado por el creador:** preparar **APK candidata de experiencia del jugador**, a partir de la línea PR27/Preview73 (aún no integrada), priorizando composición del HUD de combate, menús contextuales, densidad visual, claridad de botones, vuelta/navegación y mantenimiento de funcionalidades aprobadas. Aislar en rama \`feature/*\` y PR draft para Android. Proteger tests y fuentes canónicas.
+
+**Separación estricta entre lo visible y lo todavía no implementable:**
+- **Sí en prototipo UX seguro:** reubicar opciones de gestión y panel de detalles detrás de un acceso contextual sin eliminar técnicas reales; seguir mostrando golpes, Insignia, Equipo y Entrenador; menú claramente reversible y sin mutar acciones; legibilidad/tamaño de tap.
+- **No afirmar que esté en APK sin programarlo:** vínculo con rival vivo, XP P5 de captura, sellos, botín exclusivo, objetivos de historia, inventario general, fabricación, equipamiento pasivo del entrenador, venta premium. Son contratos o ideas documentados, no mecánicas de la Preview73.
+- **No crear un botón «Reiniciar combate» sin la decisión de semántica/stamina/guardados**. Si la interfaz se denomina «Pausa», debe suspender de verdad temporizador rival y no añadir turnos; hasta aprobar este contrato, una vista de **Menú de combate** sin falsa promesa de congelación es válida.
+- **El HUD actual tiene Guardia, Golpe e Insignia**. Mover Guardia a un submenú (sin retirarla del motor) preserva las 13 fichas y evita un cambio canónico encubierto.
+- **Ayuda** E5 existente y checkpoints de PR27 deben conservarse. No eliminar ayudas obligatorias de primera sesión sin UX/semántica de sustitución aprobada.
+- Crear/regresar una PR contra rama de desarrollo compatible que active CI APK, etiquetar explícitamente como **candidata para validación física**, nunca integrar en dev/main sin «prueba correcta».
+
+### 34.3 Módulos recomendados tras la candidata UX
+
+1. **Primer contrato de misiones únicas:** solo a partir de lista de objetivos/hitos aprobada por el creador, con especie, umbral, momento de aceptación y premio. Sin datos canónicos, la fase es documental.
+2. **Inventario/loot:** completar tabla exclusiva respetando recuperador 20 %, volumen de sellos y materiales; producto no puede mostrar objetos inexistentes.
+3. **Fabricación/pasivos:** después de materiales/recetas y matriz de efectos; no diseñar todas las especies a la vez.
+4. **Libro intra-combate:** implementar D-24/D-25/D-27/D-28/D-29 juntos, con capturas persistentes y migración verificada, no solo añadir botón.
+5. **UX de objetivos:** una vez existentes estados reales, mostrar metas, progreso y cobro sin asumir nombres ni cantidades.
+
+### 34.4 Aceptación y pruebas futuras
+
+- Menú/consultas no gastan turnos, no duplican ventanas y cierran con Atrás; pantalla de acciones real sigue habilitando Guardia/Insignia/Entrenador/Equipo y mostrando razones de bloqueo.
+- Menú no altera temporizador de respuesta rival ni se presenta como pausa real hasta contrato de suspensión.
+- En navegación retorno al mapa no cobra stamina ni descarta encuentro; abandonar conserva confirmación y bloqueo durante respuesta.
+- Texto grande, 1280×720, movimiento reducido, toques y regresiones PR27. Compilar con CI Godot/Android; comprobar estado y vincular el APK por **release real**, no inventar URL.
+- Los objetivos de ejemplo **no aparecen como misiones aceptadas/completables** sin contenido canónico.
+
+**Estado:** D-32 registrada en Plan Director; rama documental PR26 sigue draft; candidata UX separada de cambios canónicos, y ninguna aprobación física/integración implícita.
