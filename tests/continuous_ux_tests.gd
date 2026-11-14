@@ -21,6 +21,14 @@ func _clear() -> void:
 		if FileAccess.file_exists(PATH + suffix):
 			DirAccess.remove_absolute(PATH + suffix)
 
+func find_button(node: Node, caption: String) -> Button:
+	if node is Button and node.text == caption: return node
+	for child in node.get_children(true):
+		var candidate := find_button(child, caption)
+		if candidate != null: return candidate
+	return null
+
+
 func _run() -> void:
 	_clear()
 	root.size = Vector2i(1280, 720)
@@ -41,6 +49,28 @@ func _run() -> void:
 	await process_frame
 	var trial: Variant = main.get_node("Page").get_child(0).get_child(1)
 	var before: Dictionary = app.profile.duplicate(true)
+	# Player HUD is compact; canonical defense is still reachable from Táctica.
+	check(find_button(trial, "Menú") != null and find_button(trial, "Táctica") != null, "single combat menu and tactical sub-menu visible")
+	check(find_button(trial, "Detalles") == null, "details moved off primary battlefield")
+	check(find_button(trial, "Entrenador") != null and find_button(trial, "Equipo") != null, "trainer/team choices remain visible")
+	trial._guard_menu(app.profile.campaign.encounter, int(app.profile.campaign.encounter.revision))
+	await process_frame
+	check(trial.get_node_or_null("GuardMenu") != null, "defense remains accessible, not removed from canonical rules")
+	var guard := preload("res://scripts/combat_catalog.gd").action(app.profile.campaign.encounter.ally_species, "guardia").name
+	check(find_button(trial.get_node("GuardMenu"), guard) != null, "the real guard technique is offered")
+	main._back()
+	await process_frame
+	check(trial.get_node_or_null("GuardMenu") == null and app.profile == before, "Android Back dismisses tactics without playing a turn")
+	# Android Back on an active battle opens a reversible menu, not the map.
+	for help in get_tree().get_nodes_in_group("context_help"):
+		if help.is_visible_in_tree(): help.close_card()
+	main._back()
+	await process_frame
+	check(trial.get_node_or_null("OptionsMenu") != null and main.page == "battle" and app.profile == before, "Back opens battle menu without exiting or spending resources")
+	check(find_button(trial.get_node("OptionsMenu"), "Volver al combate") != null, "combat menu offers explicit resume")
+	main._back()
+	await process_frame
+	check(trial.get_node_or_null("OptionsMenu") == null and main.page == "battle", "Back closes the menu and returns to battle")
 	trial._details()
 	await process_frame
 	var panel: Variant = trial.get_node_or_null("CombatContextPanel")
