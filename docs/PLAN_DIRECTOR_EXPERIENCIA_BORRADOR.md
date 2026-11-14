@@ -1,5 +1,5 @@
 # Karmany Monsta Android · Plan director de experiencia (BORRADOR)
-**Versión:** 0.6 · 14 de noviembre de 2026 (retroalimentación física Preview73: HUD, pausa y propuesta de revisión canónica)  
+**Versión:** 0.7 · 14 de noviembre de 2026 (D-24: Libro consume acción del Karmany y abre resolución de victoria/XP)  
 **Estado:** dirección de producto parcialmente definida y diagnósticos técnicos verificados; **NO aprobado como implementación ni modificación canónica**.  
 **Objeto:** definir la experiencia objetivo antes de continuar desarrollando gameplay, interfaces o animaciones. Las propuestas de esta versión NO constituyen reglas nuevas.
 
@@ -667,6 +667,82 @@ Reutilizar \`ExperiencePanel\` y muestreo multinivel, \`AftermathFlow\` como fue
 
 **Validación mínima cuando se autorice:** no hay controles secundarios permanentes; Pausa/Reanudar sin pérdida del encuentro ni acción; Atrás Android prioriza panel/pausa antes de abandonar; reinicio/salida no explotan stamina; Libro nunca captura criatura debilitada si esa regla se aprueba; tiradas y recompensas únicas; finales dobles válidos; Sakuromushi y técnicas de todas las especies alineadas con el contrato; partidas históricas recuperables; accesibilidad móvil y arte claro.
 
-**Próximo punto de decisión necesario:** elegir **qué acción consume un intento de vínculo durante combate y qué respuesta tiene el rival si falla**. Es la primera regla que bloquea el motor; luego resolver éxito/XP y finales dobles. En paralelo, elegir el significado preciso de «Reiniciar» y «Salir» antes de añadir esos botones.
+**D-24 RESUELTO:** el creador decidió que intentar vínculo **consume la acción del Karmany** y que, ante fallo, **puede responder el rival**. Esta definición es de reglas, no autoriza codificación hasta cerrar resultados de éxito, tercero fallido, finales dobles y migraciones. Siguiente bloqueo: definir si el vínculo exitoso cuenta como victoria con XP y progresión. En paralelo, definir «Reiniciar» y «Salir» antes de añadir esos botones.
 
 **Nota de protección:** no marcar Preview73 como «prueba correcta» ni integrar PR27; el creador ha solicitado cambios adicionales. Esta v0.6 solo documenta hallazgos y conflictos, no implementa jugabilidad.
+
+
+## 23. D-24 — Acción de Libro consume el turno del Karmany (APROBADA COMO DIRECCIÓN DE REGLAS)
+
+**Fuente explícita (14/11/2026):** «Para el nuevo sistema de vínculo de Karmany Monsta Android elijo: A: consume la acción del Karmany y permite respuesta rival al fallar. Continúa definiendo las reglas pendientes sin implementarlas arbitrariamente».
+
+**Decisiones verificables que sí quedan cerradas:**
+1. El **Libro no es una acción extra**; intentar vínculo usa el cupo de **una acción del Karmany** en el turno compartido.
+2. Una resonancia del entrenador, si está disponible, puede utilizarse **antes** del intento, siguiendo el flujo automático ya vigente; el Libro no gasta el cupo de resonancia por defecto.
+3. Un intento de Libro **no puede convivir en el mismo turno** con Golpe, Insignia, Defensa/Guardia u otro ataque del Karmany. No se vuelve a habilitar el cupo si falla.
+4. Si el vínculo **falla y sigue existiendo combate con enemigo vivo**, la respuesta enemiga automática sigue siendo posible. No se conceden intentos gratuitos ni ataques extra por fallo.
+5. La intención D-22 se mantiene: **vincular es una decisión antes de derrotar al Karmany salvaje**, no después de ponerlo fuera de combate. La distinción entre «debilitado» como PS=0 y un posible umbral de PS bajo requiere aclaración antes de validar reglas exactas.
+6. La decisión de interfaz es mostrar Libro como acción táctica durante el combate, no como una pantalla obligatoria posterior a la victoria. El antiguo diseño D-20 de Libro destacado después de vencer queda **subordinado/pendiente de rediseño** para este cambio de reglas; un Libro cinematográfico después de capturar puede conservarse como **celebración**, pero no como nueva oportunidad de intento.
+
+**Importante:** aquí solo se aprueba **el gasto de cupo por intento y la respuesta rival ante fallo cuando corresponda**. No se han aprobado cambios de probabilidades, captura con PS bajo, agotamiento de intentos, premios por captura, nuevas técnicas ni persistencia.
+
+### 23.1 Flujo objetivo parcial (NO contrato ejecutable todavía)
+
+\`\`\`text
+TURNO DE JUGADOR / rival vivo y elegible
+    ├── Entrenador: resonancia opcional (si está disponible)
+    │
+    └── UNA elección del cupo Karmany:
+        ├── Golpe o técnica actualmente permitida → efectos de combate
+        ├── Cambio de Karmany → efecto de cambio vigente
+        └── Libro / vínculo → gastar cupo y un intento registrado
+             ├── fallo, enemigo sigue luchando → posible respuesta rival
+             ├── éxito → RESULTADO POR DEFINIR (victoria/XP/cierre)
+             └── tercer fallo → RESULTADO POR DEFINIR (escape/seguir)
+\`\`\`
+
+El concepto \`book_action\` es una etiqueta de diseño, **no una nueva acción del motor aprobada**, ni un cuarto propietario de turno. \`SharedCombatTurn\` distingue ya \`trainer\` y \`karmany\`; un intento debe ocupar exactamente \`karmany\`, sin llamar además a una técnica. En el motor actual \`TacticalEncounter.attempt_capture()\` solo funciona en fase \`capture\` posterior a enemigo HP=0, mientras \`TacticalEncounter.valid()\` prohíbe captura durante \`battle\`; \`CaptureSession.begin()\` exige un enemigo derrotado. Las tres invariantes y \`App.trial_action()\`/recompensas tendrían que rediseñarse **juntas** al implementar.
+
+### 23.2 Consecuencias técnicas y riesgos identificados
+
+| Dominio | Contrato actual verificado | Conflicto pendiente del nuevo Libro |
+|---|---|---|
+| Turno | \`SharedCombatTurn\` tiene cupos \`trainer\` y \`karmany\`; \`_finish_player()\` programa respuesta rival | Agotar cupo Karmany por captura fallida y permitir respuesta sin doble acción |
+| Elegibilidad | \`capture\` tras PS rival 0 | Intento con enemigo vivo y estado de Libro definido; criterio exacto para no elegible |
+| Resultado | Victoria/XP al último enemigo derrotado en \`App.trial_action()\` | Si se captura un enemigo vivo, ¿cuenta victoria y otorga XP? |
+| Intentos | \`CaptureSession\` máximo 3; tercer fallo \`escaped\` después de victoria | ¿Tercer fallo hace escapar al salvaje inmediatamente o se continúa peleando sin Libro? |
+| Final doble | Dos enemigos consecutivos; después de vencer al segundo se elige un derrotado | ¿En cuál de los dos se ofrece Libro? ¿Vincular antes altera el recorrido y selección única? |
+| Persistencia | \`capture\`/checkpoint \`AftermathFlow\` guardado entre intentos | Se necesita guardar intentos durante \`battle\` sin corromper guardados E2/Preview32 |
+| UI | PR27 integra victoria+XP y Libro posterior | El Libro será acción en combate; segundo momento podría ser presentación de resultado, no intento |
+
+**No reinterpretar automáticamente el tercer intento como respuesta rival**, ni el éxito como victoria, ni la captura como terminación del combate; son decisiones de reglas aún pendientes.
+
+### 23.3 Preguntas ordenadas para cerrar el contrato sin arbitrariedad
+
+**Q1 — resultado de captura exitosa (primera decisión necesaria):**
+- **A. Captura exitosa cuenta como victoria de ese encuentro**, acredita la XP/progreso y permite continuar; para finales dobles falta acordar tratamiento separado.
+- **B. Captura exitosa añade el Karmany pero no cuenta como victoria/progreso de la etapa**; la ruta puede exigir volver a vencer otro encuentro, con riesgo de experiencia frustrante.
+- **C. Victoria de captura y victoria de combate son estados diferenciados**; sus recompensas y avance necesitan una tabla canónica completa antes de programar.
+
+**Q2 — después del tercer intento fallido:** ¿el Karmany escapa, termina el encuentro y no hay victoria, o permanece vivo/combatiendo y el Libro queda bloqueado? Debe reconciliarse con D-24, respuesta rival y guardado.
+
+**Q3 — finales regionales de dos enemigos:** ¿solo se puede vincular a uno, y en qué momento, para que una captura temprana no evite/recompense indebidamente el segundo enemigo? No construir solución por inferencia.
+
+**Q4 — criterio de elegibilidad y porcentaje:** confirmar que «debilitado/derrotado» significa **0 PS** y no un umbral positivo. Conservar porcentajes del Libro hasta aprobación distinta; no asumir que menos PS aumenta el éxito.
+
+**Q5 — consecuencias de pausa:** si hay rival pendiente, definir Reanudar/Reiniciar/Salir sin cobrar stamina otra vez ni perder XP/turnos. D-21 no autoriza semántica por defecto.
+
+**Q6 — dos habilidades de Karmany:** Golpe + Ataque especial; falta matriz aprobada por especie para reemplazar Guardia/Insignia y transferir soporte a entrenador. No tocar E1/E2/Sakuromushi.
+
+### 23.4 Criterios de futura implementación (una vez aprobadas las respuestas)
+
+- Un solo intento por cupo Karmany; segundo toque rechazado por \`encounter.id\`, \`revision\`, \`turn_id\` y selección objetivo.
+- Resonancia opcional **primero** y Libro en lugar de técnica Karmany, sin permitir resonancia tardía.
+- Si falla y se continúa combatiendo, respuesta rival exactamente una vez; pausa/reanudación no cancela ni duplica esa respuesta.
+- PS 0 no presenta opción de Libro si así queda aprobado el criterio de debilitamiento.
+- Guardado de intento en el mismo flujo transaccional; fallos de escritura no consumen intentos ni acciones en RAM.
+- No conceder XP ni abrir siguiente localización sin regla de victoria expresamente aprobada.
+- Cierre/apertura y perfil QA conservan rival, HP, intentos, turno y respuestas pendientes.
+- Regresiones nuevas de finales dobles, victorias repetidas, migraciones y no duplicación de recompensas. No debilitar tests ya válidos: adaptar contratos solo con aprobación canónica explícita.
+
+**Estado de ejecución:** SOLO Plan Director v0.7. No cambios en PR27/Preview73, \`dev/karmany-core\` ni \`main\`. No crear APK de reglas en este punto. Primero seleccionar Q1 y continuar secuencialmente por Q2–Q6.
