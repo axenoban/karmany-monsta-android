@@ -447,7 +447,8 @@ func _trainer_menu() -> void :
 	var panel := _combat_panel("Entrenador · resonancias")
 	panel.add_text("La resonancia es opcional antes de actuar con el Karmany.", 20)
 	if state.loadout.is_empty():
-		panel.add_text("Sin resonancias equipadas. Actúa con tu Karmany.")
+		var hint := panel.add_text("Sin resonancias equipadas. Actúa con tu Karmany.")
+		hint.name = "TrainerHint"
 	for id in state.loadout:
 		var chosen: String = id
 		var reason: String = model.reason("trainer", chosen)
