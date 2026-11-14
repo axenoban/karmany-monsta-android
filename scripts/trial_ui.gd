@@ -355,10 +355,15 @@ func _combat_panel(caption: String) -> Control:
 	var panel := CombatPanel.new()
 	add_child(panel)
 	panel.setup(caption, App.profile.settings.large_text)
+	panel.set_meta("encounter_id", App.profile.campaign.encounter.get("id", ""))
+	panel.set_meta("profile_epoch", App.ui_epoch)
 	return panel
 
 func _panel_action(panel: Control, operation: String, id: String, revision: int, target_id: String = "") -> void:
-	if binding_busy or combat_busy: return
+	if binding_busy or combat_busy or not is_instance_valid(panel) or panel.is_queued_for_deletion(): return
+	if panel.get_meta("encounter_id", "") != App.profile.campaign.encounter.get("id", "") or panel.get_meta("profile_epoch", -1) != App.ui_epoch:
+		panel.set_notice("El encuentro cambió. Cierra este panel para continuar.")
+		return
 	if App.trial_action(operation, id, revision, target_id):
 		navigate.emit("battle")
 	else:
