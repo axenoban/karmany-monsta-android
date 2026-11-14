@@ -1,5 +1,5 @@
 # Karmany Monsta Android · Plan director de experiencia (BORRADOR)
-**Versión:** 0.7 · 14 de noviembre de 2026 (D-24: Libro consume acción del Karmany y abre resolución de victoria/XP)  
+**Versión:** 0.8 · 14 de noviembre de 2026 (D-25: vínculo exitoso concede victoria/XP/avance; finales dobles e intentos pendientes)  
 **Estado:** dirección de producto parcialmente definida y diagnósticos técnicos verificados; **NO aprobado como implementación ni modificación canónica**.  
 **Objeto:** definir la experiencia objetivo antes de continuar desarrollando gameplay, interfaces o animaciones. Las propuestas de esta versión NO constituyen reglas nuevas.
 
@@ -719,10 +719,8 @@ El concepto \`book_action\` es una etiqueta de diseño, **no una nueva acción d
 
 ### 23.3 Preguntas ordenadas para cerrar el contrato sin arbitrariedad
 
-**Q1 — resultado de captura exitosa (primera decisión necesaria):**
-- **A. Captura exitosa cuenta como victoria de ese encuentro**, acredita la XP/progreso y permite continuar; para finales dobles falta acordar tratamiento separado.
-- **B. Captura exitosa añade el Karmany pero no cuenta como victoria/progreso de la etapa**; la ruta puede exigir volver a vencer otro encuentro, con riesgo de experiencia frustrante.
-- **C. Victoria de captura y victoria de combate son estados diferenciados**; sus recompensas y avance necesitan una tabla canónica completa antes de programar.
+**Q1 — RESUELTO por D-25 (resultado de captura exitosa, regla general):**
+**El creador eligió A:** vínculo exitoso = resultado de victoria del encuentro, otorga la XP correspondiente y habilita el avance correspondiente; se añade una sola instancia vinculada. **Alcance no inferido:** una etapa con dos rivales sigue teniendo obligaciones propias. No se fija aún cuándo se consolida la victoria regional ni qué sucede si el otro rival sigue vivo. Las opciones B/C quedan descartadas para el caso general.
 
 **Q2 — después del tercer intento fallido:** ¿el Karmany escapa, termina el encuentro y no hay victoria, o permanece vivo/combatiendo y el Libro queda bloqueado? Debe reconciliarse con D-24, respuesta rival y guardado.
 
@@ -745,4 +743,101 @@ El concepto \`book_action\` es una etiqueta de diseño, **no una nueva acción d
 - Cierre/apertura y perfil QA conservan rival, HP, intentos, turno y respuestas pendientes.
 - Regresiones nuevas de finales dobles, victorias repetidas, migraciones y no duplicación de recompensas. No debilitar tests ya válidos: adaptar contratos solo con aprobación canónica explícita.
 
-**Estado de ejecución:** SOLO Plan Director v0.7. No cambios en PR27/Preview73, \`dev/karmany-core\` ni \`main\`. No crear APK de reglas en este punto. Primero seleccionar Q1 y continuar secuencialmente por Q2–Q6.
+**Estado de ejecución:** Plan Director v0.8. D-25 resuelve Q1 para encuentros simples, pero Q2–Q6 y la liquidación de encuentros dobles siguen abiertos. No cambios en PR27/Preview73, \`dev/karmany-core\` ni \`main\`; no crear APK de reglas hasta cerrar el contrato.
+
+
+## 24. D-25 — Vínculo exitoso equivale a victoria con XP y avance (DECISIÓN EXPRESA)
+
+**Fuente:** el creador el 14/11/2026: «si el vínculo tiene éxito, elijo la opción A. Registra la decisión en el Plan Director y continúa definiendo las reglas pendientes, especialmente finales dobles y tres intentos, sin implementar todavía».
+
+**Regla elegida para un encuentro individual:**
+- El **vínculo exitoso de un Karmany salvaje vivo** constituye una **victoria** del encuentro, no una salida sin premio ni un estado de progreso inferior a derrotarlo.
+- Se agrega **una instancia real del Karmany** y se conceden la **experiencia y el avance de ruta correspondientes**. Mantener la fuente de XP, los límites regionales, el bono real y las transacciones del juego; **no se autoriza un valor nuevo de XP, drop o porcentaje**.
+- Una victoria por vínculo y una victoria por daño del mismo encuentro **no se pueden contabilizar dos veces**. La captura exitosa sustituye la resolución de ese rival; no dispara una segunda victoria al cerrar la pantalla o al avanzar el checkpoint.
+- La acción de Libro que logra el éxito ya consumió la acción del Karmany (D-24); el resultado de captura no concede un ataque adicional ni una respuesta rival «póstuma» del individuo vinculado. El tratamiento del **otro** rival en finales dobles sigue abierto.
+- La acción solo se contempla en combate **antes de derrotar al salvaje** según la solicitud D-22. La especificación exacta de elegibilidad por PS/rareza sigue pendiente; las probabilidades vigentes del Libro se preservan hasta decisión distinta.
+
+**Límite semántico crítico:** «victoria y avance correspondientes» se refiere al encuentro cuya condición de victoria se haya completado. En el sistema actual, el final regional con **dos rivales consecutivos es un solo encuentro de ruta**; no convertir la captura del primero en victoria **de toda la etapa** sin aprobación explícita. D-25 NO resuelve cómo tratar el segundo rival ni la incorporación de una criatura si el resto del encuentro se pierde.
+
+### 24.1 Conciliación con el modelo actual (inspección de código)
+
+| Subsistema | Hecho comprobado | Cambio futuro necesario; no implementado |
+|---|---|---|
+| \`SharedCombatTurn\` | Tiene cupos de \`trainer\` y \`karmany\`, cerrados al actuar con Karmany | El Libro usa \`karmany\`, no un tercer cupo |
+| \`CaptureSession.begin()\` | Exige \`defeated=true\`, sesión \`offered\`, política de Libro válida | Permitir intento con enemigo vivo solo tras contrato canónico cerrado |
+| \`CaptureSession.attempt()\` | Hasta tres intentos, éxito \`captured\`, tercer fallo \`escaped\` | Determinar si \`escaped\` termina la pelea o únicamente el acceso al Libro |
+| \`TacticalEncounter._finish_player()\` | Cuando enemigo llega a 0 PS, presenta el siguiente o inicia \`capture\`; con enemigo vivo programa respuesta | Resolución alternativa por vínculo, sin simular falsamente HP=0 si aún estaba vivo |
+| \`TacticalEncounter.valid()\` | \`battle\` exige enemigo vivo y \`capture/captured/escaped\` exige enemigo HP=0 | Definir nuevas invariantes y validaciones que no invaliden partidas heredadas |
+| \`App.trial_action()\` | Victoria, XP, ruta y drop se guardan en transición \`battle → capture\`, captura se añade después | Al tener vínculo en \`battle\`, una sola transacción consistente debe conciliar victoria + captura + progreso |
+| \`AftermathFlow\` y PR27 | \`victory\`, \`experience\`, \`choose\`, \`duplicate\`, \`binding\` se presentaban tras derrotar rival | Libro se ofrece en batalla; después del éxito solo animación/resultado y XP, no un segundo intento |
+
+**Regla de protección:** no equiparar \`captured\` con \`capture\` en el antiguo motor sin rediseñar \`SaveStore.valid\`, \`JadeRoute.valid\`, checkpoints y fixture de reinicio. No editar archivos de gameplay en este PR.
+
+### 24.2 Finales con dos rivales — todavía NO hay regla aprobada
+
+**Contrato vigente:** dos enemigos consecutivos en una única etapa regional. El equipo aliado mantiene HP/efectos/recargas; después del segundo enemigo derrotado se otorga **una victoria/XP de etapa**, y se elige irrevocablemente **un solo rival derrotado** para un único vínculo de hasta tres intentos. Esto es incompatible con el nuevo requisito «capturar antes de derrotar».
+
+**Alternativas para decidir — ninguna se presume seleccionada:**
+
+| Diseño | Regla conceptual | Ventaja | Conflicto/riesgo |
+|---|---|---|---|
+| **F1 · Secuencial con vínculo único** (propuesta preferida para estudio) | En cada rival vivo, Libro puede ofrecerse si aún no se obtuvo ningún vínculo; capturarlo resuelve ese rival y da paso al siguiente, que debe derrotarse. Victoria/XP/avance regional **una vez al resolver ambos**. | Conserva dos enfrentamientos y máximo una captura. | Hay que decidir si la captura temprana se conserva en caso de derrota frente al segundo y cuándo se añade a colección. El éxito es victoria **del rival**, pero no de la etapa. |
+| **F2 · Libro solo ante el rival final** | Primero debe derrotarse al rival inicial; con el segundo vivo puede intentarse el vínculo, contando como victoria final. | Persistencia y balance más simples. | Niega la oportunidad de vincular al primer rival, distinta del sistema histórico que permitía elegir entre ambos. |
+| **F3 · Resolver uno y cerrar encuentro** | Un vínculo exitoso termina inmediatamente toda la etapa aunque quede otro rival. | Recorrido más corto. | Omite uno de los dos combates, cambia dificultad y recompensas; **no recomendado** sin rediseño explícito de finales. |
+
+**Preguntas inseparables de F1:** (i) ¿captura del primero disponible inmediatamente en colección o provisional hasta ganar la etapa? (ii) si se pierde contra el segundo, ¿se conserva la captura inicial y/o su XP? (iii) ¿los intentos se comparten entre los dos rivales (3 por encuentro) o son 3 por rival, aun cuando solo pueda vincularse uno? No asumir respuesta. **Recomendación de preservación del contrato:** estudiar límite **total de tres por encuentro** y un solo vínculo; aún no se aprueba para el sistema nuevo.
+
+### 24.3 Tres intentos mientras el rival está vivo — todavía NO resuelto
+
+El límite actual de \`CaptureSession.MAX_ATTEMPTS=3\` es un hecho implementado y aprobado del prototipo anterior. **Mantenerlo es el supuesto de mínima modificación**, pero su resultado terminal debe redefinirse para una pelea aún activa:
+
+| Resultado del intento | Lo ya definido | Lo pendiente |
+|---|---|---|
+| **Primero o segundo, fallido** | Consume **una acción del Karmany** y un intento; si continúa combate, el rival puede responder (D-24) | Si el salvaje cambia de fase o rival antes del próximo turno, determinar identidad/contadores del Libro |
+| **Tercero, fallido: T1** | Posible escape inmediato del salvaje y fin del encuentro **sin** victoria/XP | Cambia la condición de ruta y penaliza severamente al jugador; confirmar |
+| **Tercero, fallido: T2** | Posible continuación del combate con Libro bloqueado para el encuentro actual | Permite todavía ganar por daño, pero ya no vincularlo; qué pasa en final doble requiere decisión |
+| **Tercero, fallido: T3** | Posible fin del encuentro pero premio de combate parcial/diferenciado | Requiere nuevas recompensas; **no recomendar sin nuevo canon** |
+
+**Comparación:** T1 mantiene el significado histórico de \`escaped\` pero ahora **antes** de victoria; T2 conserva la posibilidad de progresar derrotando al rival, sin crear premios nuevos y sin regalar más intentos. Se propone **T2 para discusión**, no queda aprobada hasta respuesta del creador. «Puede responder al fallar» de D-24 implica que una respuesta enemiga no se omite arbitrariamente: con T2 se resuelve conforme al turno; con T1 no queda enemigo para responder por haber escapado.
+
+**Indefiniciones asociadas:**
+- ¿El límite de tres aplica al **encuentro entero** incluso si cambia el enemigo en un final doble? Contrato antiguo: tres por único vínculo después de ambos enemigos; no ampliar a tres por cada uno sin permiso.
+- ¿Cuándo se bloquea Libro si el rival llega a **0 PS**? Solicitud inicial del creador: no se captura tras derrota. El código antiguo ofrecía lo contrario. No usar un umbral de PS ni una escala de probabilidad ligada a PS sin decisión de diseño.
+- ¿Es posible intentar vínculo en una pelea no regional o con especie/rareza no elegible por Libro? Consultar \`BookCapturePolicy\` y la categoría; no mostrar CTA de vínculo habilitado por defecto.
+- ¿Se reinician los intentos al volver a una localización, al abandonar y reanudar, o en un encuentro nuevo con otro \`encounter.id\`? El contador durante una pelea activa debe persistir. No definir todavía políticas anti-reintento o coste extra.
+
+### 24.4 Tabla de premios y continuidad que sí es decidible frente a lo pendiente
+
+| Situación | Garantía confirmada | Estado o decisión aún abierta |
+|---|---|---|
+| Vínculo exitoso en combate de un solo rival | Victoria + XP vigente + avance + incorporación única | Presentación visual exacta, elegibilidad y reanudación |
+| Rival derrotado por daño sin vínculo previo | Victoria/XP/progreso según modelo actual | No ofrecer captura de enemigo a 0 PS conforme D-22, tras aprobación del contrato completo |
+| Fallo antes del tercero | Turno Karmany gastado; puede llegar una sola respuesta rival | Política concreta de contador y cambios entre rivales |
+| Tercer fallo | Ningún cuarto intento gratuito | T1 escape definitivo o T2 batalla sin Libro |
+| Doble encuentro, primer enemigo vinculado | No se debe conceder doble XP ni saltar el segundo por inferencia | F1/F2/F3; persistencia de captura temprana y regla de victoria del punto |
+| Victoria final tras resolver dos rivales | No duplicar premios, XP ni registro de punto | Cómo conviven enemigo derrotado y vínculo anterior; momento de consolidación |
+
+### 24.5 Escenarios de QA a preparar cuando cierre la decisión
+
+- **VX-01** Libro exitoso con un rival vivo: consume una acción, concede una victoria, XP/bono correctos, una captura, avance de ruta una vez.
+- **VX-02** Fallo de intento 1/2: una sola respuesta enemiga y contador persistente, sin XP ni victoria antes de resolver encuentro.
+- **VX-03** Tercer fallo: comprobar exactamente el resultado T1/T2 aprobado; jamás cuarto intento.
+- **VX-04** Rival cae a 0 PS por daño: acción Libro no habilitada, pero resultado de victoria sigue siendo correcto.
+- **VX-05** Doble rival con captura temprana: no saltar al segundo, no regalar HP/turno, preservar recursos y resolver derrota del equipo.
+- **VX-06** Doble rival que termina con captura del segundo: una sola victoria regional y XP correspondiente.
+- **VX-07** Dos toques de Libro simultáneos, respuesta rival pendiente y reinstancia UI: ningún intento, XP o vínculo duplicado.
+- **VX-08** Reinicio, pausa, cierre de app y guardados históricos E2/Preview32: estado válido, sin reinterpretar un enemigo vencido como vivo.
+- **VX-09** Sin elegibilidad por rareza o libro: no gastar turno ni provocar tirada al pulsar acción inválida.
+- **VX-10** Resultado final y animación omitida: el motor es fuente única de premios y el Libro no reaparece como una segunda opción de intento.
+
+### 24.6 Orden de decisiones y límites de autoridad
+
+**Cerrado por el creador:** D-24 (Libro consume acción Karmany, puede responder rival al fallar), **D-25 (un vínculo exitoso equivale a victoria, XP y avance correspondientes)**. Se mantiene D-21 como dirección de HUD/pause; D-23 dos acciones del Karmany es una solicitud pendiente de nueva matriz canónica.
+
+**Próximas decisiones, sin inferencia:**
+1. **Q2 / T1 vs T2:** tercer intento fallido con rival todavía vivo.
+2. **Q3 / F1 vs F2 vs F3:** final doble; para F1 decidir conservación del capturado si se pierde contra el segundo.
+3. Límite de tres intentos: total por encuentro/rival, y reglas de elegibilidad en PS 0.
+4. Pausa «Reiniciar» y «Salir», ruta de Detalles, y rediseño de habilidades por especie.
+
+**Restricción explícita:** implementación nueva de captura/XP requiere contrato aprobado para todos esos puntos, sin tocar fases estables ni degradar tests. Hasta entonces, solo documentación en PR26; PR27/Preview73 no aprobados; \`dev/karmany-core\` y \`main\` siguen sin modificaciones.
