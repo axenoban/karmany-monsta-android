@@ -3,10 +3,6 @@ extends SceneTree
 const Store = preload("res://scripts/save_store.gd")
 const Tactical = preload("res://scripts/tactical_encounter.gd")
 const Flow = preload("res://scripts/aftermath_flow.gd")
-const MainView = preload("res://scripts/main.gd")
-const TrialUI = preload("res://scripts/trial_ui.gd")
-const CombatPanel = preload("res://scripts/combat_context_panel.gd")
-const AftermathScreen = preload("res://scripts/aftermath_screen.gd")
 const PATH := "user://continuous-ux-test.json"
 var checks := 0
 var failures := 0
@@ -39,15 +35,15 @@ func _run() -> void:
 	check(app.start_route("jade_point_1"), "enter first Jade location")
 	var encounter_id: String = app.profile.campaign.encounter.id
 	check(app.discover_location(encounter_id), "discover fight without further stamina")
-	var main: MainView = load("res://scenes/main.tscn").instantiate() as MainView
+	var main: Variant = load("res://scenes/main.tscn").instantiate()
 	root.add_child(main)
 	main._show("battle")
 	await process_frame
-	var trial: TrialUI = main.get_node("Page").get_child(0).get_child(1) as TrialUI
+	var trial: Variant = main.get_node("Page").get_child(0).get_child(1)
 	var before: Dictionary = app.profile.duplicate(true)
 	trial._details()
 	await process_frame
-	var panel: CombatPanel = trial.get_node_or_null("CombatContextPanel") as CombatPanel
+	var panel: Variant = trial.get_node_or_null("CombatContextPanel")
 	check(panel != null and panel.tabs != null and panel.tabs.get_tab_count() == 4, "details show four tabs over same fight")
 	check(main.page == "battle" and before == app.profile, "read-only panel has no saved-game writes")
 	main._back()
@@ -78,7 +74,7 @@ func _run() -> void:
 	main._show("battle")
 	await process_frame
 	trial = main.get_node("Page").get_child(0).get_child(1)
-	var after: AftermathScreen = trial.aftermath_screen as AftermathScreen
+	var after: Variant = trial.aftermath_screen
 	check(after != null and after.stage == "victory", "single integrated result view")
 	check(after.find_child("IntegratedExperience", true, false) != null, "XP shown on victory view")
 	check(after.find_child("VictoryPortraits", true, false) != null, "combat context remains on result surface")
