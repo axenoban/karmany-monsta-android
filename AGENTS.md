@@ -60,3 +60,7 @@ alcance, límites, entregables y condición para pasar al siguiente agente]
 
 Si el paso está bloqueado, identificar la causa y el agente que debe resolverla. No autorizar implícitamente otra fase mediante el cierre de la anterior.
 
+
+## Skills especializadas de desarrollo (14/11/2026, rama feature documental)
+
+Existen cinco procedimientos locales en `.agents/skills/` (`godot-ui-ux`, `game-visual-system`, `godot-ui-implementation`, `android-game-qa`, `godot-gameplay`) y guía en `docs/SKILLS_DESARROLLO.md`. Al trabajar sobre UI o gameplay, cargar la skill pertinente junto con estas instrucciones. Las skills son procedimientos de Codex/Work, no autorizan fases ni cambios canónicos, no cambian reglas y NO prevalecen sobre este `AGENTS.md`. El PR24 contiene kit visual propuesto, no automáticamente aprobado; verificar PR/rama real antes de integrarlo. Validar metadatos con `python ci/validate_skills.py`. Este bloque se incorporó en una feature independiente de `dev/karmany-core`, no en `main` ni en dev.

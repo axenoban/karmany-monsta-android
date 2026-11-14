@@ -1,5 +1,13 @@
 # ESTADO VIVO · Roadmap de Karmany Monsta (Chat + Work)
 
+## 14/11/2026 · Skills de apoyo (feature separada, sin código de juego)
+
+- Se preparan cinco skills locales para Codex y lectura explícita desde Work/Chat: `godot-ui-ux`, `game-visual-system`, `godot-ui-implementation`, `android-game-qa`, `godot-gameplay`, guía en `docs/SKILLS_DESARROLLO.md` y validador `ci/validate_skills.py`.
+- **Rama de esta entrega:** `feature/skills-godot-ui-ux-android` desde `dev/karmany-core` `29be7ba3d30ea72e860f62ec4f0c8aa766e6d1b4`. Únicamente documentación e infraestructura de instrucciones, sin scripts jugables, assets finales, escenas ni APK.
+- **Ramas visuales pendientes:** PR23, PR24 y PR28 abiertos (candidatos); PR24 no está aprobado como kit completo. Estas skills no los fusionan ni alteran la autorización R1.1 existente.
+- **Siguiente paso:** revisión de frontmatter/guía, después seleccionar pantalla real y ejecutar piloto visual en rama propia. **Responsable:** CHAT para revisión de esta entrega; WORK para implementar piloto únicamente con nuevo alcance autorizado. **No integrar a dev sin validación.**
+
+
 ## R1.1 AUTORIZADA · contrato implementable registrado · 16/10/2026
 
 - **Nueva autorización del creador:** «Sí, autorizo» para **R1.1 — NAV-01 + QA-01**. La autorización corresponde a la solución descrita por Chat: Atrás contextual, y laboratorio configurable de niveles, equipos y 12 etapas sin alterar el guardado real. **No requiere otra ronda de diseño ni autorización adicional para que Work programe estos dos módulos.**
