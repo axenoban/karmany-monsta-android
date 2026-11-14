@@ -8,7 +8,7 @@
 - Baseline publicado como última versión validada: `dev/karmany-core @ 29be7ba3d30ea72e860f62ec4f0c8aa766e6d1b4`, con Preview42.
 - Rama del prototipo: `feature/jade-interactive-location-prototype`, creada a partir de `feature/jade-nocturno @ 2591d0538d05b594b713a7a8aac32a6ec6b64deb` (PR23).
 - Dependencias en cadena **sin integrar**: PR21 (NAV/QA) → PR22 (documento maestro) → PR23 (identidad Jade); PR24 (kit gráfico) es hermana del prototipo y no está fusionada ni aprobada visualmente. El prototipo NO incorpora los diseños pendientes de PR24.
-- Sin cambios en `main` o `dev/karmany-core`. Prototipo pendiente de CI, revisión Android y aprobación expresa.
+- Sin cambios en `main` o `dev/karmany-core`. CI técnica correcta sobre código `473209b8` ([run 43629104749](https://github.com/axenoban/karmany-monsta-android/actions/runs/43629104749)); **pendiente prueba física y aprobación expresa**.
 
 ## Interacción y contrato
 
@@ -57,13 +57,13 @@ godot --headless --path . --script tests/run_tests.gd
 python3 -m unittest discover -s tests -p 'test_*.py'
 ```
 
-El workflow existente ejecuta el resto de regresiones y prepara el APK si tiene éxito. **No sustituir una CI pendiente por una afirmación de pruebas superadas.** La validación real requiere descargar la candidata identificada y repetir el caso en un teléfono Android sin desinstalar la versión anterior.
+El workflow existente ejecuta el resto de regresiones y prepara el APK si tiene éxito. **CI efectivamente terminada** con importación, regresiones y exportación correctas en la candidata [Preview53](https://github.com/axenoban/karmany-monsta-android/releases/tag/android-preview-53). No sustituir esas pruebas automatizadas por una afirmación de aprobación física. La validación real requiere descargar la candidata identificada y repetir el caso en un teléfono Android sin desinstalar la versión anterior.
 
 ## Próxima decisión de producto
 
 Después de la prueba física, evaluar si la inspección ofrece diversión real o solo añade pulsaciones: tiempo hasta combate, claridad de las zonas, deseo de explorar de nuevo y necesidad de más interacciones. **No ampliar a 12 etapas ni introducir nuevas recompensas/ramificaciones sin una decisión de diseño específica.**
 
-**SIGUIENTE PASO:** ejecutar CI y validación física del prototipo, corregir defectos confirmados, y pedir `prueba correcta` indicando APK/commit. No integrar la cadena de PR pendientes de forma implícita.
+**SIGUIENTE PASO:** ejecutar la prueba física de Preview53, corregir defectos confirmados, y pedir `prueba correcta` indicando APK/commit. No integrar la cadena de PR pendientes de forma implícita.
 
-**RESPONSABLE:** WORK para implementación/verificación, creador para la prueba Android.
+**RESPONSABLE:** CHAT para implementación/revisión del prototipo, creador para la prueba Android.
 **INSTRUCCIÓN PARA CONTINUAR:** En `axenoban/karmany-monsta-android`, verifica el HEAD de `feature/jade-interactive-location-prototype` y los PR21–24; revisa este contrato, ejecuta Godot 4.7.2 y regresiones completas, comprueba APK y guardados antiguos, publica evidencias en el PR del prototipo sin integrar `dev` ni `main`; conserva canones y reglas.
