@@ -22,6 +22,7 @@ const CombatTransitionScreen = preload("res://scripts/combat_transition_screen.g
 const Stage = preload("res://scripts/trial_stage.gd")
 const Locations = preload("res://scripts/location_visuals.gd")
 const JadeUI = preload("res://scripts/jade_ui.gd")
+const LocationHotspots = preload("res://scripts/location_hotspots.gd")
 var mode:= "battle"
 var column: VBoxContainer
 var message: Label
@@ -457,25 +458,46 @@ func _open_encounter() -> void :
 
 func _exploration_scene() -> void :
 	var point_id: String = App.profile.campaign.get("route", Route.defaults()).current.get("point_id", "")
-	var view:= TextureRect.new()
-	view.name = "LocationBackdrop"
-	view.texture = Stage.texture(Locations.background_for(App.profile.campaign))
-	view.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	view.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	view.custom_minimum_size.y = 220
-	view.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	column.add_child(view)
 	var info:= Locations.details(point_id)
-	column.add_child(_label("%s · %s" % [info.get("title", "Localización"), info.get("environment", "Valle Jade")], 24))
-	column.add_child(_label("Entrada pagada: %d stamina. Buscar y retomar no tienen coste adicional." % Route.entry_cost(point_id), 20))
 	var encounter_id: String = App.profile.campaign.encounter.get("id", "")
-	column.add_child(_button("Buscar encuentro", func():
-		if App.discover_location(encounter_id): navigate.emit("battle")
-		else: _notice()))
+	if point_id == "jade_point_1":
+		# Prototipo local: dos inspecciones sin efecto y una búsqueda con el contrato existente.
+		var scene:= LocationHotspots.new()
+		scene.name = "LocationHotspots"
+		scene.setup(Stage.texture(Locations.background_for(App.profile.campaign)), info, App.profile.settings.large_text)
+		column.add_child(scene)
+		column.add_child(_label("%s · %s" % [info.get("title", "Localización"), info.get("environment", "Valle Jade")], 24))
+		var feedback:= _label("Toca Entorno o Camino para observar antes de buscar.", 20)
+		feedback.name = "LocationInspection"
+		column.add_child(feedback)
+		scene.inspected.connect(func(description: String): feedback.text = description)
+		scene.encounter_requested.connect(func():
+			App.tap()
+			_discover_from_scene(encounter_id))
+	else:
+		# Las otras once etapas conservan íntegra su navegación anterior.
+		var view:= TextureRect.new()
+		view.name = "LocationBackdrop"
+		view.texture = Stage.texture(Locations.background_for(App.profile.campaign))
+		view.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		view.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		view.custom_minimum_size.y = 220
+		view.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		column.add_child(view)
+		column.add_child(_label("%s · %s" % [info.get("title", "Localización"), info.get("environment", "Valle Jade")], 24))
+	column.add_child(_label("Entrada pagada: %d stamina. Buscar y retomar no tienen coste adicional." % Route.entry_cost(point_id), 20))
+	if point_id != "jade_point_1":
+		column.add_child(_button("Buscar encuentro", func(): _discover_from_scene(encounter_id)))
 	column.add_child(_button("Salir de la localización", func():
 		_confirm("Salir termina esta exploración. La stamina de entrada no se devuelve.", func():
 			if App.trial_action("retreat"): navigate.emit("jade_play")
 			else: _notice(), "Salir")))
+
+func _discover_from_scene(encounter_id: String) -> void:
+	if App.discover_location(encounter_id):
+		navigate.emit("battle")
+	else:
+		_notice()
 
 func _update_stamina() -> void :
 	if stamina_label == null: return
