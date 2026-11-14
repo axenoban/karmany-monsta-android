@@ -1,6 +1,6 @@
 # Karmany Monsta Android · Plan director de experiencia (BORRADOR)
-**Versión:** 0.1 · 14 de noviembre de 2026  
-**Estado:** diagnóstico y consulta, **NO aprobado como implementación ni modificación canónica**.  
+**Versión:** 0.2 · 14 de noviembre de 2026 (rondas 1 y 2; auditoría de fluidez)  
+**Estado:** dirección de producto parcialmente definida y diagnósticos técnicos verificados; **NO aprobado como implementación ni modificación canónica**.  
 **Objeto:** definir la experiencia objetivo antes de continuar desarrollando gameplay, interfaces o animaciones. Las propuestas de esta versión NO constituyen reglas nuevas.
 
 ## 1. Referencias y estado real
@@ -94,21 +94,109 @@ No fijar objetivos numéricos sin pruebas. Medir al menos:
 
 Los bloques de ejecución se redefinirán en unidades medianas tras las decisiones. No mover PR21–25, main o dev durante la definición.
 
-## 7. Ronda 2 — decisiones que faltan (pendientes)
+## 7. Decisiones expresas del creador — ronda 2 (14/11/2026)
 
-- R2-01: ¿Conservar y modernizar la silueta de los personajes actuales o rediseñar la identidad visual?
-- R2-02: ¿Animación por partes 2D, por fotogramas o técnica híbrida? Se debe evaluar una muestra técnica antes de producir todos los sprites.
-- R2-03: ¿Dificultad basada en anticipar al rival, composición de equipo/afinidades documentadas o desafíos de preparación? No añadir mecánicas sin aprobación.
-- R2-04: ¿Rutas opcionales con progreso principal fijo, o bifurcaciones que alteran el recorrido?
-- R2-05: ¿Encuentros aleatorios por zona, elección visible o mezcla con encuentros ancla? Elegibilidad y especies pendientes de canon.
-- R2-06: ¿Desarrollar la historia existente, rehacer la historia o limitar narrativa y favorecer ecología/descubrimiento?
-- R2-07: ¿Qué información mínima debe mostrar permanentemente combate y exploración? Ayuda solo bajo demanda ya decidida.
-- R2-08: ¿Qué pantallas considera el creador más débiles? Recoger capturas y notas concretas; auditar visualmente, no solo mediante código.
+| ID | Área | Decisión vigente | Implicación y límite |
+|---|---|---|---|
+| D-09 | Sprites | **Conservar identidad y redibujar con mayor calidad** | No cambiar siluetas, especies ni personalidad por iniciativa del equipo; propuestas para comparar antes de reemplazar |
+| D-10 | Animación | **Comparar prototipos antes de decidir** | Ninguna técnica de rigging, secuencias ni presupuesto de fotogramas ha sido aprobada |
+| D-11 | Dificultad | **Combinar estrategia y preparación** | Diseñar juego táctico legible y composiciones de equipo importantes; IA, estadística y nuevas reglas siguen pendientes |
+| D-12 | Rutas | **Historia principal lineal y caminos secundarios** | Mantener identidad de hitos principales; rutas opcionales aún sin reglas, eventos, recompensas ni modelo persistente |
+| D-13 | Encuentros | **Combinación** | Anclas principales + encuentros variables y pistas/búsqueda dirigidas por zona, con elegibilidad y probabilidades aún por acordar |
+| D-14 | Canon | **Combinar historia y narrativa ambiental** | Priorizar fuentes aprobadas; no agregar escenas, diálogos, hechos del mundo o personajes sin revisión canónica |
+| D-15 | Colección | **Combinar desarrollo, estrategia y descubrimiento** | No equivale a aprobar evoluciones, habilidades, rarezas, fusiones ni nuevos sistemas |
+| D-16 | Ayuda | **Sección de ayuda en menú principal y Opciones** | Sin botón persistente ni ventanas automáticas de explicación dentro de gameplay; preservar acceso a información necesaria |
+| D-17 | Continuidad UX | **Mayor fluidez entre diferentes vistas** | Auditar transiciones, continuidad visual, cantidad de pasos y regreso sin pérdida de contexto |
 
-## 8. Puerta de cierre
+La ronda 2 no aprobó ningún cambio de código, cambios de reglas o sustitución del arte. No confundir dirección de diseño con especificación implementable.
 
-El documento NO se considerará plan director definitivo hasta resolver las decisiones anteriores con el creador, auditar capturas reales de las pantallas y validar una muestra artística/jugable. El contenido canónico sigue sujeto al documento maestro y los datos aprobados. El plan se cerrará con criterios de aceptación, secuencia de integración y módulos afectados.
+## 8. Auditoría de continuidad entre vistas (código candidato inspeccionado)
 
-**Siguiente paso:** revisión conjunta con el creador de preguntas R2-01 a R2-08 y capturas de pantallas problemáticas.  
-**Responsable:** CHAT para análisis/documentación; creador para decisiones de diseño.  
-**Instrucción de continuidad:** En `axenoban/karmany-monsta-android`, lee `docs/PLAN_DIRECTOR_EXPERIENCIA_BORRADOR.md` de `feature/plan-director-experiencia-juego`, el maestro y PR21–25. Consulta las decisiones pendientes, revisa evidencias visuales y consolida un plan aprobado; no implementes nuevas reglas, canon, IA, sprites ni merges de ramas mientras el diseño siga abierto.
+### Estado observado verificable
+
+- `scripts/main.gd::_show(next_page)` elimina el nodo `Page` previo, lo encola para liberación y construye otro `MarginContainer`, `ScrollContainer` y contenido. El estado de navegación se gestiona aparte con `NavigationHistory`.
+- `scripts/main.gd::_playable()` reemplaza el área de lectura por una instancia nueva de `TrialUI`. `TrialUI::_build()` vuelve a componer cabecera, HUD, escena y botones según su `mode`.
+- `scripts/main.gd::_back()` respeta modales y animaciones antes de historial; `navigation_history.gd` limita entradas y evita ciertos duplicados. **No confundir ausencia de transición visual suave con navegación semántica defectuosa**.
+- `TrialUI._location_details()` abre una ventana con imagen y texto antes de entrar; `_options_menu()`, `_trainer_menu()` y `_team_menu()` abren modales adicionales. Estos pasos son puntos concretos a medir para determinar cuánta fricción percibe el jugador.
+- `TrialUI` crea cabecera de escena y `main.gd` también mantiene una cabecera general para pantallas jugables. Su jerarquía y ocupación deben medirse en capturas; no afirmar solapamientos sin prueba visual.
+- `ContextHelp` y `FirstSession` todavía insertan controles/tarjetas contextuales. La nueva D-16 sustituye esa intención UX, pero todavía no se ha codificado.
+- Ya existen animaciones de combate, resumen, captura y prólogo; **no existe una capa central de transición visual compartida entre todas las pantallas** visible en los archivos inspeccionados.
+- Se guardan datos y encuentros al margen de la interfaz; esto ofrece un punto seguro para diseñar vistas más persistentes. **No se dispone de mediciones de FPS, memoria ni latencia de cambio de vista**: la reconstrucción es un riesgo de fluidez percibida, no prueba de bajo rendimiento.
+
+### Flujos que requieren observación en dispositivo
+
+| Flujo | Fricción a comprobar | Objetivo UX (propuesta) |
+|---|---|---|
+| Inicio → continuar → regiones/mapa | Pantallas redundantes antes de volver a la aventura | Llegar al último contexto útil sin perder orientación |
+| Región → punto → ficha → exploración | Ventana intermedia y pasos hasta la primera decisión significativa | Menos interrupciones; ficha contextual liviana |
+| Exploración → encuentro → combate | Cambio brusco de modo, nueva instancia de pantalla | Continuidad del escenario cuando corresponda; entrada a combate clara |
+| Combate → entrenador/equipo/detalles → combate | Modales y posible pérdida de vista de referencia | Consulta rápida, regreso al mismo turno y acción inequívoca |
+| Combate → victoria → XP → vínculo → mapa | Secuencia segmentada y repetida en recorridos frecuentes | Destacar nuevas criaturas/subidas de nivel; acortar resultados rutinarios |
+| Mapa → equipo/colección/bestiario → Atrás | Reconstrucción de vistas, retorno contextual | Regresar al origen real conservando foco/selección cuando sea relevante |
+| Progreso → árbol/Libro → retorno | Texto largo, decisiones permanentes y selección | Mostrar efecto de la decisión antes de confirmarla |
+| Menú principal/Opciones → Ayuda → anterior | Nueva sección solicitada sin interposición en gameplay | Consulta manual en dos accesos, retorno exacto sin forzar tutoriales |
+
+### Tres alternativas arquitectónicas (NO aprobadas)
+
+| Alternativa | Concepto | Ventaja | Coste/riesgo |
+|---|---|---|---|
+| **A · Transiciones ligeras** | Mantener `_show()` y añadir transiciones controladas, evitando parpadeos y reorganizando modales | Bajo riesgo para pruebas/guardados, compatible con ramas actuales | No elimina reconstrucciones ni todas las interrupciones |
+| **B · Shell visual persistente** | Mantener capa de fondo, cabeceras e información esencial; sustituir solo el panel central con un controlador de navegación | Mejor continuidad de escenario y jerarquía, base para animaciones entre estados | Riesgo medio: lifecycle, foco, historial, teardown y regresiones |
+| **C · Escenas jugables persistentes completas** | Conservar nodos de mapa/exploración/batalla y alternar visibilidad | Menos recreación visual, facilita persistencia de microestado UI | Riesgo alto de nodos vivos, señales, timers, audio, consumo Android y estados desincronizados |
+
+**Recomendación técnica provisional:** conservar semántica de `NavigationHistory` y transacciones de `App`; demostrar la alternativa **A** sobre un flujo real (mapa → localización → combate) y, con evidencia de fricción residual, evaluar un **shell B** parcial. No adoptar C por defecto. La transición deberá ser interrumpible/cancelable, respetar movimiento reducido, accesibilidad, gesto Atrás y reanudación segura. Los guardados actuales no deben adquirir datos puramente visuales.
+
+### Contrato de fluidez: criterios de medición sin cifras inventadas
+
+1. Cronometrar en dispositivo la respuesta a pulsación, primera imagen útil y tiempo a control operable de cada transición. Registrar dispositivo, resolución, build, FPS, caídas y memoria cuando se ejecuten tests.
+2. Comprobar visualmente si la pantalla conserva fondo, sentido de lugar, posición de selección y orientación. No confundir una animación larga con fluidez.
+3. Medir cantidad de toques y ventanas de ida/vuelta en los flujos anteriores; un jugador debe poder retroceder sin reabrir pasos innecesarios.
+4. Asegurar que no existen toques dobles, entradas de acciones durante transiciones bloqueadas, señales hacia nodos destruidos, timers/coroutines huérfanos, audio retenido ni incremento gradual de memoria al navegar repetidamente.
+5. Comprobar `reduced_motion`: movimientos desactivados sin retrasar acciones ni duplicar transacciones; texto grande y áreas táctiles funcionales en 1280×720, 960×540 y teléfono real.
+6. Compatibilidad con PR21 NAV/QA, guardados históricos, captura, stamina, XP y el mismo `encounter.id`/turno al volver del Libro/Equipo/Detalles.
+7. No establecer presupuestos de milisegundos o FPS como aprobados sin medir primero el hardware objetivo y obtener decisión del creador.
+
+## 9. Lineamientos de producción artística y animación (evaluación)
+
+- **Identidad congelada por defecto:** las especies, nombres y siluetas históricas del proyecto son referencias, no pretexto para reemplazar canon. Se permite proponer mejor anatomía, separación fondo/personaje, iluminación, expresiones y lectura móvil.
+- **Comparación controlada:** crear muestras del mismo Karmany y Ezel con (A) transformaciones 2D refinadas, (B) rigging 2D por partes y (C) animación híbrida con poses especiales. Mantener idénticos personaje, fondo, escala y acciones para comparar la técnica y no confundirla con la calidad de la ilustración.
+- **Contenido mínimo a comparar:** reposo, anticipación, acción, impacto/reacción y retorno. Definir duración/frames, tamaño de descarga, consumo, tiempo de producción, mantenibilidad, soporte movimiento reducido y legibilidad antes de generalizar.
+- **Puerta:** seleccionar técnica con el creador tras mirar las tres muestras en Godot/Android; solamente después producir lotes medianos de sprites. La calidad del kit UI de PR24 debe evaluarse independientemente de la animación del Karmany.
+- **Riesgo:** redibujar por completo todas las criaturas antes de fijar el pipeline visual generaría retrabajo y assets poco reutilizables.
+
+## 10. Propuesta de experiencia coherente (NO es canon ni regla aprobada)
+
+**Ciclo objetivo de producto:** preparación de equipo → selección de ruta principal y posibles rutas opcionales → observación/elección de escenario → descubrimiento o búsqueda de Karmany elegibles → combate táctico legible → vínculo/XP y cambios en el equipo → nueva decisión de recorrido. Esta secuencia **ilustra relaciones entre sistemas**, no eventos, probabilidades ni objetos nuevos.
+
+Compatibilidades a resolver:
+- **Historia lineal y rutas secundarias:** el progreso principal debe seguir siendo recuperable y coherente con las 12 etapas actuales; el efecto concreto de los caminos opcionales necesita un contrato de producto y de guardados propio.
+- **Encuentros variables con captura:** mantener distinción entre un encuentro principal que acredita progreso y encuentros opcionales que ofrecen variedad; definir catálogo elegible/descubrimiento, límites de repetición y tasas antes de modificar el RNG.
+- **Desafío táctico con preparación:** mostrar información que permita decidir, evitar dificultad por opacidad o simple inflación de daño. El patrón rival actual es simple, pero cambiar IA exige definir comportamientos y pruebas de balance canónicas.
+- **Colección como centro:** cada Karmany debe tener relevancia comprensible en equipo/exploración, sin inventar evoluciones, poderes o rarezas.
+- **Narrativa explícita y ambiental:** reutilizar el canon existente y planificar escenas/descubrimientos mediante un guion pendiente de aprobación. El borrador no declara nueva historia.
+
+## 11. Opciones todavía no resueltas (ronda 3 focalizada)
+
+1. **Transiciones:** elegir A ligera como primer experimento, B shell persistente como objetivo, u otra opción. Una propuesta arquitectónica no equivale a autorización para programarla.
+2. **Diseño de escena:** escoger cuánto tiempo debe permanecer la ilustración del mundo a la vista cuando se navega a equipo, ayuda o resultados; valorar continuidad contra legibilidad.
+3. **Resultados:** decidir si la secuencia victoria → XP → Libro debe conservar todos los pasos o compactarse en resultados habituales, manteniendo momentos especiales.
+4. **Rutas opcionales:** especificar qué decisiones significativas debe ofrecer una ruta secundaria, sin escribir aún misiones/recompensas ficticias.
+5. **Comparación artística:** elegir la criatura piloto y el tipo de escena para evaluar técnicas, sin presuponer que un nuevo sprite está aprobado.
+6. **Prioridad:** ¿probar primero transición/fluidez o nueva muestra de sprite/animación? La prioridad declarada de arte se respeta, pero puede incluir primero un prototipo de transición breve para evaluar el contexto real.
+
+## 12. Puerta de cierre y orden de trabajo revisado
+
+**Se han cerrado las elecciones generales de las rondas 1 y 2**, salvo la técnica de animación que explícitamente requiere comparación. El Plan Director **no queda listo para aprobación de implementación**, porque faltan:
+- una revisión visual real de pantallas y animaciones en teléfono/capturas,
+- la selección de técnica mediante comparativas controladas,
+- reglas concretas de rutas secundarias y encuentros variables, IA y ritmo de stamina,
+- decisión sobre la experiencia de transición y aceptación de la arquitectura,
+- criterios cuantificados a partir de una sesión de pruebas en dispositivo real.
+
+Orden recomendado para decidir, no implementar: (1) fluidez y composición de una secuencia completa; (2) muestras de sprite/animación comparables; (3) UI compacta/ayuda manual; (4) dificultad/comportamiento rival/colección; (5) rutas, encuentros variables y compatibilidad; (6) experimento de stamina. Después crear contratos técnicos en bloques medianos, con PRs separados y pruebas.
+
+La propuesta de fases de la sección 6 queda **histórica y subordinada** a este orden. No mover PR21–25, ni modificar `main`/`dev/karmany-core` por el hecho de crear este documento.
+
+**SIGUIENTE PASO:** creador responde la ronda 3 y aporta cuando le sea posible capturas o vídeo de un cambio de vista y de un ataque. Chat registra decisiones y compara alternativas sin modificar gameplay.  
+**RESPONSABLE:** CHAT (análisis y documento); creador (selección de rumbo/validación visual).  
+**INSTRUCCIÓN PARA CONTINUAR:** Revisa `feature/plan-director-experiencia-juego/docs/PLAN_DIRECTOR_EXPERIENCIA_BORRADOR.md` y PR26 en GitHub; comprueba HEAD/PR21–25, lee maestro y el contrato R1.1. Continúa con la ronda 3, audita imágenes o vídeos suministrados y, tras decisiones explícitas, genera especificación implementable aislada. No cambiar código, canon, guardado, estadísticas, sprites ni PR pendientes; mantener la rama solo documental hasta nueva autorización.
