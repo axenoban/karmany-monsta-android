@@ -56,13 +56,13 @@ func _run() -> void:
 	trial._guard_menu(app.profile.campaign.encounter, int(app.profile.campaign.encounter.revision))
 	await process_frame
 	check(trial.get_node_or_null("GuardMenu") != null, "defense remains accessible, not removed from canonical rules")
-	var guard := preload("res://scripts/combat_catalog.gd").action(app.profile.campaign.encounter.ally_species, "guardia").name
+	var guard: String = str(preload("res://scripts/combat_catalog.gd").action(app.profile.campaign.encounter.ally_species, "guardia").name)
 	check(find_button(trial.get_node("GuardMenu"), guard) != null, "the real guard technique is offered")
 	main._back()
 	await process_frame
 	check(trial.get_node_or_null("GuardMenu") == null and app.profile == before, "Android Back dismisses tactics without playing a turn")
 	# Android Back on an active battle opens a reversible menu, not the map.
-	for help in get_tree().get_nodes_in_group("context_help"):
+	for help in get_nodes_in_group("context_help"):
 		if help.is_visible_in_tree(): help.close_card()
 	main._back()
 	await process_frame
