@@ -101,16 +101,21 @@ func _build() -> void :
 	var title:= _label("COMBATE · Turno %d" % int(App.profile.campaign.encounter.get("round", 1)) if mode == "battle" else ProgressRules.region(App.profile.campaign.get("route", {}).get("selected", "jade")).name.to_upper() + " · Exploración", 26)
 	if mode == "battle" and App.profile.campaign.encounter.has("regional") and App.profile.campaign.encounter.get("phase") in ["capture", "captured", "escaped"]: title.text = "VÍNCULO · EL LIBRO"
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	header.add_child(_button("Volver", func(): back_requested.emit()))
+	# Combat: single contextual menu replaces redundant Volver/Opciones buttons.
+	# Other routes keep their existing, approved navigation.
+	if mode != "battle": header.add_child(_button("Volver", func(): back_requested.emit()))
 	header.add_child(title)
 	if mode == "battle":
-		header.add_child(_button("Opciones", _options_menu))
+		header.add_child(_button("Menú", _options_menu))
 	elif mode in ["map", "exploration"]: header.add_child(_button("Opciones", _map_options))
 	else: header.add_child(_button("Mapa", func(): navigate.emit("jade_play")))
-	header.get_child(0).autowrap_mode = TextServer.AUTOWRAP_OFF
-	header.get_child(2).autowrap_mode = TextServer.AUTOWRAP_OFF
-	header.get_child(0).size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-	header.get_child(2).size_flags_horizontal = Control.SIZE_SHRINK_END
+	var first: Button = header.get_child(0) as Button if mode != "battle" else null
+	var last: Button = header.get_child(header.get_child_count() - 1) as Button
+	if first != null:
+		first.autowrap_mode = TextServer.AUTOWRAP_OFF
+		first.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	last.autowrap_mode = TextServer.AUTOWRAP_OFF
+	last.size_flags_horizontal = Control.SIZE_SHRINK_END
 	if mode != "intro": _help_in(column, mode)
 	if mode in ["intro", "map", "exploration"]:
 		_world()
@@ -255,7 +260,8 @@ func _battle() -> void :
 	if state.phase == "battle":
 		var actions:= HBoxContainer.new()
 		column.add_child(actions)
-		for id in ["golpe", "guardia", "insignia"]:
+		# Two central combat choices; Guardia remains available from Táctica.
+		for id in ["golpe", "insignia"]:
 			var chosen: String = id
 			var reason: String = encounter.reason("karmany", chosen)
 			var name: String = Catalog.action(state.ally_species, id).name if tactical else Encounter.rules().actions[id].name
@@ -269,8 +275,8 @@ func _battle() -> void :
 		var secondary:= HBoxContainer.new()
 		column.add_child(secondary)
 		secondary.add_child(_button("Entrenador", _trainer_menu))
-		secondary.add_child(_button("Detalles", _details))
 		if tactical: secondary.add_child(_button("Equipo", _team_menu))
+		secondary.add_child(_button("Táctica", func(): _guard_menu(state, revision)))
 		if state.enemy_pending and not App.response_error.is_empty():
 			secondary.add_child(_button("Reintentar respuesta", App.retry_enemy_response))
 	elif state.phase == "replacement":
@@ -425,10 +431,26 @@ func _popup(id: String, caption: String) -> VBoxContainer:
 	dialog.popup_centered(Vector2i(680, 430))
 	return content
 
+func _guard_menu(state: Dictionary, revision: int) -> void:
+	# Read-only until the player confirms a real existing Guardia action.
+	var model = Router.create(state)
+	if not model.restore(state): return
+	var content := _popup("GuardMenu", "Táctica adicional")
+	if content == null: return
+	var reason: String = model.reason("karmany", "guardia")
+	var guard_name: String = Catalog.action(state.ally_species, "guardia").name if model is Tactical else Encounter.rules().actions["guardia"].name
+	content.add_child(_label("La defensa conserva su efecto y consume la acción del Karmany.", 19))
+	content.add_child(_button(guard_name, func():
+		_dismiss("GuardMenu")
+		_act("karmany", "guardia", revision), not reason.is_empty()))
+	if not reason.is_empty(): content.add_child(_label(reason, 18))
+
 func _options_menu() -> void :
-	var content:= _popup("OptionsMenu", "Opciones de combate")
+	var content:= _popup("OptionsMenu", "Menú de combate")
 	if content == null: return
 	var state: Dictionary = App.profile.campaign.encounter
+	content.add_child(_button("Volver al combate", func(): _dismiss("OptionsMenu")))
+	# This is a menu, not a timer pause: keep the existing automatic rival response.
 	content.add_child(_button("Estado y técnicas", func():
 		_dismiss("OptionsMenu")
 		_details()))
