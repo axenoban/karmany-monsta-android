@@ -1,6 +1,6 @@
 # Karmany Monsta Android · Plan director de experiencia (BORRADOR)
-**Versión:** 0.13 · 14 de noviembre de 2026 (D-29: XP por captura P5 aprobada; siguiente fase: fuentes de sellos)  
-**Estado:** decisiones D-24/D-25/D-27/D-28/D-29 documentadas; **P5 aprobada como regla**, pero recursos, pausa y técnicas aún por definir; **NO aprobado como implementación**.  
+**Versión:** 0.14 · 14 de noviembre de 2026 (D-30: botín aleatorio + objetivos; equipo pasivo y fabricación propuestos)  
+**Estado:** decisiones D-24/D-25/D-27/D-28/D-29/D-30 documentadas; **botín aleatorio + objetivos aprobados como dirección**, pero tablas de drops, fabricación, equipo pasivo, recursos, pausa y técnicas aún por definir; **NO aprobado como implementación**.  
 **Objeto:** definir la experiencia objetivo antes de continuar desarrollando gameplay, interfaces o animaciones. Las propuestas de esta versión NO constituyen reglas nuevas.
 
 ## 1. Referencias y estado real
@@ -1205,3 +1205,70 @@ El motor **no admite hoy este flujo**. No basta agregar un número a \`LevelProg
 - Probar escenarios con stock 0/1/2/3/10, victoria repetida, primer final doble, derrota tras captura, pausa/reinicio y necesidad de un sello en cada intento.
 
 **Decisión pendiente prioritaria:** escoger G1/G2/G3 para la **fuente principal renovable**. Después determinar cantidad inicial I3/I1, migración y umbral de inventario si corresponde. Todas las cifras de §30 son recomendaciones, no contenido canónico adoptado. **No implementar cambios en PR27 ni integración en dev antes de cerrar el contrato.**
+
+
+## 31. D-30 — Botín aleatorio y premios de objetivos; futura fabricación y equipo pasivo de entrenador (DIRECCIÓN APROBADA, PARÁMETROS ABIERTOS)
+
+**Decisión expresa del creador (14/11/2026):** «Debe ser aleatoria y como recompensa por objetivos, ya que tendremos varios ítems que podremos encontrar por victoria a la suerte o al azar, como el ítem que regenera energía, o material para fabricación de ítem, que quiero que el entrenador pueda tener equipo con habilidades pasivas».
+
+### 31.1 Qué se aprueba y qué no
+
+**Dirección cerrada por el creador:**
+1. **Se descarta G1:** no regalar automáticamente un Sello de Vínculo por cada victoria. Los sellos normales forman parte de un **sistema de botín aleatorio** ganado por victoria y también de **recompensas por objetivos** (combinación de G2 + G3).
+2. El botín futuro contempla **múltiples clases de objetos**, no solo sellos: consumibles de vínculo, el **recuperador de stamina que ya existe**, y **materiales de fabricación** cuya lista/identidad todavía no está definida.
+3. Se desea añadir en una fase de diseño un **sistema de fabricación de objetos** y **equipamiento del entrenador con habilidades pasivas**. No convertir esa intención en recetas, rarezas, slots, habilidades, nombres de equipo o inventario canónico sin definición.
+4. La escasez de sellos **no debe inducir automáticamente escape** del rival ni sustituir la regla D-27: máximo 3 intentos por encuentro; al agotarse el Libro, combate normal y posibilidad de ganar XP. El sello premium permanece hipótesis futura aparcada, no recurso disponible.
+
+**No aprobado todavía:** probabilidades, pesos, si botín es exclusivo o admite varias recompensas en una victoria, números de ítems, objetivos, frecuencia, moneda, materiales, recetas, fabricación, categorías de equipo, límites de equipamiento, efectos pasivos, balance, cambios de stamina ni comercio.
+
+### 31.2 Recompensa al finalizar encuentro — separación recomendada de sistemas
+
+**Fuente real auditada:** \`scripts/exploration_energy.gd\`, \`data/exploration_rules.json\`, \`App.trial_action()\`, \`TrialCampaign\`, \`level_progression.gd\` y rutas de Jade/Velo. **Ya existe** un recuperador de stamina con tirada al entrar al encuentro, \`drop_below=2000\` de \`drop_scale=10000\` (**20% por victoria**), más recompensa de XP regional/primer bono. El recuperador es de +30 y el objeto se suma mediante recibo persistido al ganar. Esta es una regla aprobada: **no cambiarla en esta fase de planificación**.
+
+**Propuesta de arquitectura (no canon):**
+- **A. Resultado fijo existente:** XP por victoria y progreso regional / XP de captura P5 según D-29; las reglas de ambos permanecen independientes del azar de botín.
+- **B. Botín aleatorio extensible:** catálogo de identificadores de ítem y tablas versionadas por región/etapa, con tirada(s) congeladas al crear encuentro y recibo al resolver la victoria. Posibles entradas futuras: sello normal, materiales; **no incorporar** estos premios a \`data/\` sin tabla y chances aprobadas.
+- **C. Premios por objetivo:** un registro de objetivo/hito y su recompensa reclamada una sola vez; puede conceder sellos o materiales. El juego aún **no dispone de un sistema canónico de misiones con estos objetos**. Sin inventar hitos, quests, progreso o NPC.
+- **D. Inventario compartido:** una única fuente de verdad para las existencias, tipado por \`item_id\`, sin mezclar ítems de uso directo, materiales y equipos. El recuperador vigente vive en \`campaign.exploration.items\`; cualquier migración al inventario general requiere pruebas de guardados y compatibilidad de la API antigua.
+
+**Decisión técnica abierta fundamental:** ¿conviven tiradas **independientes** (puede ganar recuperador + sello + materiales en una victoria) o se utiliza una **tabla exclusiva** (una recompensa aleatoria seleccionada entre categorías), o un modelo híbrido? No alterar la probabilidad actual del recuperador ni crear un nuevo porcentaje sin aprobación; una tabla exclusiva exigiría recalibración explícita para preservar 20%.
+
+### 31.3 Obtención aleatoria + objetivos sin bloquear colección
+
+**Alternativas para diseñar (no aprobadas):**
+- *Botín aleatorio puro con premios por objetivos finitos:* fácil de entender pero puede agotar todos los sellos tras una mala racha; es especialmente problemático si después se ofrece un premium de pago.
+- *Aleatorio más objetivos renovables/progresivos:* objetivos garantizan una forma razonable de reponer sellos incluso tras repetidas derrotas o cero drops, mientras las victorias aportan sorpresa. **Recomendación para estudiar**: al menos una fuente de reposición accesible sin pago, y con progreso comprobable, sin adjudicar todavía frecuencia, número ni nombre de misión.
+- *Premio por primer hito + probabilidades en repetición:* no proponer cantidad ni tasa hasta conocer objetivos y coste de stamina; evitar explotación por repetir combates fáciles.
+
+**Garantía de producto:** la derrota no debe «transformarse» en premio de victoria; los objetivos pueden estudiar progresión por participación, pero no se declara concedido un sello al perder. Cualquier objetivo se valida y remunera por sus propias reglas. No afirmar que haya sistema de misiones ya implementado.
+
+### 31.4 Fabricación + equipamiento pasivo del entrenador (NUEVOS SISTEMAS; SIN IMPLEMENTACIÓN AUTORIZADA)
+
+**Separación conceptual recomendada:**
+- **Materiales:** componentes guardados en inventario, adquiribles mediante botín y/o objetivos, que puedan usarse para recetas futuras; sin nombres, valores, inventario inicial o rarezas inventados.
+- **Fabricación:** transforma cantidades aprobadas de materiales en un ítem identificado; consume material y crea resultado **en una transacción validada e idempotente**. No fabricar objetos no documentados ni asumir que sellos serán fabricables.
+- **Equipamiento del entrenador:** objetos persistentes con identidad, espacios definidos posteriormente y **efectos pasivos** que no utilizan la acción normal del Karmany ni las resonancias del entrenador. No asumir que una habilidad pasiva puede curar, controlar, alterar los porcentajes del Libro o añadir acción por turno: cada efecto requiere contrato y restricciones explícitas.
+- **Resonancias del árbol:** el árbol del entrenador vigente ya implementa acciones activas. Los futuros pasivos de equipo deben formar un sistema distinto de las resonancias activas, con orden de aplicación, apilamiento, recargas, límites y compatibilidad de buffs documentados antes de usarlos.
+- **Prevención de exploits:** congelar la configuración de equipo al entrar al encuentro o definir cuándo se permiten cambios; reequipar durante respuesta rival, reiniciar app o fabricar no debe duplicar efectos ni crear recursos. Recompensas y transformación deben auditar cantidades sin balances negativos.
+
+**Riesgo de alcance:** introducir simultáneamente botín, objetivos, fabricación, equipo pasivo, tienda, Libro y rediseño de habilidades de 13 especies multiplica superficie de balance y migraciones. **Planificar por bloques independientes**: (i) catálogo/inventario y recompensas, (ii) objetivos, (iii) materiales/fabricación, (iv) equipo pasivo, (v) tienda/premium solo si se estudia más adelante. Ningún bloque se implementa antes de las reglas canónicas correspondientes.
+
+### 31.5 Impactos precisos en guardados y QA futuro
+
+- Proteger \`ExplorationEnergy.resolve_drop\` y su 20% vigente, incluso si se migra el ítem al inventario general: no conceder recuperador dos veces o borrarlo al cargar.
+- Conservar resultados de botín independientes de la experiencia de captura P5: el primer rival capturado en final doble puede entregar captura+XP P5, pero **NO** premio de victoria de etapa ni botín condicionado a esa victoria si se pierde ante el segundo.
+- Congelar las tiradas al crear el encuentro, no al abrir el menú de resultados, para impedir rerolls por cierre/reinstancia UI.
+- El recibo de botín debe resistir doble toque, reintento por fallo de escritura, reentrada a etapa y salida del juego.
+- Nuevos perfiles y migraciones deben validar cantidades y no generar de forma retroactiva equipo, recetas, misiones completadas ni drops; preservación \`schema3\` y respaldos.
+- Preparar tests: tirada fallida, premio sello, premio materiales, coexistencia o exclusividad según contrato futuro, recuperador original 20% intacto, premio por objetivo reclamado exactamente una vez, materiales consumidos una vez, equipo pasivo no apilado accidentalmente, victoria/captura/derrota final doble.
+
+### 31.6 Decisiones siguientes por orden de dependencia
+
+1. **Botín:** ¿tiradas independientes o premio exclusivo/híbrido? Mantener el 20% existente del recuperador mientras se define la tabla restante.
+2. **Objetivos:** ¿renovables, únicos o mixtos? Definir una ruta gratuita renovable antes de fijar porcentajes de sellos.
+3. **Inventario inicial:** stock de sellos para primera partida y migraciones; sin número por defecto aprobado.
+4. **Catálogo y probabilidades:** lista canónica de consumibles/materiales y sus chances, por región/punto; sin inventar contenidos.
+5. **Fabricación/equipo:** categorías, recetas, número de espacios, efectos pasivos, apilamiento y restricciones de combate.
+6. **Otros contratos previos:** elegibilidad PS > 0, semántica Pausa «Reiniciar/Salir» y replanteamiento de habilidades Karmany/entrenador.
+
+**Protección del proyecto:** decisión G2+G3 y visión crafting/equipo pasivo registradas **solo como dirección de diseño** en PR26. No cambiar código, reglas de loot, inventario, datos, XP, balance, \`dev/karmany-core\` ni PR27/Preview73 por este cambio documental; PR26 sigue draft.
