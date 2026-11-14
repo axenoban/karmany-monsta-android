@@ -78,7 +78,7 @@ func _run() -> void:
 		app.profile.settings.large_text = large
 		main._show("battle")
 		await process_frame
-		find_button(main.get_node("Page"), "Opciones").pressed.emit()
+		find_button(main.get_node("Page"), "Menú").pressed.emit()
 		await process_frame
 		find_button(main.get_node("Page"), "Estado y técnicas").pressed.emit()
 		await process_frame
@@ -103,7 +103,7 @@ func _run() -> void:
 	check(app.trial_action("karmany", "golpe"), "queued rival response for panel lifecycle")
 	main._show("battle")
 	await process_frame
-	find_button(main.get_node("Page"), "Opciones").pressed.emit()
+	find_button(main.get_node("Page"), "Menú").pressed.emit()
 	await process_frame
 	find_button(main.get_node("Page"), "Estado y técnicas").pressed.emit()
 	await process_frame
