@@ -3,6 +3,7 @@ extends SceneTree
 const Store = preload("res://scripts/save_store.gd")
 const Tactical = preload("res://scripts/tactical_encounter.gd")
 const Flow = preload("res://scripts/aftermath_flow.gd")
+const MainView = preload("res://scripts/main.gd")
 const TrialUI = preload("res://scripts/trial_ui.gd")
 const CombatPanel = preload("res://scripts/combat_context_panel.gd")
 const AftermathScreen = preload("res://scripts/aftermath_screen.gd")
@@ -38,7 +39,7 @@ func _run() -> void:
 	check(app.start_route("jade_point_1"), "enter first Jade location")
 	var encounter_id: String = app.profile.campaign.encounter.id
 	check(app.discover_location(encounter_id), "discover fight without further stamina")
-	var main: Control = load("res://scenes/main.tscn").instantiate()
+	var main: MainView = load("res://scenes/main.tscn").instantiate() as MainView
 	root.add_child(main)
 	main._show("battle")
 	await process_frame
