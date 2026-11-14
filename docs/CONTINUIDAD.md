@@ -1,5 +1,16 @@
 # Continuidad de Karmany Monsta
 
+## Jade nocturno · revisión artística y archivo de diseños · 14/11/2026
+
+El creador considera insuficiente la fidelidad visual de Preview46 respecto al concepto elegido y solicita registrar el inventario/manual antes de generar los diseños. Preview46 sigue siendo una primera adaptación técnica, sin aprobación artística final. No integrar por esta petición documental.
+
+Manual y catálogo: docs/diseno/jade-nocturno/README.md y catalogo.csv. Archivo de imágenes: docs/diseno/jade-nocturno/imagenes/, con referencia original, cuatro bloques y carpetas propuestas/aprobados. No hay nuevos diseños finales aprobados. Esta entrega modifica solo documentación y archivo de referencia; no modifica APK, reglas ni guardados. PR23 permanece abierto en feature/jade-nocturno.
+
+SIGUIENTE PASO: diseñar la lámina del kit maestro y presentarla para revisión.
+RESPONSABLE: WORK.
+INSTRUCCIÓN PARA CONTINUAR: En feature/jade-nocturno lee docs/diseno/jade-nocturno/README.md; diseña la lámina del kit maestro siguiendo la referencia y registra sus propuestas sin marcarlas aprobadas ni modificar el juego.
+
+
 ## Jade nocturno · implementación autorizada · 14/11/2026
 
 **Entrega verificable:** [Preview46 / v0.25.0-jade](https://github.com/axenoban/karmany-monsta-android/releases/tag/android-preview-46), [PR23](https://github.com/axenoban/karmany-monsta-android/pull/23), código `ca3fd8d95d913998415618d11d27b706a669fbfd`, [CI43597428376 correcta](https://github.com/axenoban/karmany-monsta-android/actions/runs/43597428376). APK83.431.938 bytes, SHA256 `40fdf39d1012bbb5440eb1218adb7eb2edf0dd5a7ef4a508dcda84667b481e33`. Descarga completa comprobada; firma con el mismo certificado anterior;11 JSON de juego idénticos. 5.972 comprobaciones/32 suites Godot y3 Python correctas. Capturas en ui-review.zip de la release. Prueba física pendiente, sin integración. Evidencia: docs/JADE_NOCTURNO_VERIFICACION.json. Los commits documentales posteriores no alteran esta APK.

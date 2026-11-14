@@ -16,6 +16,9 @@ Descargar el APK de la preview más reciente en [Releases](https://github.com/ax
 
 ## Documentación
 
+- [Manual y catálogo de componentes Jade nocturno](docs/diseno/jade-nocturno/README.md).
+- [Archivo de imágenes y diseños](docs/diseno/jade-nocturno/imagenes/README.md).
+
 - [Localizaciones y dirección artística](docs/LOCALIZACIONES_ARTE_14.md), pendiente de validación.
 - [Exploración, stamina e interfaz](docs/EXPLORACION_STAMINA_UI_13.md), validada en Preview 19.
 
