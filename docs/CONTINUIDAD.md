@@ -1,5 +1,16 @@
 # Continuidad de Karmany Monsta
 
+## Jade nocturno · implementación autorizada · 14/11/2026
+
+El creador eligió Jade nocturno y aprobó su extensión e implementación. Rama de trabajo: `feature/jade-nocturno`, v0.25.0-jade, basada en `docs/documento-maestro-android@3a468de`; conserva R1.1 y el documento maestro. PR21/22 siguen siendo dependencias pendientes de conciliación; no se han integrado. Dev continúa en29be7ba y main en9ef7af7. Esta autorización habilita el bloque visual; no habilita E6 ni cambios de reglas, balance, canon o guardado.
+
+Implementación y protocolo: [JADE_NOCTURNO_IMPLEMENTACION.md](JADE_NOCTURNO_IMPLEMENTACION.md). Tema, marcos/iconos propios y composiciones de inicio, regiones, equipo/colección, Libro, Bestiario, perfil y ajustes; HUD de combate con detalles al tocar. Arte canónico existente conservado. Comprobaciones locales Godot4.7.2 y Python satisfactorias; prueba física Android pendiente. Consultar PR/CI de la rama para la evidencia publicada; no confundir con Preview45.
+
+SIGUIENTE PASO: entregar candidata y acompañar validación física; integrar solo tras aprobación identificable y revisión de la cadena de PR.
+RESPONSABLE: WORK.
+INSTRUCCIÓN PARA CONTINUAR: En axenoban/karmany-monsta-android verifica HEAD/PR/CI reales de feature/jade-nocturno, lee JADE_NOCTURNO_IMPLEMENTACION.md y contrasta la APK con el SHA publicado. Acompaña la prueba física; corrige fallos visuales reproducibles sin alterar reglas ni guardados. No integres dev/main antes de aprobación de esta candidata.
+
+
 ## Consolidación documental · 12/11/2026
 
 Punto de entrada portable: `docs/DOCUMENTO_MAESTRO_ANDROID.md` (rama docs/documento-maestro-android). Reúne bases, estado real, contratos, datos exactos y guía de recuperación/compilación. Sin cambios funcionales ni integración de PR21: dev29be7ba, candidata6365654. CI histórica38955362578 correcta; no se ejecutaron nuevas pruebas de juego en esta consolidación. La recuperación de otros chats registra pruebas físicas satisfactorias, pero GitHub mantiene PR21 abierto; conciliar autorización y cierre antes de integrar.

@@ -2,7 +2,11 @@
 
 # Karmany Monsta Android
 
-Videojuego Android de Karmany Monsta. **Base jugable validada:** Preview 29 (v0.17.0) en `dev/karmany-core`; mapa Jade de cuatro puntos, combate, captura, stamina, niveles/XP, Libro y guardado. **Prototipo no validado:** Preview 34 (v0.18.0, rama `feature/e1-jade-relay`) con ensayo de ataque y relevo de Sakuromushi, a la espera de prueba física. Para el progreso real y el próximo responsable consultar siempre `docs/ROADMAP_ESTADO.md`.
+Videojuego Android de Karmany Monsta. **Baseline integrado:** R1/Preview42 en `dev/karmany-core`, con dos regiones y doce etapas. **Candidata visual en desarrollo:** Jade nocturno v0.25.0-jade, basada en R1.1/Preview45 y el documento maestro, pendiente de validación física. No está integrada en dev/main.
+
+- [Documento maestro portable](docs/DOCUMENTO_MAESTRO_ANDROID.md).
+- [Jade nocturno: alcance y prueba Android](docs/JADE_NOCTURNO_IMPLEMENTACION.md).
+- [Estado real y responsable](docs/ROADMAP_ESTADO.md).
 
 Ramas previstas: main (publicable), dev/karmany-core (baseline validado), feature/* (trabajo pendiente de validación).
 
