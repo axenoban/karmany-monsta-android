@@ -101,28 +101,29 @@ func _ready() -> void :
 	var species: String = encounter.get("enemy_species", "tanugami")
 	var species_name:= Catalog.species_name(species)
 	match stage:
-		"victory":
-			body.add_child(label("VICTORIA", 52, Color("efd49b")))
-			var pair:= HBoxContainer.new()
-			body.add_child(pair)
-			pair.add_child(portrait(encounter.get("ally_species", "zephyr"), 210))
-			departing = portrait(species, 210)
-			pair.add_child(departing)
-			body.add_child(label("El encuentro ha terminado", 24))
-			body.add_child(label("Tu equipo se prepara para continuar el viaje.", 20, Color("c0d4cc")))
-			footer.add_child(action("Ver experiencia" if Flow.next(campaign) == "experience" else "Continuar al vínculo", advance))
-		"experience":
+		"victory", "experience":
 			body.alignment = BoxContainer.ALIGNMENT_BEGIN
-			body.add_child(label("EXPERIENCIA ADQUIRIDA", 34, Color("efd49b")))
-			for entry in preload("res://scripts/first_session.gd").topics(app.profile, "experience"):
-				body.add_child(label(entry.text, 20))
-			xp_panel = ExperiencePanel.new()
-			xp_panel.receipt = Flow.receipt(campaign).duplicate(true)
-			xp_panel.large = app.profile.settings.large_text
-			body.add_child(xp_panel)
+			body.add_child(label("VICTORIA · PROGRESO DEL EQUIPO", 36, Color("efd49b")))
+			var pair := HBoxContainer.new()
+			pair.name = "VictoryPortraits"
+			pair.custom_minimum_size.y = 124
+			body.add_child(pair)
+			pair.add_child(portrait(encounter.get("ally_species", "zephyr"), 124))
+			pair.add_child(portrait(species, 124))
+			var receipt: Dictionary = Flow.receipt(campaign).duplicate(true)
+			if not receipt.is_empty() and not receipt.get("rows", []).is_empty():
+				body.add_child(label("EXPERIENCIA ADQUIRIDA", 26, Color("b3ead4")))
+				xp_panel = ExperiencePanel.new()
+				xp_panel.name = "IntegratedExperience"
+				xp_panel.receipt = receipt
+				xp_panel.large = app.profile.settings.large_text
+				body.add_child(xp_panel)
+			else:
+				body.add_child(label("Encuentro completado. No hay experiencia regional que mostrar.", 21))
 			var drop: Dictionary = campaign.get("exploration", {}).get("drop", {})
-			if drop.get("encounter_id") == encounter_id and drop.get("received", false): body.add_child(label("Recuperador de stamina +30 obtenido", 20))
-			footer.add_child(action("Continuar al vínculo", advance))
+			if drop.get("encounter_id") == encounter_id and drop.get("received", false):
+				body.add_child(label("Recuperador de stamina +30 obtenido", 21, Color("b3ead4")))
+			footer.add_child(action("Continuar al Libro", advance))
 		"choose":
 			body.add_child(label("UN VÍNCULO POR ELEGIR", 36, Color("efd49b")))
 			body.add_child(label("Elige cuál de los rivales quieres vincular.", 22))
@@ -180,17 +181,38 @@ func _process(delta: float) -> void :
 	if app.application_paused or not is_visible_in_tree() or (host.binding_busy or host.combat_busy): return
 	elapsed += maxf(delta, 0)
 	_update(delta)
-	if stage == "victory" and elapsed >= VICTORY_DURATION and not auto_attempted:
-		auto_attempted = true
-		advance()
 func _update(_delta: float) -> void :
 	content.modulate.a = 1.0 if reduced else clampf(0.3 + elapsed / 0.3, 0.3, 1.0)
 	if departing != null: departing.modulate.a = 0.18 if reduced else lerpf(1.0, 0.18, clampf(elapsed / 0.9, 0, 1))
 	if xp_panel != null: xp_panel.set_fraction(1.0 if reduced else clampf(elapsed / 4.0, 0, 1))
 func advance() -> void :
-	if (host.binding_busy or host.combat_busy): return
-	if app.advance_aftermath(encounter_id, stage): host.navigate.emit("battle")
-	else: show_notice(app.notice if not app.notice.is_empty() else "El resultado ya cambió.")
+	if host.binding_busy or host.combat_busy or auto_attempted: return
+	var current: String = Flow.step(app.profile.campaign)
+	if app.profile.campaign.encounter.get("id") != encounter_id or current != stage:
+		host.navigate.emit("battle")
+		return
+	auto_attempted = true
+	if stage in ["victory", "experience"]:
+		# Dos checkpoints persistidos, una superficie visual. Avanzar en orden.
+		if current == "victory":
+			if not app.advance_aftermath(encounter_id, "victory"):
+				auto_attempted = false
+				show_notice(app.notice if not app.notice.is_empty() else "No se pudo guardar el resultado.")
+				return
+			current = Flow.step(app.profile.campaign)
+		if current == "experience":
+			if not app.advance_aftermath(encounter_id, "experience"):
+				auto_attempted = false
+				show_notice(app.notice if not app.notice.is_empty() else "No se pudo guardar la experiencia.")
+				return
+		host.navigate.emit("battle")
+		return
+	if app.advance_aftermath(encounter_id, stage):
+		host.navigate.emit("battle")
+	else:
+		auto_attempted = false
+		show_notice(app.notice if not app.notice.is_empty() else "El resultado ya cambió.")
+
 func finish() -> void :
 	if (host.binding_busy or host.combat_busy): return
 	if app.finish_aftermath(encounter_id, revision): host.navigate.emit("jade_play")
