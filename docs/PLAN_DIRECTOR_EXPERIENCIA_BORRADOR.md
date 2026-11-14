@@ -1,5 +1,5 @@
 # Karmany Monsta Android · Plan director de experiencia (BORRADOR)
-**Versión:** 0.10 · 14 de noviembre de 2026 (D-26: sello normal priorizado y sello premium reservado como hipótesis futura)  
+**Versión:** 0.11 · 14 de noviembre de 2026 (D-27: tres intentos por encuentro; tercer fallo permite seguir combatiendo)  
 **Estado:** dirección de producto parcialmente definida y diagnósticos técnicos verificados; **NO aprobado como implementación ni modificación canónica**.  
 **Objeto:** definir la experiencia objetivo antes de continuar desarrollando gameplay, interfaces o animaciones. Las propuestas de esta versión NO constituyen reglas nuevas.
 
@@ -966,3 +966,62 @@ El motor existente \`CaptureSession.MAX_ATTEMPTS = 3\` y \`TacticalEncounter.sta
 - **Prueba contractual futura:** no cobrar o gastar dos veces por toques simultáneos, desconexión y cierre de app. Compras realizadas no deben desaparecer ante error de persistencia. Ningún premio/captura se duplica; ninguna compra eleva el máximo de intentos/rareza por accidente.
 
 **Estado:** idea premium **APARCADA / NO IMPLEMENTAR EN ESTE BLOQUE**. Este registro no convierte el sello normal ni la economía propuesta en contenido canónico implementable; conserva la dirección del creador y evita que se diseñe la tienda antes de probar el núcleo de juego. **PR26 documental solamente; PR27, dev y main sin modificaciones.**
+
+
+## 27. D-27 — Tres intentos por encuentro; agotarlos no expulsa al rival (REGLA APROBADA PARA NUEVO DISEÑO)
+
+**Decisión expresa del creador (14/11/2026):** «Considero que si escapa sería una pérdida de tiempo y esfuerzo para el jugador, así que sería mejor que lo pueda derrotar y al menos quedarse con la experiencia, mantendremos los 3 intentos por el momento».
+
+**Contexto inmediato que delimita la respuesta:** la alternativa presentada por el equipo era **L1: máximo tres intentos por encuentro aunque existan más sellos**, y **T2: tras el tercero fallido el combate continúa sin acceso al Libro**. La respuesta del creador selecciona **T2 + límite de tres (L1)** para el nuevo diseño. Esto reemplaza las propuestas T1/L2 en lo que concierne a la regla general; no implica aprobación de la cantidad inicial de sellos, tasas de obtención, tienda ni detalles de los finales dobles.
+
+### 27.1 Reglas cerradas y verificables (nuevo contrato, no implementado)
+
+1. **Máximo tres intentos de vínculo por encuentro** (no por turno). No se añade un cuarto por tener más consumibles, por mejorar el Libro ni por volver de Pausa. El contador se identifica y persiste por encuentro.
+2. La disponibilidad también depende de **cuántos sellos normales tenga el entrenador** bajo el concepto D-26; la fuente de suministro y el stock inicial aún están abiertos. Si quedan menos de tres sellos, solo se pueden gastar los disponibles; no hay premio/castigo automático por no tener ninguno.
+3. Cada intento efectivamente realizado **consume un cupo del Karmany** y, cuando el consumible quede implementado, un sello. El intento fallido no devuelve el cupo ni el sello. La respuesta enemiga se produce **una vez si corresponde**, según D-24; no se regala un nuevo turno al agotarse los intentos.
+4. Si **el tercer intento falla**, el salvaje **no escapa automáticamente**. El Libro queda **bloqueado para el resto de ese encuentro**, el rival permanece vivo y **el combate continúa** desde su estado real de HP/turno/recargas; puede responder al intento conforme al sistema de turno.
+5. Si el jugador **derrota después al rival** y cumple las condiciones de victoria del encuentro, obtiene la **XP y el progreso de victoria habituales**. La tercera falla **por sí sola NO concede XP, victoria, captura, avance ni recompensa**. No inventar premios consolación adicionales.
+6. **D-25 permanece intacta**: si uno de los intentos de vínculo tiene éxito, se concede captura + victoria/XP/progreso correspondientes. La criatura a 0 PS no ofrece una captura posterior, conforme a la intención D-22; las condiciones exactas de PS todavía requieren cierre.
+7. Para conservar intención/compatibilidad, **no reinterpretar** las antiguas sesiones \`phase="escaped"\` o \`CaptureSession\` del sistema post-derrota como intentos fallidos del nuevo modelo. Las partidas históricas requieren adaptación explícita.
+8. **Un premium futuro no restablece el contador, no crea cuarto intento ni salta el límite** por el solo hecho de ser premium. Su incorporación, métodos de adquisición y posibles mejoras de tasa continúan diferidos.
+
+### 27.2 Flujo representativo — un solo rival
+
+\`\`\`text
+ENCUENTRO ACTIVO · rival vivo
+   ├─ Golpe / ataque / cambio → reglas normales de combate
+   └─ Libro (si quedan intentos y sellos, y el rival es elegible)
+         └─ Gasta 1 acción Karmany + 1 sello; registra intento
+              ├─ Éxito → D-25: vinculado, victoria y XP, avance
+              └─ Fallo (1/3 o 2/3) → respuesta rival si corresponde
+                    └─ siguiente turno puede elegir atacar o usar Libro
+                  Fallo (3/3) → respuesta rival si corresponde;
+                       Libro bloqueado solo durante ese encuentro
+                       └─ batalla prosigue hasta victoria por daño
+                          o derrota/retirada ordinaria
+                                 ├─ victoria → XP/progreso normal
+                                 └─ derrota/retirada → no inventar XP
+\`\`\`
+
+**Precisiones:** «3 intentos por encuentro» incluye un final regional de dos oponentes como **una misma etapa/encuentro** bajo la semántica actualmente usada. El detalle de **en qué oponente** se habilita Libro, qué ocurre tras capturar al primero y cómo se contabiliza una captura durante la victoria de la etapa **no queda aprobado** por esta respuesta. No implementar F1/F2/F3 ni reparto de contador entre subencuentros sin cerrar Q3; la regla general no autoriza resetear intentos por oponente.
+
+### 27.3 Pruebas contractuales cuando se autorice implementación
+
+- **D27-01:** tres fallos en encuentro simple, estado de rival vivo, acción Libro deshabilitada, siguiente turno válido y respuesta enemiga exactamente una vez.
+- **D27-02:** victoria por daño tras 3/3 fallidos concede una sola XP, premio y avance del encuentro, sin criatura añadida.
+- **D27-03:** 0/1/2/3/10 sellos en inventario; nunca más de tres intentos en el encuentro; sin sello no se consume turno, sin inventar intento fallido.
+- **D27-04:** Libro mejorado afecta solo probabilidad/rareza según tabla aprobada; no aumenta el límite de tres.
+- **D27-05:** 3/3 fallos, derrota del jugador y retirada: no se otorga XP de victoria por el mero fracaso del Libro.
+- **D27-06:** doble toque, cierre/reapertura, guardar durante respuesta pendiente, pausa, reconexión: contador no se reinicia, sin cuarta tirada ni duplicados.
+- **D27-07:** encuentros de dos rivales: mantener el límite a nivel del encuentro, sujetar habilitación a futura decisión Q3, una victoria de etapa sin duplicar XP.
+- **D27-08:** perfiles legacy en fases \`capture/captured/escaped\` conservan datos y se restauran correctamente, sin creación retroactiva de sellos ni turnos.
+
+### 27.4 Pendientes que siguen bloqueando el motor
+
+- **Q3 — Finales dobles:** escoger F1/F2/F3; si F1, qué sucede con la criatura capturada del primero al perder ante el segundo, momento de incorporación a colección y XP regional.
+- **D-26 — Recursos:** precio en acciones ya aprobado, pero **stock inicial, cantidades de premios, misiones/tienda, migraciones de stock y nombre definitivo** todavía por definir. Sello premium solo como idea futura (v0.10).
+- **D-22 — Capturabilidad:** confirmar PS > 0, si la probabilidad se mantiene idéntica con 1 PS/PS máximos, límites por rareza definidos por Libro.
+- **D-21 — Pausa/HUD:** significado exacto de Reiniciar y Salir sin duplicar recursos, e ubicación de Detalles.
+- **D-23 — Habilidades:** matriz de Golpe + Ataque especial por especie y árbol del entrenador sin eliminar canon antiguo arbitrariamente.
+
+**Estado de ejecución:** Plan Director v0.11, **solo documentación**. El comportamiento real del APK Preview73 permanece como antes; D-27 NO está implementada. No hacer merge en dev; PR26 continúa draft y PR27 sigue pendiente de aprobación física.
