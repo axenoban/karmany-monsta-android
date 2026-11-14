@@ -86,7 +86,7 @@ func _run() -> void:
 		check(panels.size() == 1, "read-only details overlay opens once")
 		var panel = panels[0]
 		await process_frame
-		check(panel.get_node("PanelSurface").size.x <= 1280 and panel.get_node("PanelSurface").size.y <= 720, "overlay fits landscape large=%s" % large)
+		check(panel.get_node("PanelSurface").size.x <= 1280 and panel.get_node("PanelSurface").get_global_rect().end.y <= 720, "overlay fits viewport large=%s rect=%s" % [large, panel.get_node("PanelSurface").get_global_rect()])
 		check(panel.tabs.get_tab_count() == 4, "all four readout tabs available")
 		for tab in range(4):
 			panel.tabs.current_tab = tab
