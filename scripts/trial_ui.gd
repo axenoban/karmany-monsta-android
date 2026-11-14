@@ -452,7 +452,7 @@ func _trainer_menu() -> void :
 		var chosen: String = id
 		var reason: String = model.reason("trainer", chosen)
 		var label: String = Encounter.rules().resonances[chosen].name
-		panel.add_action("Ezel · " + label, func():
+		panel.add_action("Ezel: " + label, func():
 			_panel_action(panel, "trainer", chosen, int(state.revision)), not reason.is_empty())
 		if not reason.is_empty(): panel.add_text(reason, 18)
 
