@@ -1,5 +1,19 @@
 # Continuidad de Karmany Monsta
 
+## Prototipo A · Exploración táctil Jade Lugar 1 · 14/11/2026
+
+**Aprobación explícita:** el creador aprobó la opción A de exploración por interacción y autorizó implementar un prototipo. Contrato: `docs/PROTOTIPO_EXPLORACION_INTERACTIVA_JADE_01.md`. Se modifica únicamente `jade_point_1`: Entorno y Camino leen descripciones existentes; Buscar llama al mismo `App.discover_location`. El resto de las 12 etapas, reglas, datos canónicos, stamina, guardados, combate y navegación aprobada permanecen intactos.
+
+**Rama:** `feature/jade-interactive-location-prototype`, iniciada desde `feature/jade-nocturno@2591d053` (PR23), con [PR25](https://github.com/axenoban/karmany-monsta-android/pull/25) borrador contra PR23. PR21→PR22→PR23 siguen pendientes; PR24 de arte es hermano y no entra en esta rama. `dev/karmany-core@29be7ba` y `main@9ef7af7` sin tocar.
+
+**Evidencia:** CI inicial [43627903615](https://github.com/axenoban/karmany-monsta-android/actions/runs/43627903615) detectó un error en un test nuevo por usar la clave `stamina` inexistente en uno de los dos snapshots, mientras el modelo utiliza `value`. Corregida la aserción en commit `141251be` sin cambiar lógica de juego. **CI final y APK todavía por verificar** después de esa corrección; no atribuir éxito, guardado compatible o prueba física hasta evidencia completa.
+
+**SIGUIENTE PASO:** verificar la CI del último HEAD, corregir solo errores reales, obtener APK/artefactos y entregar al creador prueba física para su aprobación. No integrar a dev/main antes de `prueba correcta` y conciliación de dependencias.
+
+**RESPONSABLE:** CHAT (implementación, documentación y seguimiento del PR); creador para validación Android.
+**INSTRUCCIÓN PARA CONTINUAR:** En `axenoban/karmany-monsta-android` revisa HEAD y PR25, CI posterior a `141251be`, contrato del prototipo y PR21–24. Verifica importación Godot4.7.2, tests `location_hotspots_tests.gd`, regresiones completas y APK. Mantén aislamiento de guardados y reglas intactas; no integres sin validación física del creador.
+
+
 ## Jade nocturno · revisión artística y archivo de diseños · 14/11/2026
 
 El creador considera insuficiente la fidelidad visual de Preview46 respecto al concepto elegido y solicita registrar el inventario/manual antes de generar los diseños. Preview46 sigue siendo una primera adaptación técnica, sin aprobación artística final. No integrar por esta petición documental.
