@@ -464,7 +464,7 @@ func _team_menu() -> void :
 	for member in state.get("members", []):
 		var chosen: String = member.instance_id
 		var disabled: bool = chosen == state.ally_id or member.hp <= 0 or Router.pending(state)
-		var caption := "%s · PS %d/%d · %s" % [Catalog.species_name(member.species_id), int(member.hp), int(Tactical.stats_for(member).life), "Activo" if chosen == state.ally_id else "Reserva"]
+		var caption := "%s %d/%d · %s" % [Catalog.species_name(member.species_id), int(member.hp), int(Tactical.stats_for(member).life), "activo" if chosen == state.ally_id else "reserva"]
 		panel.add_action(caption, func():
 			_confirm("Entrará " + Catalog.species_name(member.species_id) + ". El cambio consume la acción y el rival responderá contra el nuevo activo. Los efectos y recargas permanecen en cada individuo.", func():
 				_panel_action(panel, "switch", chosen, int(state.revision))), disabled)
