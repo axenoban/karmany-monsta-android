@@ -111,6 +111,9 @@ func _show(next_page: String, record_history: bool = true) -> void :
 	margin.name = "Page"
 	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(margin)
+	# La transición se limita a presentación: App y NavigationHistory conservan el estado.
+	if not App.profile.settings.reduced_motion:
+		margin.modulate.a = 0.62
 	var column:= VBoxContainer.new()
 	column.add_theme_constant_override("separation", 10)
 	margin.add_child(column)
@@ -183,6 +186,9 @@ func _show(next_page: String, record_history: bool = true) -> void :
 	column.add_child(toast)
 	column.add_child(_label("JADE NOCTURNO · PREVIEW %s" % App.build_info.get("version", ""), 16, Color("a6bdb0")))
 	_safe_margins()
+	if not App.profile.settings.reduced_motion:
+		var fade := margin.create_tween()
+		fade.tween_property(margin, "modulate:a", 1.0, 0.18)
 
 func _label(text: String, font_size: int = 24, color: Color = PAPER) -> Label:
 	var label:= Label.new()
@@ -670,6 +676,9 @@ func _write_report(path: String) -> void :
 
 func _back() -> void :
 	if _close_modal(self): return
+	# Consultas de combate: Atrás cierra el panel, no cambia de ruta ni turno.
+	for panel in get_tree().get_nodes_in_group("combat_context_panel"):
+		if panel.is_visible_in_tree() and panel.handle_back(): return
 	if page == "prologue" and is_instance_valid(prologue):
 		prologue.back()
 		return
