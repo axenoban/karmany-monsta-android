@@ -101,7 +101,7 @@ jobs:
       - name: Validate interactive Jade exploration prototype
         run: |
           set -o pipefail
-          timeout 55s xvfb-run -a godot --rendering-method gl_compatibility --audio-driver Dummy --path . --script tests/location_hotspots_tests.gd 2>&1 | tee build/location-hotspots.log
+          timeout 55s xvfb-run -a godot --verbose --rendering-method gl_compatibility --audio-driver Dummy --path . --script tests/location_hotspots_tests.gd 2>&1 | tee build/location-hotspots.log
           python3 ci/check_log.py build/location-hotspots.log
       - name: Validate latest action display
         run: |
