@@ -2,11 +2,13 @@
 
 ## Jade nocturno · implementación autorizada · 14/11/2026
 
+**Entrega verificable:** [Preview46 / v0.25.0-jade](https://github.com/axenoban/karmany-monsta-android/releases/tag/android-preview-46), [PR23](https://github.com/axenoban/karmany-monsta-android/pull/23), código `ca3fd8d95d913998415618d11d27b706a669fbfd`, [CI43597428376 correcta](https://github.com/axenoban/karmany-monsta-android/actions/runs/43597428376). APK83.431.938 bytes, SHA256 `40fdf39d1012bbb5440eb1218adb7eb2edf0dd5a7ef4a508dcda84667b481e33`. Descarga completa comprobada; firma con el mismo certificado anterior;11 JSON de juego idénticos. 5.972 comprobaciones/32 suites Godot y3 Python correctas. Capturas en ui-review.zip de la release. Prueba física pendiente, sin integración. Evidencia: docs/JADE_NOCTURNO_VERIFICACION.json. Los commits documentales posteriores no alteran esta APK.
+
 El creador eligió Jade nocturno y aprobó su extensión e implementación. Rama de trabajo: `feature/jade-nocturno`, v0.25.0-jade, basada en `docs/documento-maestro-android@3a468de`; conserva R1.1 y el documento maestro. PR21/22 siguen siendo dependencias pendientes de conciliación; no se han integrado. Dev continúa en29be7ba y main en9ef7af7. Esta autorización habilita el bloque visual; no habilita E6 ni cambios de reglas, balance, canon o guardado.
 
 Implementación y protocolo: [JADE_NOCTURNO_IMPLEMENTACION.md](docs/JADE_NOCTURNO_IMPLEMENTACION.md). Tema, marcos/iconos propios y composiciones de inicio, regiones, equipo/colección, Libro, Bestiario, perfil y ajustes; HUD de combate con detalles al tocar. Arte canónico existente conservado. Comprobaciones locales Godot4.7.2 y Python satisfactorias; prueba física Android pendiente. Consultar PR/CI de la rama para la evidencia publicada; no confundir con Preview45.
 
-SIGUIENTE PASO: entregar candidata y acompañar validación física; integrar solo tras aprobación identificable y revisión de la cadena de PR.
+SIGUIENTE PASO: acompañar validación física de Preview46; integrar solo tras aprobación identificable y revisión de la cadena de PR.
 RESPONSABLE: WORK.
 INSTRUCCIÓN PARA CONTINUAR: En axenoban/karmany-monsta-android verifica HEAD/PR/CI reales de feature/jade-nocturno, lee JADE_NOCTURNO_IMPLEMENTACION.md y contrasta la APK con el SHA publicado. Acompaña la prueba física; corrige fallos visuales reproducibles sin alterar reglas ni guardados. No integres dev/main antes de aprobación de esta candidata.
 

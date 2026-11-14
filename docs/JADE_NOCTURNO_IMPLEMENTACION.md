@@ -1,5 +1,7 @@
 # Jade nocturno · candidata v0.25.0-jade
 
+**Entrega verificable:** [Preview46 / v0.25.0-jade](https://github.com/axenoban/karmany-monsta-android/releases/tag/android-preview-46), [PR23](https://github.com/axenoban/karmany-monsta-android/pull/23), código `ca3fd8d95d913998415618d11d27b706a669fbfd`, [CI43597428376 correcta](https://github.com/axenoban/karmany-monsta-android/actions/runs/43597428376). APK83.431.938 bytes, SHA256 `40fdf39d1012bbb5440eb1218adb7eb2edf0dd5a7ef4a508dcda84667b481e33`. Descarga completa comprobada; firma con el mismo certificado anterior;11 JSON de juego idénticos. 5.972 comprobaciones/32 suites Godot y3 Python correctas. Capturas en ui-review.zip de la release. Prueba física pendiente, sin integración. Evidencia: docs/JADE_NOCTURNO_VERIFICACION.json. Los commits documentales posteriores no alteran esta APK.
+
 ## Aprobación y base
 
 Axe eligió la opción1 «jade nocturno» y aprobó su extensión a Libro, Bestiario, perfil y ajustes, seguido de «Apruebo la extensión del estilo,pasa a la implementación». Dirección: misterio y fantasía con momentos luminosos; formas limpias, símbolos propios; información esencial en combate y detalle al tocar.
