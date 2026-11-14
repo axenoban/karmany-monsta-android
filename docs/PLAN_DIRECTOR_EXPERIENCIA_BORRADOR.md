@@ -1,6 +1,6 @@
 # Karmany Monsta Android · Plan director de experiencia (BORRADOR)
-**Versión:** 0.14 · 14 de noviembre de 2026 (D-30: botín aleatorio + objetivos; equipo pasivo y fabricación propuestos)  
-**Estado:** decisiones D-24/D-25/D-27/D-28/D-29/D-30 documentadas; **botín aleatorio + objetivos aprobados como dirección**, pero tablas de drops, fabricación, equipo pasivo, recursos, pausa y técnicas aún por definir; **NO aprobado como implementación**.  
+**Versión:** 0.15 · 14 de noviembre de 2026 (D-31: un único resultado de botín aleatorio por victoria; contratos de objetivos, inventario y fabricación)  
+**Estado:** decisiones D-24/D-25/D-27/D-28/D-29/D-30/D-31 documentadas; **botín exclusivo por victoria aprobado**, con objetivos como fuente adicional; porcentajes nuevos, inventario, fabricación, equipo pasivo, pausa y técnicas aún por definir; **NO aprobado como implementación**.  
 **Objeto:** definir la experiencia objetivo antes de continuar desarrollando gameplay, interfaces o animaciones. Las propuestas de esta versión NO constituyen reglas nuevas.
 
 ## 1. Referencias y estado real
@@ -1272,3 +1272,96 @@ El motor **no admite hoy este flujo**. No basta agregar un número a \`LevelProg
 6. **Otros contratos previos:** elegibilidad PS > 0, semántica Pausa «Reiniciar/Salir» y replanteamiento de habilidades Karmany/entrenador.
 
 **Protección del proyecto:** decisión G2+G3 y visión crafting/equipo pasivo registradas **solo como dirección de diseño** en PR26. No cambiar código, reglas de loot, inventario, datos, XP, balance, \`dev/karmany-core\` ni PR27/Preview73 por este cambio documental; PR26 sigue draft.
+
+
+## 32. D-31 — Una sola recompensa aleatoria de botín por victoria (APROBADA COMO REGLA DE DISEÑO)
+
+**Decisión expresa (14/11/2026):** «Para Karmany Monsta Android, en el sistema de botín elijo B: una sola recompensa aleatoria por victoria. Registra la decisión en el Plan Director y continúa definiendo objetivos, inventario y fabricación sin inventar estadísticas ni contenido canónico».
+
+**Decisión que reemplaza la alternativa técnica de §31.2 y §31.6:** **B / botín exclusivo**; no tiradas independientes (A), ni mezcla con recuperador separado y tabla común (C). Se deja el histórico de opciones en las versiones anteriores para trazabilidad; cualquier texto anterior que recomiende A o G1 queda **supeditado** a esta decisión posterior D-31. La fuente de sellos D-30 sigue siendo aleatoria + premios por objetivos; el sello premium continúa solo como hipótesis futura.
+
+### 32.1 Contrato de comportamiento cerrado
+
+1. Cada **victoria regional completa** puede conceder **como máximo un resultado de botín aleatorio**: una sola entrada de catálogo o ausencia de botín si esa posibilidad se conserva en la tabla final. **No** dar recuperador + sello + material en el mismo evento de botín.
+2. Las **recompensas garantizadas de progresión** (XP de victoria, XP P5 por captura, desbloqueos y avance de ruta) **NO** cuentan como «botín aleatorio» y no desaparecen con una tirada sin objeto.
+3. Las **recompensas por objetivos** (D-30) usan **un canal separado**, que puede liquidarse en la misma victoria si un objetivo queda cumplido; no deben interpretarse como segundo objeto del botín aleatorio. Si la UX agrupa ambos recibos en una pantalla, deben distinguir claramente **Botín** de **Objetivo**.
+4. Si se vincula al **primer rival del final doble** y luego se pierde ante el segundo: se conserva criatura + XP P5 (D-28/D-29), pero **NO** se entrega el botín aleatorio reservado para la **victoria regional**. Si se resuelven ambos, solo se liquida **un** evento de botín.
+5. Un intento de vínculo que consume sello y acción no produce botín por sí mismo. Fallar los tres intentos y ganar por daño sigue dando la oportunidad normal de **una tirada de botín regional**, sin captura ni XP P5.
+6. Resultado persistente e **idempotente por identidad de encuentro**: abrir el resultado, pausar, reentrar a la etapa o pulsar dos veces no repite la tirada ni concede un segundo objeto.
+
+**No decidido por D-31:** si el resultado «sin botín» figura formalmente en la tabla, la cantidad de unidades de un mismo ítem cuando sale premiado, las categorías disponibles por región, pesos de sellos/materiales, los objetivos concretos ni las tasas futuras. «Una recompensa» significa **una entrada premiada del botín**, no se ha acordado número de unidades ni probabilidad total de entrega. Evitar inferir «un objeto garantizado por victoria» a partir de «una sola recompensa».
+
+### 32.2 Compatibilidad estricta con recuperador de energía aprobado
+
+**Base observada:** \`scripts/exploration_energy.gd\` y \`data/exploration_rules.json\` contienen un recibo congelado por encuentro, escala de \`10000\` valores, umbral \`drop_below=2000\` (**20% de chance del recuperador por victoria**), y \`recovery_item_amount=30\`. Estas cifras son **canon del prototipo y están protegidas**.
+
+**Estrategia de compatibilidad propuesta, NO tabla de loot aprobada:**
+- Congelar **un solo resultado RNG por encuentro** (como actualmente) y conservar la pertenencia al intervalo existente \`roll < 2000\` para recuperador. En un contrato nuevo, si ese resultado ocurre y hay victoria, la única recompensa aleatoria será el recuperador (no calcular otro drop).
+- El intervalo restante \`2000..9999\` se reservaría para resolver entre **otras entradas aprobadas** o **sin botín**, una vez que el creador defina sus categorías y pesos. **No asignar 80% a sellos ni materiales**: es simplemente el espacio matemático restante; también puede contener «sin botín».
+- No lanzar una segunda tirada separada para sellos/materiales ni restablecer la primera al vencer al segundo rival. El resultado queda congelado al **iniciar el encuentro** para evitar rerolls mediante cierre/reinicio.
+- En migraciones: encuentros viejos con \`campaign.exploration.drop\` ya sorteado o resuelto **conservan el recibo antiguo**, sin generar un segundo objeto de la tabla nueva. No cambiar retroactivamente los premios ni reconstruir un premio distinto para una partida histórica.
+- En nuevos encuentros, el mismo contrato de recompensas debe controlar unicidad de objeto, estado de cobro, selección del catálogo y actualización de inventario **junto a victoria**. No editar \`Energy.resolve_drop()\` hasta cerrar el diseño canónico completo y tener una migración verificable.
+
+**Importante:** el esquema exclusivo puede conservar **exactamente** el 20% histórico del recuperador sin cambiar su tasa al sumar nuevas clases, **si** la nueva tabla reserva su cuota probabilística. Las cuotas de los demás objetos siguen sin decidir y la entrega no está garantizada.
+
+## 33. Contratos técnicos preliminares para objetivos, inventario y fabricación (SIN NUEVAS REGLAS CANÓNICAS)
+
+Los siguientes son **límites de arquitectura y preguntas de producto**, no objetos, misiones, estadísticas, tipos de material, recetas ni efectos concretos aprobados.
+
+### 33.1 Objetivos: registro y recompensa independiente de botín
+
+**Objetivo de diseño:** permitir conseguir sellos y otros ítems por logros/objetivos aun cuando el azar no entregue sellos. El juego todavía **no incluye misiones productivas aprobadas con este catálogo**.
+
+**Contrato de datos recomendado** para un eventual modelo de objetivos:
+- **Definición** versionada: identificador estable del objetivo, condición/actividad a observar, alcance temporal, reglas de elegibilidad, recompensa exacta, política de repetición y fuente de contenido aprobada.
+- **Estado persistente**: progreso acumulado, cumplimiento, reclamaciones ya realizadas, clave única de cobro y ancla de periodo solo si existen objetivos recurrentes autorizados.
+- **Recompensa**: un evento propio y atómico de inventario, separado del recibo de botín por victoria. No repetir cobros al cargar el perfil ni conceder progreso desde una acción duplicada.
+- **Visibilidad**: diferenciar en interfaz objetivo pendiente, completado, reclamable y cobrado, sin anunciar misiones/NPCs/contenido inexistente.
+- **Prevención de recompensas duplicadas**: si un evento de victoria cumple objetivo y además resuelve botín, cada canal se registra exactamente una vez, sin confundir recibos.
+
+**Decisión pendiente principal:** ¿objetivos **solo únicos**, **solo repetibles** o **mixtos** (hitos únicos + objetivos repetibles)? **Recomendación para siguiente validación: mixtos**, porque las metas únicas pueden agotarse y el botín aleatorio provocar rachas sin sellos; un objetivo repetible ofrece reposición sin pago. **No existe cadencia, cantidad, condición, umbral ni objetivo específico aprobados**.
+
+### 33.2 Inventario: una fuente de verdad, tipos compatibles
+
+**Estado auditado:** el recuperador aprobado vive en \`campaign.exploration.items\`, y la colección de Karmany, el equipamiento táctico de resonancias y los objetos de progresión son otros datos separados. El **inventario general de sellos/materiales/equipo aún no existe** en el motor.
+
+**Modelo conceptual, no esquema final ni campos obligatorios aprobados:**
+- **Catálogo de ítems:** identificador estable, **categoría funcional** (consumible, material o equipamiento cuando se aprueben), si apila en cantidad o tiene identidad de instancia, reglas de uso y versión de definición.
+- **Existencias:** mapa de cantidades enteras **no negativas** para ítems apilables; identidad única para instancias de equipos, evitando duplicados o referencias a fichas inventadas.
+- **Eventos de inventario:** gasto por intento de vínculo, obtención por botín u objetivo, y consumo/creación por fabricación **como movimientos de una sola transacción**, validados frente a stock y revisión de perfil.
+- **Integración legacy:** conservar recuperadores existentes al migrar \`exploration.items\`, o introducir un adaptador temporal (sin doble fuente de verdad). Las partidas históricas no ganan sellos o materiales retroactivos por inferencia.
+- **Bloqueos:** acciones inválidas no consumen ítems; cantidades negativas, catálogos desconocidos y cobros repetidos deben invalidarse. Evitar consumir sellos premium no disponibles.
+- **Separación de responsabilidades:** la colección de criaturas y el árbol del entrenador **NO** se reconvierten en entradas de este inventario.
+
+**No decidido:** existencia inicial de sellos normales, máximos de almacenamiento, categorías y nombres canónicos de materiales, acumulación, comercio, venta o equipamiento. **No generar un inventario con valores numéricos inventados**.
+
+### 33.3 Fabricación: recetas explícitas, sin lista inventada
+
+**Contrato de proceso propuesto:**
+1. Una receta canónica futura identifica ingredientes y cantidades, resultado y cantidad, condiciones de desbloqueo y restricciones de uso. **No hay recetas aprobadas para el Android actual**.
+2. La pantalla muestra solo recetas realmente registradas y verificables; no se infieren resultados por nombre del material ni se genera un ítem aleatorio por falta de receta.
+3. Antes de fabricar, validar existencia de ingredientes, capacidad si llegase a existir, disponibilidad de receta y estado de combate. Un fallo no modifica existencias.
+4. Si la operación es válida, **restar ingredientes y añadir resultado en una sola persistencia** con recibo/identidad que impida duplicación. Si falla la escritura, el perfil visible no cambia.
+5. Si el resultado es equipo, queda en inventario; **no se equipa automáticamente** y no activa pasivos hasta una operación de equipamiento explícita autorizada.
+6. Si se desea fabricar sellos, recargadores u otros consumibles, ello requiere **una decisión y receta independiente**; no es consecuencia automática de permitir fabricación.
+
+**No aprobados:** recetas, materiales, talleres/estaciones, duración, éxito o fallo de fabricación, mejora de calidad, reciclaje, rareza, costos, nivel mínimo, monedas, equipamiento inicial, slots, pasivos ni apilamiento.
+
+### 33.4 Equipamiento del entrenador con pasivos: frontera futura
+
+- Tratar como sistema separado de resonancias activas; un pasivo no implica una acción adicional, no puede crear capturas gratuitas ni ampliar tres intentos sin aprobación.
+- Los efectos necesitarán contratos de **momento de activación**, objetivo, apilamiento, magnitud, escalado y límite antes de especificar estadísticas.
+- La configuración y efectos efectivos deben persistirse en perfiles válidos y **no cambiar unilateralmente durante un encuentro activo**, para no reescribir HP/ataques, turnos o premios. El congelamiento al iniciar combate es una **recomendación técnica, no una regla adoptada**.
+- Implementar después de catálogo/inventario y fabricación, no junto con el rediseño de habilidades de todas las especies.
+
+### 33.5 Secuencia propuesta de módulos y QA
+
+1. **Contrato del botín exclusivo:** completar tabla de categorías + pesos; preservar recuperador al 20% y que **solo una** entrada gane por \`encounter.id\`. Confirmar si «sin botín» forma parte del resultado.
+2. **Inventario de consumibles/materiales:** catálogo definitivo, migración de \`exploration.items\`, política de stock inicial, guardados, recuentos y transacciones.
+3. **Objetivos:** elegir únicos/repetibles/mixtos y definir un primer conjunto real con contenidos, criterios, recompensas y tests; sin inventar cantidades.
+4. **Fabricación:** inventario de materiales real, primeras recetas aprobadas y flujo de fabricación persistente.
+5. **Equipo pasivo:** slots/identidades/efectos aprobados, equipamiento explícito y regresiones de combate.
+
+**QA previsto (no ejecutado):** una victoria entrega 0 o 1 premio aleatorio según tabla aprobada; recuperador mantiene 20%, premios exclusivos; final doble no duplica tirada; recompensa por objetivo se conserva aparte; guardar/reabrir no vuelve a sortear; caída del segundo rival cierra la única victoria; inventario nunca negativo; recetas inválidas no consumen; equipo sin receta ni pasivo definido no aparece en partida; guardados antiguos mantienen recuperadores.
+
+**Prioridad de decisión para el próximo turno:** política de **objetivos únicos/repetibles/mixtos** y necesidad de fuente renovable de sellos. Después decidir la opción «sin botín» y pesos de la tabla sin tocar el 20% existente. **Solo documento PR26; sin implementación, recompensas nuevas, datos, misiones, recetas, equipamiento ni APK.**
