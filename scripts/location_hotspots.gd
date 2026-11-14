@@ -19,7 +19,7 @@ func setup(background: Texture2D, info: Dictionary, large_text: bool = false) ->
 	clip_contents = true
 
 	var image := TextureRect.new()
-	image.name = "InteractiveBackdrop"
+	image.name = "LocationBackdrop"
 	image.texture = background
 	image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
