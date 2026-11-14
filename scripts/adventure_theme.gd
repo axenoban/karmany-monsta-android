@@ -75,7 +75,7 @@ static func create() -> Theme:
 	return result
 
 static func decorate(button: Button) -> void:
-	var icons := {"Volver":"back", "Equipo":"team", "Libro":"book", "Ajustes":"settings", "Bestiario":"leaf", "Golpe":"attack", "Protección":"shield", "Insignia":"leaf", "Detalles":"info"}
+	var icons := {"Volver":"back", "Volver al combate":"back", "Menú":"settings", "Táctica":"shield", "Entrenador":"book", "Equipo":"team", "Libro":"book", "Ajustes":"settings", "Bestiario":"leaf", "Golpe":"attack", "Protección":"shield", "Insignia":"leaf", "Detalles":"info"}
 	for caption in icons:
 		if button.text == caption:
 			button.icon = load("res://assets/ui/jade/icon_" + icons[caption] + ".svg")
