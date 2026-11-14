@@ -72,14 +72,21 @@ func setup(caption: String, large_text: bool = false) -> void:
 
 func _layout() -> void:
 	if _shell == null or size.x < 1 or size.y < 1: return
-	if size.x >= 1080.0 and size.y >= 560.0:
-		var panel_width := minf(560.0, size.x * 0.46)
-		_shell.position = Vector2(size.x - panel_width - 10.0, 8.0)
-		_shell.size = Vector2(panel_width, size.y - 16.0)
+	# La escena puede calcular un mínimo mayor que el viewport con texto grande.
+	# El panel debe ajustarse a la zona visible, y desplazar su contenido internamente.
+	var viewport: Vector2 = get_viewport_rect().size
+	var available := Vector2(
+		minf(size.x, maxf(200.0, viewport.x - global_position.x)),
+		minf(size.y, maxf(200.0, viewport.y - global_position.y))
+	)
+	if available.x >= 1080.0 and available.y >= 560.0:
+		var panel_width := minf(560.0, available.x * 0.46)
+		_shell.position = Vector2(available.x - panel_width - 10.0, 8.0)
+		_shell.size = Vector2(panel_width, available.y - 16.0)
 	else:
-		var top := maxf(8.0, size.y * 0.34)
+		var top := maxf(8.0, available.y * 0.34)
 		_shell.position = Vector2(8.0, top)
-		_shell.size = Vector2(maxf(200.0, size.x - 16.0), maxf(180.0, size.y - top - 8.0))
+		_shell.size = Vector2(maxf(190.0, available.x - 16.0), maxf(160.0, available.y - top - 8.0))
 
 func _label(value: String, font_size: int = 21) -> Label:
 	var label := Label.new()
