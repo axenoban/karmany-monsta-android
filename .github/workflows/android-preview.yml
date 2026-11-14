@@ -137,7 +137,7 @@ jobs:
       - name: Validate continuous combat and results UX
         run: |
           set -o pipefail
-          godot --headless --path . --script tests/continuous_ux_tests.gd 2>&1 | tee build/continuous-ux.log
+          timeout 40s godot --headless --path . --script tests/continuous_ux_tests.gd 2>&1 | tee build/continuous-ux.log
           python3 ci/check_log.py build/continuous-ux.log
       - name: Validate guided Jade route and migration
         run: |
