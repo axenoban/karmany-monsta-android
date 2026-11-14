@@ -4,7 +4,7 @@ Versión1 · 14/11/2026 · Proyecto Karmany Monsta Android
 ## Estado y propósito
 El creador solicita integrar el inventario y preparar el archivo de diseños antes de generar todas las piezas. Preview46 es una adaptación técnica inicial: su resultado visual fue considerado insuficiente respecto al concepto elegido. La CI satisfactoria no representa aprobación artística. No integrar PR23/dev/main por esta petición documental.
 
-Este manual fija el alcance de producción visual; no modifica reglas, estadísticas, contenido canónico ni guardados. Sustituye cualquier interpretación de que la aplicación de colores en Preview46 completó Jade nocturno. Los nuevos diseños se presentan para aprobación antes de incorporarlos al juego. La generación de la lámina maestra es el siguiente trabajo, no una entrega realizada aquí.
+Este manual fija el alcance de producción visual; no modifica reglas, estadísticas, contenido canónico ni guardados. Sustituye cualquier interpretación de que la aplicación de colores en Preview46 completó Jade nocturno. Los nuevos diseños se presentan para aprobación antes de incorporarlos al juego. La dirección 02 Cristal vivo cuenta con una entrega posterior de 401 SVG en propuesta, no aprobados individualmente; sigue pendiente la revisión artística y su eventual integración por bloques.
 
 ## Referencia y dirección
 ![Referencia Jade nocturno](imagenes/00-referencias/jn-referencia-estilo-v001.png)
@@ -20,7 +20,7 @@ Imagen aportada por el creador: concepto de exploración, combate y equipo. Se c
 - Identidad propia de Karmany Monsta: sin imitar interfaces Android estándar ni copiar arte de otros juegos.
 
 ## Cómo usar el inventario
-Cada ID identifica una familia, no un único archivo: por ejemplo iconos de navegación requiere varias piezas, y cada botón requiere estados. El [catálogo editable](catalogo.csv) registra el avance por familia; los archivos individuales se anotan en el [registro de imágenes](imagenes/registro.csv). Inicialmente todas las familias están pendientes: los recursos simples de Preview46 no cuentan como diseños finales aprobados.
+Cada ID identifica una familia, no un único archivo: por ejemplo iconos de navegación requiere varias piezas, y cada botón requiere estados. El [catálogo editable](catalogo.csv) registra el avance por familia; los archivos individuales se anotan en el [registro de imágenes](imagenes/registro.csv). Tras la propuesta 02, las 53 familias figuran como propuestas para revisión. Ninguna ha sido aprobada ni implementada; los recursos simples de Preview46 no cuentan como diseños finales aprobados.
 
 ## Identidad y estructura
 
@@ -134,7 +134,7 @@ La zona táctil incluye margen invisible y no se limita al contorno ornamental. 
 3. **Equipo y progresión:** colección, Bestiario, Libro, perfil y resonancias.
 4. **Composiciones y situaciones:** pantallas completas, configuración, tutorial, resultados, vinculación y efectos.
 
-No generar todas las familias antes de revisar el kit maestro: una aprobación de su lenguaje gráfico permite mantener coherencia en el resto. La aprobación de una lámina no valida automáticamente cada recurso derivado.
+Las familias ya cuentan con prototipos exportados en la propuesta 02. Revisar primero el kit maestro para ajustar el lenguaje antes de considerar las demás como finales. La aprobación de una lámina no valida automáticamente cada recurso derivado.
 
 ## Archivo de diseños y trazabilidad
 Ver [guía del espacio de imágenes](imagenes/README.md). Propuestas/aprobados se guardan dentro de docs, fuera de assets de ejecución; el export actual ya excluye docs/*. Un archivo .gdignore evita importar este archivo de diseño en Godot. Solo las piezas aprobadas y preparadas pasan luego a assets/ui/jade u otra carpeta del juego mediante un cambio explícito.
@@ -142,4 +142,9 @@ Ver [guía del espacio de imágenes](imagenes/README.md). Propuestas/aprobados s
 Registrar en catalogo.csv: pendiente → propuesta → en_revision → aprobado → implementado. Una revisión solicitada puede devolver una familia a propuesta. Las revisiones superadas permanecen como historial, sin borrar la evidencia de aprobación previa. En una familia con muchas piezas, anotar estados parciales en notas; no marcarla aprobada si faltan piezas.
 
 ## Continuación
-Responsable: WORK. Próxima entrega: lámina del kit visual maestro con estados, seguida de revisión del creador. Instrucción: «En feature/jade-nocturno lee docs/diseno/jade-nocturno/README.md; diseña la lámina del kit maestro siguiendo la referencia y registra sus propuestas sin marcarlas aprobadas ni modificar el juego».
+Responsable: CHAT/WORK según coordinación del creador. Próxima acción: revisión artística del kit maestro y ajustes de los recursos propuestos. Instrucción: «En feature/jade-nocturno lee docs/diseno/jade-nocturno/README.md; diseña la lámina del kit maestro siguiendo la referencia y registra sus propuestas sin marcarlas aprobadas ni modificar el juego».
+
+
+## Entrega posterior · Cristal vivo 02
+
+[Ver manifiesto de 401 diseños vectoriales en propuesta](imagenes/cristal-vivo-02/manifiesto.csv). Fuente reproducible en `imagenes/cristal-vivo-02/generar_kit.py`. Hay PNG RGBA y vistas locales de revisión en paquete descargable, pero no en recursos activos de Godot. La validación estructural de fuentes no reemplaza aprobación artística ni regresiones Android.
