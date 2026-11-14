@@ -1,5 +1,5 @@
 # Karmany Monsta Android · Plan director de experiencia (BORRADOR)
-**Versión:** 0.4 · 14 de noviembre de 2026 (dirección de combate por panel, composición y flujos documentados)  
+**Versión:** 0.5 · 14 de noviembre de 2026 (resultados integrados con vínculo destacado, dirección y flujos documentados)  
 **Estado:** dirección de producto parcialmente definida y diagnósticos técnicos verificados; **NO aprobado como implementación ni modificación canónica**.  
 **Objeto:** definir la experiencia objetivo antes de continuar desarrollando gameplay, interfaces o animaciones. Las propuestas de esta versión NO constituyen reglas nuevas.
 
@@ -109,6 +109,7 @@ Los bloques de ejecución se redefinirán en unidades medianas tras las decision
 | D-17 | Continuidad UX | **Mayor fluidez entre diferentes vistas** | Auditar transiciones, continuidad visual, cantidad de pasos y regreso sin pérdida de contexto |
 | D-18 | Prioridad de navegación (ronda 3 parcial) | **Ambas: demasiadas pantallas/ventanas y cambios visuales bruscos** | Atacar simultáneamente la fragmentación de tareas y la discontinuidad visual; no se reduce a añadir Tween |
 | D-19 | Navegación de combate (ronda 3) | **Panel sobre el combate** para Equipo, Entrenador y Detalles | La escena sigue de fondo mientras se consulta; las decisiones de juego conservan validaciones y efectos actuales |
+| D-20 | Resultados (ronda 3) | **Resultados integrados con vínculo destacado** | Victoria/XP/recompensas en una superficie; Libro como segundo momento visual, sin alterar decisiones ni transacciones |
 
 La ronda 2 no aprobó ningún cambio de código, cambios de reglas o sustitución del arte. No confundir dirección de diseño con especificación implementable.
 
@@ -258,11 +259,11 @@ No mantener todo el equipo, mapa y combate como nodos activos invisibles por def
 
 ## 14. Decisiones pendientes y puerta de cierre
 
-**Confirmado:** dirección de las rondas 1–2; redibujo conservando identidad; comparación de técnicas de animación; ayuda bajo demanda desde Inicio y Opciones; doble prioridad en navegación (reducir pasos y brusquedad); **D-19: panel superpuesto al combate para Equipo/Entrenador/Detalles**.
+**Confirmado:** dirección de las rondas 1–2; redibujo conservando identidad; comparación de técnicas de animación; ayuda bajo demanda desde Inicio y Opciones; doble prioridad en navegación; **D-19: panel superpuesto al combate**; **D-20: resultados integrados con Libro destacado**.
 
 **Aún requieren decisión/validación:**
 1. **RESUELTO D-19:** Equipo, Entrenador y Detalles durante combate se consultarán en **panel superpuesto** (no navegación a pantalla completa). Pendiente validar dimensiones, desplazamiento, legibilidad y ubicación exacta mediante maqueta/prueba real.
-2. ¿Compactar automáticamente resultados rutinarios o permitir modo resumen/expandido? La elección de vincular debe permanecer explícita.
+2. **RESUELTO D-20 (dirección):** integrar victoria/XP/recompensas, seguido de un momento destacado para el Libro. Sigue por validar cuánto detalle de XP se muestra de entrada.
 3. ¿Un shell B parcial aporta mejora respecto a A suficiente para justificar complejidad? La recomendación no es autorización.
 4. Elegir personaje, fondos, escala y técnica final de animación por comparación; **sprites actuales no reemplazados**.
 5. Contratos concretos de caminos opcionales, encuentros variables y dificultad; requerirían decisiones canónicas y pruebas; stamina permanece en experimentación.
@@ -466,7 +467,7 @@ Mapa → Localización → Exploración → Encuentro → COMBATE
 
 **Bloque UX-C2 — Continuidad entre exploración y combate:** transición corta, ficha local contextual, eliminación de pasos intermedios, Back y conservación de escenario en el flujo. Solo una vez revisado el contrato con la historia principal y la variante Jade1; no ampliar nuevas rutas aquí.
 
-**Bloque UX-C3 — Resultados y vínculo:** evaluar compactación de victoria/XP/vínculo como propuesta aparte. Los pasos actuales no se fusionan sin decisión del creador.
+**Bloque UX-C3 — Resultados y vínculo:** D-20 aprueba integrar la **presentación** de victoria/XP/recompensas, manteniendo al Libro como momento destacado posterior. No fusionar transacciones, descartar elecciones ni omitir checkpoints.
 
 **Bloque UX-C4 — Ayuda de consulta manual:** Inicio + Opciones, migración no destructiva de \`first_session\` cuando corresponda. Eliminar tutorial automático requiere pruebas de aprendizaje, no solo ocultar \`ContextHelp\`.
 
@@ -477,7 +478,130 @@ El orden de producción se ajustará a la validación previa del lenguaje visual
 - **Resueltos:** la consulta de Equipo/Entrenador/Detalles ocurre **encima del combate**, con escena visible; intención de reducir pasos y brusquedad; ayudas manuales en Inicio/Opciones; demás elecciones generales de rondas 1 y 2.
 - **Para maqueta visual:** panel lateral frente a inferior según resolución; cantidad exacta de escenario visible; barra superior/inferior y manejo de texto grande.
 - **Para futura autorización técnica:** A simplificada vs B parcial, transición específica y lifecycle; no exigir una escena completamente persistente por la sola preferencia de panel.
-- **Para decisión separada:** compactación victoria/XP/Libro; animación híbrida vs otras técnicas; rutas secundarias, encuentros variables, comportamiento rival, stamina, contenido narrativo y arte de personajes.
-- **Límite:** ningún fragmento de esta v0.4 modifica reglas, datos, estado del repositorio integrado, gameplay ni UI; el PR26 sigue documental y draft.
+- **Resuelto D-20:** dirección visual de resultados integrados y Libro destacado. **Por decidir:** detalle XP, animación híbrida vs otras técnicas; rutas secundarias, encuentros variables, comportamiento rival, stamina, contenido narrativo y arte.
+- **Límite:** ningún fragmento de esta v0.5 modifica reglas, datos, estado del repositorio integrado, gameplay ni UI; PR26 sigue documental y draft.
 
-**SIGUIENTE PASO:** revisar con el creador la maqueta para el panel superpuesto, observar en vídeo/capturas el combate real, y seleccionar la siguiente decisión sobre resultados antes de autorizar un primer bloque implementable.
+**SIGUIENTE PASO:** revisar las maquetas de panel de combate (D-19) y resultados integrados/Libro (D-20), contrastar capturas/vídeo y avanzar hacia la prueba de técnicas de animación.
+
+
+## 20. Decisión D-20 — Victoria/XP/recompensas integradas y vínculo destacado
+
+**Fuente explícita:** el creador elige «Resultados integrados con vínculo destacado» y solicita **analizar, documentar y actualizar PR26, sin implementar**.
+
+**Dirección de producto confirmada:** tras una victoria, mostrar en una sola superficie el resultado, XP de cada integrante, niveles alcanzados y premios efectivamente otorgados. Acto seguido, el Libro conserva un momento **visualmente propio**, con probabilidad, objetivo elegible y elección expresa. Esta decisión es de UX y NO autoriza cambiar reglas, datos canónicos, guardados, estadísticas, probabilidades ni contenido.
+
+### 20.1 Estado real inspeccionado y riesgos
+
+1. El documento maestro Android señala que el último rival vencido origina una única victoria, XP y avance. En finales regionales se derrota a dos enemigos consecutivos, se elige **uno** para intentar vincular y hay hasta **tres intentos** guardados. La elección no consume intento.
+2. \`App.trial_action()\` guarda en \`commit_profile()\` la victoria, recibo de XP, registro de ruta, posible premio de stamina y checkpoint al pasar de \`battle\` a \`capture\`. La UI solo presenta estos datos; jamás calcula ni concede otra vez.
+3. \`AftermathFlow\` distingue pasos persistidos \`victory\`, \`experience\`, \`choose\`, \`duplicate\`, \`binding\`, y fases reales \`captured\`, \`escaped\`, \`defeat\`, \`retreated\`. \`Aftermath.step()\` y \`Aftermath.next()\` determinan el punto actual y su continuación. **Una sola pantalla visual no significa un solo checkpoint persistido.**
+4. \`AftermathScreen\` presenta victoria por separado, transiciona automáticamente tras 1,25 segundos en condiciones normales, luego XP individual con \`ExperiencePanel\`, y después Libro, elección, duplicado o final. La cinemática de \`BindingStage\` dura actualmente 3,6 segundos; esos valores descriptivos no son límites propuestos.
+5. \`ExperiencePanel\` y \`ExperienceSummary.frame()\` ya muestran distribución individual, varios niveles cruzados, cap regional y cambios de estadísticas. No resumirlo en una ficticia «XP total» idéntica para todos.
+6. \`App.advance_aftermath(id, expected_step)\` valida y persiste el avance; \`App.finish_aftermath(id, revision)\` valida fase, ID y revisión; \`App.trial_action("capture")\` guarda intento y resultado **antes** de reproducir cinemática. Nunca reemplazar esto con navegación directa al mapa o escritura de \`campaign.aftermath\` desde una vista.
+7. \`App.consume_experience()\` usa \`pending_experience_id\` efímero de presentación, distinto del recibo durable de \`Aftermath.receipt(campaign)\`. Al rediseñar, evitar consumir el indicador dos veces y detectar correctamente recibos existentes al restaurar una partida.
+
+### 20.2 Composición propuesta A — resultados compactos en una sola superficie
+
+\`\`\`text
+┌──────────────────────────── VICTORIA ────────────────────────────────┐
+│ [Fondo de la localización y criatura protagonista; nombres reales]  │
+│                    Encuentro completado                              │
+├───────────────────────── EXPERIENCIA ────────────────────────────────┤
+│ [Entrenador]           +XP real   barra Nv. antes → después          │
+│ [Miembro del equipo]   +XP real   barra Nv. antes → después          │
+│ [...cada receptor que figura realmente en el recibo]                 │
+│ Subida de nivel y estadísticas cuando corresponda                    │
+│ [Ver detalles del progreso]  (control propuesto, no aprobado)        │
+├────────────────────────── PREMIOS ────────────────────────────────────┤
+│ Solo bonos/recompensas concedidos según recibo/estado guardado       │
+├───────────────────────────────────────────────────────────────────────┤
+│                       [Continuar al Libro]                           │
+└───────────────────────────────────────────────────────────────────────┘
+\`\`\`
+
+No generar una pantalla de título «Victoria» que obligue a continuar hacia otra pantalla de XP. El reconocimiento y el progreso se presentan juntos, conservando una única identidad de lugar. La XP por integrante debe ser exacta, con visibilidad de niveles y topes; un nivel realmente alcanzado merece énfasis. Si no hay recibo de XP regional, omitir cifras inexistentes y avanzar según \`Aftermath.next()\`. El detalle expandible es **una opción por validar**, no una nueva regla.
+
+### 20.3 Composición propuesta B — segundo momento de vínculo destacado
+
+\`\`\`text
+┌──────────────────────────── EL LIBRO ─────────────────────────────────┐
+│ [Mismo ambiente]    [Libro protagonista]    [Karmany elegible]        │
+│ Nombre y nivel real · probabilidad vigente · intentos restantes      │
+│                                                                      │
+│ Si hay dos rivales, elegir UNO antes del primer intento              │
+│ Si la especie ya existe, decidir si vincular otro individuo          │
+│                                                                      │
+│         [Intentar vínculo]           [Dejarlo partir]                │
+├───────────────────────────────────────────────────────────────────────┤
+│  Al intentar: cinemática real / éxito / fallo / escape                │
+└───────────────────────────────────────────────────────────────────────┘
+\`\`\`
+
+El Libro conserva escena propia y ritmo especial, pero no una navegación llena de pasos innecesarios. Se mantiene la selección irreversible de una criatura cuando el encuentro tiene dos rivales, el máximo de tres intentos, la probabilidad exacta según la mejora equipada y la posibilidad de renunciar voluntariamente conservando la victoria y XP. No inventar un nuevo método de captura, recurso, aumento de probabilidad o garantía por animación.
+
+### 20.4 Estados, retorno y casos extremos
+
+| Caso real | Composición visual | Invariante funcional |
+|---|---|---|
+| Victoria simple con XP | Resultado integrado y después Libro | Premio guardado previamente, una sola vez |
+| Victoria sin recibo válido | Resumen sin XP inventada y decisión de Libro | No bloquear por indicador efímero ausente |
+| Final regional con dos enemigos | En Libro aparece elección de uno | Solo una selección; sin dos capturas |
+| Especie duplicada | Libro comunica posesión y consulta si se desea otra | No anunciar especie nueva |
+| Fallo con intentos restantes | Libro se actualiza sin volver a mostrar XP | Contador persistido; sin nueva tirada automática |
+| Tercer fallo | Escape y retorno | No existe cuarto intento |
+| Vínculo logrado | Celebración de criatura realmente añadida | Colección y nivel reales, sin segundo commit desde UI |
+| Renuncia voluntaria | Confirmación expresa antes de salir | Conserva victoria y XP; no abandona sin aviso |
+| Derrota/retirada | Pantalla distinta de recuperación/retorno | Nunca mostrar Victoria, XP ni Libro |
+| Partida cerrada durante resultados/Libro | Abrir vista del checkpoint efectivo | No repetir premios, elección ni intentos |
+| Perfil histórico | Interpretar paso persistido vigente | Sin migrar guardado para cambio visual |
+
+**Atrás Android:** priorizar diálogo crítico, cinematografía y estado activo. Estar en el Libro no equivale a renunciar al vínculo al pulsar Atrás: debe preservar o confirmar decisión. Si se interrumpe movimiento, no reejecutar \`App.advance_aftermath()\` ni \`trial_action()\`. La omisión de animación visual no omite la operación guardada.
+
+### 20.5 Propuesta de flujo y contrato de integración seguro (NO autorizado)
+
+\`\`\`text
+COMBATE → último enemigo derrotado
+     │ App ya guarda victoria + XP + premios + checkpoint
+     ▼
+[RESUMEN VISUAL INTEGRADO]
+     │ Leer receipt y step. Avanzar por checkpoints persistidos válidos.
+     ▼
+[LIBRO DESTACADO]
+     ├── rival doble: escoger uno y persistir selección
+     ├── duplicado: decidir sobre otra instancia
+     ├── intento: App.trial_action("capture") UNA sola vez
+     │      ├── éxito: celebración → continuar
+     │      ├── fallo: quedan intentos → actualizar Libro
+     │      └── tercer fallo: escape → continuar
+     └── renuncia: confirmar → conservar XP y salir
+\`\`\`
+
+**Riesgo técnico principal:** \`victory\` y \`experience\` son dos checkpoints persistidos aunque la UI nueva combine ambos en una superficie. Un adaptador debe avanzar mediante \`App.advance_aftermath()\` de forma **secuencial y guardada**, según el estado real, sin forzar directamente \`binding\`. No poner dos callbacks concurrentes para un solo botón; verificar \`encounter.id\`, \`revision\`, \`phase\`, paso efectivo y \`App.ui_epoch\`, y bloquear CTA repetidos/obsoletos. Si falla guardado, no afirmar visualmente que el paso se completó.
+
+Reutilizar \`ExperiencePanel\` y muestreo multinivel, \`AftermathFlow\` como fuente de verdad y \`BindingStage\` como animación de Libro sin recalcular resultado. La construcción presentacional hipotética puede separar \`IntegratedResultsView\` y \`BindingFocusView\`, evitando nuevas variables persistidas. Coordinar con D-19 (paneles de combate) y D-18 (fluidez), sin mantener todos los controles activos invisibles ni dejar Tweens/Audio huérfanos.
+
+### 20.6 Criterios de prueba futuros para D-20
+
+| ID | Escenario | Resultado esperado |
+|---|---|---|
+| RES-01 | Victoria regional, primera y repetida | Una superficie de victoria/XP; bono único real |
+| RES-02 | XP individual, subida multinivel, cap regional | Barras y cifras iguales al recibo persistido |
+| RES-03 | Sin recibo o con perfil antiguo | No inventar XP ni bloquear checkpoint |
+| RES-04 | Dos rivales y elección | Solo una criatura, elección persistida |
+| RES-05 | Duplicado y 1–3 fallos | Aviso exacto, intentos correctos, sin cuarto intento |
+| RES-06 | Éxito y salida sin vínculo | Una colección correcta, XP intacta |
+| RES-07 | Derrota y retirada | Sin victoria ni XP ni Libro |
+| RES-08 | Doble toque, pausa, reinicio, omisión de animación | Ninguna transacción duplicada ni callback vivo tras teardown |
+| RES-09 | Atrás Android, fallo de guardado y texto grande | Mantiene checkpoint y explica error; lectura/acciones seguras |
+| RES-10 | QA aislado, 1280×720, 960×540, movimiento reducido | Sin contaminación de partida, fuga de nodos o bloqueo visual |
+| RES-11 | Prueba física: vídeo antes/después en móvil | Menos pantallas y pasos, Libro claramente destacado |
+
+**Ritmo:** resultados ordinarios ágiles, subidas de nivel y primer vínculo con suficiente énfasis. Duraciones definitivas se deciden mediante comparación en teléfono; \`reduced_motion\` muestra el estado final inmediatamente sin retrasos artificiales.
+
+## 21. Continuación — pendientes tras D-20
+
+**D-20 resuelto a nivel de experiencia:** resultados integrados más vínculo destacado. La compactación de pantallas no significa compactación de transacciones.
+
+**Todavía por decidir:** si los cambios estadísticos y niveles se ven siempre o bajo «Ver detalle» (como mínimo XP individual y nivel ganado serán visibles); selección de técnica de animación D-10 tras prototipos comparables; maquetas artísticas D-19+D-20 y requisitos de pantalla móvil; rutas opcionales y pools variables; dificultad y stamina. No abrir un bloque de jugabilidad por estas decisiones UX.
+
+**Siguiente revisión sugerida:** definir la jerarquía de información del resumen XP y preparar un piloto comparativo de animación de un personaje existente. \`PR26\` se mantiene **draft documental**, no se integrará a dev ni producirá APK por esta modificación.
