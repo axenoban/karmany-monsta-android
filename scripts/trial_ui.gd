@@ -10,7 +10,8 @@ const ProgressRules = preload("res://scripts/progression_rules.gd")
 const Energy = preload("res://scripts/exploration_energy.gd")
 const Route = preload("res://scripts/jade_route.gd")
 const RouteMap = preload("res://scripts/jade_route_map.gd")
-const Details = preload("res://scripts/combat_details.gd")
+const Readout = preload("res://scripts/combat_readout.gd")
+const CombatPanel = preload("res://scripts/combat_context_panel.gd")
 const Encounter = preload("res://scripts/trial_encounter.gd")
 const Router = preload("res://scripts/encounter_router.gd")
 const Catalog = preload("res://scripts/combat_catalog.gd")
@@ -346,33 +347,42 @@ func _confirm(text: String, action: Callable, confirmation: String = "Confirmar 
 	dialog.canceled.connect(dialog.queue_free)
 	dialog.popup_centered(Vector2i(580, 230))
 
+func _combat_panel(caption: String) -> Control:
+	var existing := get_node_or_null("CombatContextPanel")
+	if existing != null:
+		remove_child(existing)
+		existing.queue_free()
+	var panel := CombatPanel.new()
+	add_child(panel)
+	panel.setup(caption, App.profile.settings.large_text)
+	return panel
+
+func _panel_action(panel: Control, operation: String, id: String, revision: int, target_id: String = "") -> void:
+	if binding_busy or combat_busy: return
+	if App.trial_action(operation, id, revision, target_id):
+		navigate.emit("battle")
+	else:
+		if is_instance_valid(panel) and not panel.is_queued_for_deletion():
+			panel.set_notice(App.notice)
+
 func _support(state: Dictionary, revision: int) -> void :
-	var dialog:= AcceptDialog.new()
 	var effect := Catalog.action(state.ally_species, "insignia")
 	var boost := roundi(float(effect.get("relay_boost", effect.get("grant_boost", 0))) * 100)
-	dialog.title = "Insignia · ataque y relevo (+20%, 2 rondas)" if effect.has("relay_boost") else "Insignia · elige quién recibe +%d%% al próximo golpe" % boost
-	var choices:= VBoxContainer.new()
-	dialog.add_child(choices)
+	var caption := "Insignia · ataque y relevo" if effect.has("relay_boost") else "Insignia · próximo golpe +%d%%" % boost
+	var panel := _combat_panel(caption)
+	panel.add_text("Selecciona un destinatario. Cerrar no consume la habilidad.", 20)
 	for member in state.members:
 		if member.hp <= 0 or (effect.has("relay_boost") and member.instance_id == state.ally_id): continue
 		var recipient: String = member.instance_id
-		choices.add_child(_button(Catalog.species_name(member.species_id) + " · " + recipient, func():
-			_act("karmany", "insignia", revision, recipient)
-			dialog.queue_free()))
-	add_child(dialog)
-	dialog.canceled.connect(dialog.queue_free)
-	dialog.confirmed.connect(dialog.queue_free)
-	dialog.popup_centered(Vector2i(580, 300))
+		panel.add_action(Catalog.species_name(member.species_id) + " · " + recipient, func():
+			_panel_action(panel, "karmany", "insignia", revision, recipient))
 
 func _details() -> void :
 	_dismiss("OptionsMenu")
-	if get_node_or_null("CombatDetails") != null: return
-	var dialog:= Details.new()
-	if not dialog.setup(App.profile.campaign.encounter, App.profile.settings.large_text):
-		dialog.free()
-		return
-	add_child(dialog)
-	dialog.popup_centered(Vector2i(820, 520))
+	var readout := Readout.build(App.profile.campaign.encounter)
+	if readout.is_empty(): return
+	var panel := _combat_panel("Estado y técnicas")
+	panel.populate_details(readout)
 
 func _continue_route(encounter_id: String, revision: int) -> void :
 	if App.continue_route(encounter_id, revision): navigate.emit("jade_play")
@@ -426,32 +436,33 @@ func _options_menu() -> void :
 		if Router.pending(state): content.add_child(_label("Espera la respuesta rival para abandonar.", 20))
 
 func _trainer_menu() -> void :
-	var content:= _popup("TrainerMenu", "Entrenador · resonancia opcional")
-	if content == null: return
-	_help_in(content, "trainer")
 	var model = Router.create(App.profile.campaign.encounter)
 	if not model.restore(App.profile.campaign.encounter): return
 	var state: Dictionary = model.state
+	var panel := _combat_panel("Entrenador · resonancias")
+	panel.add_text("La resonancia es opcional antes de actuar con el Karmany.", 20)
 	if state.loadout.is_empty():
-		var hint:= _label("Sin resonancias equipadas. Actúa con tu Karmany.")
-		hint.name = "TrainerHint"
-		content.add_child(hint)
+		panel.add_text("Sin resonancias equipadas. Actúa con tu Karmany.")
 	for id in state.loadout:
 		var chosen: String = id
-		var reason: String = model.reason("trainer", id)
-		content.add_child(_button("Ezel: " + Encounter.rules().resonances[id].name, func(): _act("trainer", chosen, int(state.revision)), not reason.is_empty()))
-		if not reason.is_empty(): content.add_child(_label(reason, 20))
+		var reason: String = model.reason("trainer", chosen)
+		var label: String = Encounter.rules().resonances[chosen].name
+		panel.add_action("Ezel · " + label, func():
+			_panel_action(panel, "trainer", chosen, int(state.revision)), not reason.is_empty())
+		if not reason.is_empty(): panel.add_text(reason, 18)
 
 func _team_menu() -> void :
-	var content:= _popup("TeamMenu", "Equipo · cambiar consume la acción")
-	if content == null: return
-	_help_in(content, "team")
 	var state: Dictionary = App.profile.campaign.encounter
+	var panel := _combat_panel("Equipo · cambio de Karmany")
+	panel.add_text("Consultar no consume turno. Cambiar voluntariamente sí consume la acción.", 19)
 	for member in state.get("members", []):
-		var id: String = member.instance_id
-		content.add_child(_button("%s %d/%d · %s" % [Catalog.species_name(member.species_id), member.hp, int(Tactical.stats_for(member).life), "activo" if id == state.ally_id else id], func():
-			_dismiss("TeamMenu")
-			_confirm("Entrará " + Catalog.species_name(member.species_id) + ". El cambio consume la acción y el rival responderá contra el nuevo activo. Los efectos y recargas permanecen en cada individuo.", func(): _act("switch", id, int(state.revision))), id == state.ally_id or member.hp == 0 or Router.pending(state)))
+		var chosen: String = member.instance_id
+		var disabled: bool = chosen == state.ally_id or member.hp <= 0 or Router.pending(state)
+		var caption := "%s · PS %d/%d · %s" % [Catalog.species_name(member.species_id), int(member.hp), int(Tactical.stats_for(member).life), "Activo" if chosen == state.ally_id else "Reserva"]
+		panel.add_action(caption, func():
+			_confirm("Entrará " + Catalog.species_name(member.species_id) + ". El cambio consume la acción y el rival responderá contra el nuevo activo. Los efectos y recargas permanecen en cada individuo.", func():
+				_panel_action(panel, "switch", chosen, int(state.revision))), disabled)
+
 
 func _open_encounter() -> void :
 	navigate.emit("exploration" if App.profile.campaign.get("exploration", Energy.defaults()).scouting else "battle")
