@@ -276,7 +276,16 @@ def compose_svg(id_,family,variant,idx,mode,w,h,component):
    x=w/2+math.cos(an)*rad*1.3;y=h/2+math.sin(an)*rad*.67
    content+=shard(x,y,8+(idx%3)*4,light)
   if 'quieto' in variant or 'estatico' in variant:content+=icon_shape('completado',w/2,h/2,42,IVORY)
- if state=='deshabilitado':content+=f'<path d="{corner_cut(w,h)}" fill="#0c1f1b" fill-opacity=".47"/>' if mode not in ('icon','fx','bar') else ''
+ # Diferenciar físicamente pulsación, elección y foco; no depender solo de la paleta.
+ if mode in ('button','nav','icon_button'):
+  if state=='pulsado':
+   content+=f'<path d="M {w*.10:.1f} {h*.78:.1f} L {w*.84:.1f} {h*.78:.1f}" stroke="{light}" stroke-opacity=".88" stroke-width="{h*.075:.2f}" stroke-linecap="round"/>'
+   content+=f'<path d="M {w*.21:.1f} {h*.2:.1f} L {w*.80:.1f} {h*.2:.1f}" stroke="#d6ffe6" stroke-opacity=".5" stroke-width="3"/>'
+  elif state=='enfocado':
+   content+=f'<path d="{corner_cut(w,h)}" fill="none" stroke="#f6ffeb" stroke-width="2.5" stroke-dasharray="17 12" stroke-opacity=".9"/>'
+  elif state=='seleccionado':
+   content+=f'<path d="M {w*.26:.1f} {h*.84:.1f} L {w*.74:.1f} {h*.84:.1f}" stroke="{light}" stroke-width="4.5" stroke-linecap="round"/>'
+ if state=='deshabilitado' :content+=f'<path d="{corner_cut(w,h)}" fill="#0c1f1b" fill-opacity=".47"/>' if mode not in ('icon','fx','bar') else ''
  elif state=='bloqueado':content+=f'<path d="{corner_cut(w,h)}" fill="#202a25" fill-opacity=".36"/>' if mode not in ('icon','fx','bar') else ''
  # SVG sintácticamente autónomo, sin fuentes ni recursos externos; texto vive en Godot.
  out=f'''<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" data-component="{component}" data-state="{state}">
@@ -344,7 +353,7 @@ def panel_preview(records,root,bg=None):
   label(s.upper(),70+j*360,202)
   asset(f'ctrl-01-{s}',(61+j*360,228),(320,106))
  label('PANELES / MARCOS',67,370)
- asset('base-06-principal', (55,405),(650,415))
+ asset('base-06-principal', (55,405),(650,300))
  asset('base-03-retrato',(744,408),(283,305))
  asset('base-03-seleccion',(1060,408),(283,305))
  label('BARRAS DE PS / XP',742,722)

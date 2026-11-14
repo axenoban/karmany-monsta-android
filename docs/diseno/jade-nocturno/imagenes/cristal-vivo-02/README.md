@@ -1,19 +1,23 @@
 # Cristal vivo 02 — kit gráfico parametrizado
 
-Estado: **PROPUESTA DE RECURSOS**, no aprobación artística individual; no se han modificado escenas Godot ni APK. La elección de la dirección Cristal vivo NO aprueba automáticamente cada exportación.
+**Estado: propuesta, no aprobación artística ni incorporación a Godot.** No modifica APK, reglas, guardados ni assets activos.
 
-Este directorio contiene **401 SVG con identificadores y variantes independientes** en las carpetas de cada bloque, un generador reproducible y un manifiesto con 401 filas.
+Este bloque contiene **401 SVG con identificadores y variantes** distribuidos por 53 familias, con manifiesto SHA-256 y generador Python. Reutilizar geometrías de paneles entre pantallas es intencional; 401 archivos NO equivalen a 401 obras distintas.
 
-Reutilización intencional: muchas variantes de pantallas y paneles reutilizan la misma geometría; los 401 nombres no representan 401 ilustraciones originales diferentes. Personajes, escenarios y cifras no se dibujan aquí ni sustituyen los recursos canónicos.
+### Reproducir SVG/PNG y revisar en una galería offline
 
-**Identidad gráfica:** cristal jade, superficies tinta/translúcidas, borde dorado biselado, gesto orgánico de filigrana, jerarquías claras; Golpe cálido, Protección fría, Insignia dorada. Los símbolos de navegación y combate corresponden a los nombres existentes.
+`python -m pip install pillow cairosvg`
 
-**Rutas:** `../01-kit-maestro/propuestas/cristal-vivo-02/svg/`, `../02-iconos-mapa-combate/...`, `../03-equipo-y-progresion/...`, `../04-pantallas-y-situaciones/...`. Los PNG transparentes y hojas de revisión se producen con el script `generar_kit.py`, ejecutado localmente y archivado para entrega de revisión.
+`python generar_kit.py --output /ruta/kit`
 
-**Reproducir:** `python -m pip install pillow cairosvg` y luego `python generar_kit.py --output /ruta/de/salida` (fondo opcional con `--background`). No sustituir `assets/ui` sin aprobación expresa.
+`python crear_galeria.py /ruta/kit`
 
-**Verificación del kit:** 401 SVG XML válidos, 401 PNG RGBA de tamaño esperado, 53 familias, 21 guías de pantalla, botones con iconos semánticos comprobados: 805 controles estructurales, más aserciones de semántica. Esto no es una prueba de regresión Godot ni una validación Android.
+Después abrir `GALERIA_VISUAL.html` desde la carpeta resultante, o consultar las 53 láminas de `galeria/`. Los PNG transparentes no se commitean individualmente: se generan automáticamente desde SVG y se entregan también en el ZIP de revisión. La miniatura PNG `VISTA_PREVIA_MAESTRA.png` funciona como referencia rápida en el repositorio.
 
-**Pendientes antes de usar en producción:** revisión artística por familia, contraste y tactilidad Android, regla de escalado/NinePatch con cortes por marco, pruebas 1280×720 y 960×540, licencia de tipografía, integración progresiva y regresiones.
+**Diseño:** Jade Nocturno / Cristal Vivo 02; paneles verde profundo, brillos de jade, marcos dorados. Golpe, Protección e Insignia con símbolos propios; estados normal, pulsado, seleccionado, enfocado, deshabilitado, bloqueado diferenciados por forma y acabado.
 
-El `manifiesto.csv` incluye hash SHA-256 de SVG y PNG, pero el código Git almacena únicamente los SVG + generador para evitar duplicar ráster regenerable en la rama visual. El paquete completo con PNG y guías se entrega separadamente para revisión.
+Las guías de pantallas y archivos son prototipos de estructura reutilizables, no maquetas 100% fieles a todo arte o a cada pantalla final. El canon, las estadísticas y las cifras de juego siguen siendo dinámicos.
+
+### QA y restricciones
+
+805 comprobaciones estructurales locales, y aserciones semánticas de iconos, correctas para el paquete vectorial+PNG. **No se ejecutaron pruebas Godot ni prueba física Android para esta entrega.** Revisar visualmente la calidad antes de aceptar familias, medir NinePatch por recurso, accesibilidad y 1280×720/960×540 en el juego real. No integrar sin aprobación explícita.
