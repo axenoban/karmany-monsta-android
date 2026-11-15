@@ -529,7 +529,7 @@ func _exploration_scene() -> void :
 		view.texture = Stage.texture(Locations.background_for(App.profile.campaign))
 		view.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		view.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-		view.custom_minimum_size.y = 172
+		view.custom_minimum_size.y = 150
 		view.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		column.add_child(view)
 		column.add_child(_label("%s · %s" % [info.get("title", "Localización"), info.get("environment", "Valle Jade")], 24))
