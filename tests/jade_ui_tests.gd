@@ -131,10 +131,10 @@ func control_review() -> void:
 			var kind: String = kinds[row]
 			button.theme = canvas.theme
 			button.theme_type_variation = kind
+			canvas.add_child(button)
 			button.add_theme_stylebox_override("normal", button.get_theme_stylebox("normal" if state == "focus" else state))
 			if state == "disabled": button.modulate = Color.WHITE
 			button.add_theme_color_override("font_color", button.get_theme_color("font_disabled_color" if state == "disabled" else "font_color"))
-			canvas.add_child(button)
 			if state == "focus":
 				var outline := Panel.new()
 				outline.size = button.size
