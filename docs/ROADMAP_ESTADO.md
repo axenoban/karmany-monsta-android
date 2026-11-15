@@ -1,5 +1,21 @@
 # ESTADO VIVO · Roadmap de Karmany Monsta (Chat + Work)
 
+## 15/11/2026 · CIERRE CONFIRMADO · Preview104 incorporada a dev
+
+**ESTADO REAL:** `dev/karmany-core` avanzado de `a0e108c1ca8e908942492f18caa2ac2eab3fbb88` a `3a5f53384c9dd958ca786e27ed89adf7c7b993f2` mediante fast-forward no forzado. Commit de dos padres: dev previo + código Preview104 `4a96bf3e18ce58cd5b6b8786b23fd598ded00f6e`. [PR31](https://github.com/axenoban/karmany-monsta-android/pull/31) cerrado/merged=true. [CI de integración 43662842572](https://github.com/axenoban/karmany-monsta-android/actions/runs/43662842572) **completed/success** (regresiones y exportación Android). `main` permanece en `9ef7af778ee59a47f62bdfbfd5eb0786ce787213`.
+
+**AUTORIZACIÓN:** el creador dijo «ok integra esta version , valido esta opcion por el momento», referida a Preview104 como conjunto. **No inventar** dispositivos, pasos físicos o aceptación individual de etapas antiguas. El árbol jugable del commit de integración coincide con Preview104; los únicos cambios respecto al código de la APK fueron `AGENTS.md`, `docs/ROADMAP_ESTADO.md`, `docs/CONTINUIDAD.md` y un documento de integración nuevo. Las cinco skills existentes en dev se conservaron.
+
+**PRs conciliados:** PR21 y PR31 figuran merged; PR22, PR23, PR25, PR27, PR28 y PR30 se cerraron como **incluidos indirectamente** en dev mediante PR31, con comentario explicativo (GitHub puede mostrarlos closed/unmerged por no tener merge directo). PR24 con los 401 SVG no aprobados y PR26 documental permanecen **abiertos e independientes**. No utilizar los assets del PR24 sin validación. No iniciar E6/R2–R4 por este cierre.
+
+**PROTECCIÓN:** Preview104 es ahora el baseline UI y funcional completo validado de dev. Mantenerlo estable. Siguientes mejoras visuales en nuevas `feature/*`, con revisiones y pruebas; no reabrir reglas/balance/guardados sin motivo técnico y autorización.
+
+**SIGUIENTE PASO:** contrastar en un dispositivo el APK [Preview104](https://github.com/axenoban/karmany-monsta-android/releases/download/android-preview-104/karmany-monsta-preview.apk) con el criterio artístico, y revisar por familias los recursos definitivos del kit PR24 **sin integrarlo** hasta aprobación.
+
+**RESPONSABLE:** WORK para propuesta/revisión de recursos artísticos por familia en rama separada; CHAT para revisar evidencia/CI y proteger baseline.
+**INSTRUCCIÓN PARA CONTINUAR:** Inspecciona `axenoban/karmany-monsta-android` @ dev real posterior al cierre y el PR24 pendiente; usa `game-visual-system`, `godot-ui-ux` y `android-game-qa`. Presenta recursos de una familia individual con variantes a tamaño real; no sustituir assets del baseline Preview104 ni integrar PR24 sin aprobación, no tocar reglas ni iniciar E6/R2–R4.
+
+
 ## 15/11/2026 · Conciliación de la candidata visual aprobada (Preview104)
 
 - **Aprobación explícita del usuario:** «ok integra esta version , valido esta opcion por el momento» de la APK Preview104 y la interfaz actual como **versión candidata combinada**. No se atribuyen pruebas físicas concretas no especificadas.

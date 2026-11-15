@@ -15,3 +15,11 @@
 **Pruebas exigidas:** igualdad de archivos jugables de candidata y merge, `ci/validate_skills.py`, Godot import/tests, CI completa y APK; después auditar HEAD e historia y dejar `main` intacta.
 
 **Cierre:** registrar resultado de la integración y SHA final únicamente después de confirmar el avance remoto a dev. Un CI correcto no equivale a aprobación artística de futuros recursos.
+
+## Cierre remoto verificado · 15/11/2026
+
+- **Integrado realmente** en `dev/karmany-core` mediante fast-forward sin force del SHA `a0e108c1` al merge `3a5f53384c9dd958ca786e27ed89adf7c7b993f2`. Contiene de forma trazable las dos historias de PR29 skills y Preview104, sin alterar el juego respecto a la APK aprobada.
+- **Pruebas**: [GitHub Actions 43662842572](https://github.com/axenoban/karmany-monsta-android/actions/runs/43662842572) success; APK Android exportada. No atribuir pruebas físicas adicionales a la frase de aprobación del usuario.
+- **GitHub**: PR21 y PR31 `merged=true`; PR22,23,25,27,28,30 cerrados por inclusión indirecta con comentarios que señalan el commit responsable; PR24 (401 SVG no aprobados) y PR26 (documental independiente) conservados abiertos.
+- **Protección**: `main` en `9ef7af778ee59a47f62bdfbfd5eb0786ce787213`, no se modificó. La presente actualización de cierre modifica exclusivamente documentación.
+- **Próxima etapa**: validar recursos visuales definitivos por familia; ningún nuevo kit se considera aprobado por este cierre.
