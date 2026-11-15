@@ -129,16 +129,17 @@ func control_review() -> void:
 			button.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			var state: String = states[column]
 			var kind: String = kinds[row]
-			var theme: Theme = canvas.theme
-			button.add_theme_stylebox_override("normal", theme.get_stylebox("normal" if state == "focus" else state, kind))
+			button.theme = canvas.theme
+			button.theme_type_variation = kind
+			button.add_theme_stylebox_override("normal", button.get_theme_stylebox("normal" if state == "focus" else state))
 			if state == "disabled": button.modulate = Color.WHITE
-			button.add_theme_color_override("font_color", theme.get_color("font_disabled_color" if state == "disabled" else "font_color", kind))
+			button.add_theme_color_override("font_color", button.get_theme_color("font_disabled_color" if state == "disabled" else "font_color"))
 			canvas.add_child(button)
 			if state == "focus":
 				var outline := Panel.new()
 				outline.size = button.size
 				outline.mouse_filter = Control.MOUSE_FILTER_IGNORE
-				outline.add_theme_stylebox_override("panel", theme.get_stylebox("focus", kind))
+				outline.add_theme_stylebox_override("panel", button.get_theme_stylebox("focus"))
 				button.add_child(outline)
 	var caption := Label.new()
 	caption.text = "Preview104 → candidata · mismo tamaño, paleta y texto"
