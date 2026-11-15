@@ -113,15 +113,9 @@ static func region_header(parent: Node, asset: String, title: String, state: Str
 	return frame
 
 static func readout(parent: Node, content: String, id: String = "JadeReadout", font_size: int = 22) -> Label:
-	# Una superficie ligera legible sobre fondos pintados; no captura eventos.
-	var holder := PanelContainer.new()
-	holder.name = "ReadoutSurface"
-	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	holder.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	var bg := Design.INK
-	bg.a = 0.80
-	holder.add_theme_stylebox_override("panel", Design.box(bg, Design.EDGE, 3))
-	parent.add_child(holder)
+	# Mantener el Label como hijo directo del HUD: las pruebas, el foco y la
+	# navegación histórica encuentran LastAction mediante su ruta estable.
+	# El panel es un fondo hijo sin mínimo ni captura de eventos.
 	var label := Label.new()
 	label.name = id
 	label.text = content
@@ -129,7 +123,16 @@ static func readout(parent: Node, content: String, id: String = "JadeReadout", f
 	label.add_theme_font_size_override("font_size", font_size)
 	label.add_theme_color_override("font_color", Design.PAPER)
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	holder.add_child(label)
+	parent.add_child(label)
+	var surface := Panel.new()
+	surface.name = "ReadoutSurface"
+	surface.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	surface.z_index = -1
+	var tint := Design.INK
+	tint.a = 0.80
+	surface.add_theme_stylebox_override("panel", Design.box(tint, Design.EDGE, 0))
+	label.add_child(surface)
+	surface.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	return label
 
 static func panel(parent: Node) -> VBoxContainer:

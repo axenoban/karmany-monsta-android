@@ -39,7 +39,10 @@ func run() -> void:
 	check(status.theme_type_variation == "JadeStatus", "estado")
 	var card := UI.panel(parent)
 	check(card.get_parent().theme_type_variation == "JadeCard", "tarjeta")
-	check(parent.get_child_count() == 4, "composición sin duplicados")
+	var last_action := UI.readout(parent, "Última acción", "LastAction")
+	check(last_action == parent.get_node_or_null("LastAction"), "LastAction conserva ruta directa del HUD")
+	check(last_action.get_node_or_null("ReadoutSurface") != null, "fondo de lectura disponible")
+	check(parent.get_child_count() == 5, "composición sin duplicados")
 	parent.queue_free()
 	for i in range(3): await process_frame
 	print("UI INTEGRAL: %d checks, %d failures" % [checks, failures])
