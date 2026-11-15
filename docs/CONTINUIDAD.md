@@ -4,7 +4,7 @@
 
 Autorización vigente: «Ok implementa el kit para una prueba física». Rama `feature/combat-visual-kit-physical`, basada en dev `b885e6ce7f3d09a99cdbabef4c39465164d81b8a` (Preview104). Aplicar el kit entregado a controles de combate existentes; no integrar a dev/main hasta validación física. PR24 y PR32/Preview108 permanecen independientes. No autoriza multijugador, reglas, balance, E6 ni R2–R4.
 
-Implementación y protocolo: `docs/COMBAT_VISUAL_KIT_CANDIDATA.md`. Godot 4.7.2: 159 verificaciones del kit y 675 de regresión local sin fallos. Pendiente CI completa/exportación y prueba en teléfono. Continuar publicando candidata, comprobar APK y esperar validación; no declarar prueba física realizada.
+Implementación y protocolo: `docs/COMBAT_VISUAL_KIT_CANDIDATA.md`. Godot 4.7.2: 159 verificaciones del kit y 675 de regresión local sin fallos. Preview109 publicada y descargada/verificada; CI 43727130253 completed/success. Código APK `99c6db91303e5b8d19406fa2c23bc423ed363515`, PR33 borrador. Pendiente únicamente prueba física y aprobación para integrar; no declarar prueba física realizada. Cierre documental posterior no cambia el código de la APK.
 
 
 ## 15/11/2026 · CIERRE CONFIRMADO · Preview104 incorporada a dev

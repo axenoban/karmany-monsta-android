@@ -34,3 +34,11 @@ Regresiones locales Godot 4.7.2: continuous_ux 27, combat_readout 37, exploratio
 6. Salir de QA, volver al mapa y reiniciar; comprobar conservación de partida normal.
 
 Registrar modelo Android, versión, número de Preview, capturas y cualquier fallo. No se afirma rendimiento en teléfono ni aprobación visual hasta recibir esa prueba. La integración a dev/main queda pendiente.
+
+## Entrega verificada — Preview109
+
+Código APK: `99c6db91303e5b8d19406fa2c23bc423ed363515`. PR33 abierto como borrador; no integrado. CI [43727130253](https://github.com/axenoban/karmany-monsta-android/actions/runs/43727130253): completed/success, suite completa, exportación y publicación. Firmas APK v2/v3 válidas y comprobación de privacidad correcta.
+
+[Descargar APK Preview109](https://github.com/axenoban/karmany-monsta-android/releases/download/android-preview-109/karmany-monsta-preview.apk) · [Release y capturas](https://github.com/axenoban/karmany-monsta-android/releases/tag/android-preview-109).
+
+Descarga completa comprobada: 83 539 547 bytes; SHA256 `c73dfd0492f7ebf665e6ec3993ca0ffba5647d1633ea832ae2dcd083b06780db`, coincidente con apk.sha256 publicado. Paquete de preview existente, versionCode 1109. Este cierre modifica únicamente documentación; el código de la APK sigue siendo 99c6db9. Pendiente prueba física y aprobación expresa para integrar. Dev/main conservan sus SHA baseline.
