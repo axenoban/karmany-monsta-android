@@ -3,6 +3,7 @@ signal finished
 const Flow = preload("res://scripts/combat_transition.gd")
 const Stage = preload("res://scripts/trial_stage.gd")
 const Catalog = preload("res://scripts/combat_catalog.gd")
+const AdventureTheme = preload("res://scripts/adventure_theme.gd")
 var receipt: Dictionary
 var background_id:= "jade"
 var elapsed:= 0.0
@@ -46,12 +47,7 @@ func _ready() -> void :
 	skip.text = "Continuar"
 	skip.custom_minimum_size = Vector2(210, 58)
 	skip.add_theme_font_size_override("font_size", 26)
-	var style:= StyleBoxFlat.new()
-	style.bg_color = Color("163c42")
-	style.border_color = Color("86c5c9")
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(14)
-	skip.add_theme_stylebox_override("normal", style)
+	AdventureTheme.apply_role(skip, "primary")
 	add_child(skip)
 	skip.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
 	skip.position -= Vector2(234, 82)

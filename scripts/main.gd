@@ -13,6 +13,9 @@ const Roster = preload("res://scripts/trial_roster.gd")
 const TrialUI = preload("res://scripts/trial_ui.gd")
 const Stage = preload("res://scripts/trial_stage.gd")
 const AdventureTheme = preload("res://scripts/adventure_theme.gd")
+const JadeUI = preload("res://scripts/jade_ui.gd")
+var selected_member := ""
+var book_expanded := false
 var tree_scroll_position:= 0
 var tree_pan := Vector2.ZERO
 var intro_dismissed := false
@@ -27,6 +30,7 @@ var catalog_rarity:= ""
 var selected_species:= ""
 var selected_tree_node:= "curacion"
 var page:= "home"
+var navigation := preload("res://scripts/navigation_history.gd").new()
 var body: VBoxContainer
 var dialog: ConfirmationDialog
 var export_dialog: FileDialog
@@ -34,6 +38,7 @@ var toast: Label
 
 func _ready() -> void :
 	App.combat_updated.connect(_refresh_combat)
+	App.profile_changed.connect(func(): navigation.reset())
 	if not catalog.load_file():
 		App.log_event(catalog.last_error)
 	if not books.load_file():
@@ -41,6 +46,7 @@ func _ready() -> void :
 	if not structure.load_file():
 		App.log_event(structure.last_error)
 	theme = AdventureTheme.create()
+	JadeUI.backdrop(self, "jade_point_2", 0.72)
 	dialog = ConfirmationDialog.new()
 	dialog.title = "Comenzar un nuevo viaje"
 	dialog.dialog_text = "Se reemplazarán el viaje, el árbol, la colección y el encuentro actuales. Tus ajustes se conservarán."
@@ -73,10 +79,10 @@ func _safe_margins() -> void :
 	var margin:= get_node_or_null("Page") as MarginContainer
 	if margin == null:
 		return
-	var left:= 44
-	var right:= 44
-	var top:= 24
-	var bottom:= 24
+	var left:= 44 if page == "tree_lab" else 28
+	var right:= 44 if page == "tree_lab" else 28
+	var top:= 58 if App.qa_active else 20
+	var bottom:= 16
 	if OS.get_name() == "Android":
 		var safe:= DisplayServer.get_display_safe_area()
 		var screen:= DisplayServer.screen_get_size()
@@ -92,7 +98,9 @@ func _safe_margins() -> void :
 	margin.add_theme_constant_override("margin_bottom", bottom)
 	queue_redraw()
 
-func _show(next_page: String) -> void :
+func _show(next_page: String, record_history: bool = true) -> void :
+	if next_page not in navigation.ROUTES: return
+	if record_history: navigation.visit(page, next_page)
 	page = next_page
 	var old:= get_node_or_null("Page")
 	if old != null:
@@ -103,16 +111,48 @@ func _show(next_page: String) -> void :
 	margin.name = "Page"
 	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(margin)
+	# La transición se limita a presentación: App y NavigationHistory conservan el estado.
+	if not App.profile.settings.reduced_motion:
+		margin.modulate.a = 0.62
 	var column:= VBoxContainer.new()
-	column.add_theme_constant_override("separation", 14)
+	column.add_theme_constant_override("separation", 10)
 	margin.add_child(column)
 	var header:= HBoxContainer.new()
 	column.add_child(header)
+	if App.qa_active:
+		var overlay := CanvasLayer.new()
+		overlay.layer = 100
+		margin.add_child(overlay)
+		var strip := ColorRect.new()
+		strip.color = INK
+		strip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		strip.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
+		strip.offset_bottom = 42
+		overlay.add_child(strip)
+		var banner := _label("LABORATORIO QA · NO AFECTA TU PARTIDA", 24, JADE)
+		banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		banner.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		banner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var bar := HBoxContainer.new()
+		strip.add_child(bar)
+		bar.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		banner.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		bar.add_child(banner)
+		if page != "tree_lab":
+			var lab_button := _button("Laboratorio QA", func(): _show("tree_lab"))
+			lab_button.custom_minimum_size.y = 40
+			lab_button.add_theme_font_size_override("font_size", 22)
+			bar.add_child(lab_button)
 	var brand:= _label("KARMANY MONSTA", 22, JADE)
+	brand.theme_type_variation = "JadeEyebrow"
 	brand.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	header.add_child(brand)
 	if page != "home":
-		header.add_child(_button("Volver", _back))
+		var back := _button("Volver", _back, "navigation")
+		back.autowrap_mode = TextServer.AUTOWRAP_OFF
+		back.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+		header.add_child(back)
+	header.add_child(brand)
+	brand.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	var scroll:= ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.scroll_deadzone = 18
@@ -145,8 +185,11 @@ func _show(next_page: String) -> void :
 	if page in ["intro", "jade_play", "battle", "exploration"]:
 		toast.hide()
 	column.add_child(toast)
-	column.add_child(_label("PREVIEW %s · SHISAI" % App.build_info.get("version", "0.13.0"), 16, Color("93aaa3")))
+	column.add_child(_label("JADE NOCTURNO · PREVIEW %s" % App.build_info.get("version", ""), 16, Color("a6bdb0")))
 	_safe_margins()
+	if not App.profile.settings.reduced_motion:
+		var fade := margin.create_tween()
+		fade.tween_property(margin, "modulate:a", 1.0, 0.18)
 
 func _label(text: String, font_size: int = 24, color: Color = PAPER) -> Label:
 	var label:= Label.new()
@@ -161,25 +204,38 @@ func _copy(text: String) -> void :
 	body.add_child(label)
 
 func _heading(text: String) -> void :
-	body.add_child(_label(text, 46, PAPER))
+	JadeUI.heading(body, text)
 
-func _button(text: String, action: Callable) -> Button:
+func _button(text: String, action: Callable, role: String = "") -> Button:
 	var button:= Button.new()
 	button.text = text
+	AdventureTheme.decorate(button)
+	AdventureTheme.apply_role(button, role)
+	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.custom_minimum_size = Vector2(0, 64)
+	var epoch: int = App.ui_epoch
 	button.pressed.connect( func():
+		if epoch != App.ui_epoch: return
 		App.tap()
 		action.call())
 	return button
 
 func _home() -> void:
 	_heading("Karmany Monsta")
-	_copy("El viaje de Ezel · Zephyr, tu compañero · Axe, tu mentor")
+	var outer := body
+	var columns := JadeUI.row(body)
+	JadeUI.art(columns, "zephyr", 300)
+	body = JadeUI.panel(columns)
+	_copy("El viaje de Ezel")
+	_copy("Zephyr, tu compañero · Axe, tu mentor")
 	var resume := _button("Continuar aventura", _continue_adventure)
+	resume.theme_type_variation = "JadePrimary"
 	resume.disabled = not App.profile.journey.started or App.load_failed
 	body.add_child(resume)
-	body.add_child(_button("Nueva partida", _new_journey))
-	body.add_child(_button("Ajustes", func(): _show("settings")))
+	body.add_child(_button("Nueva partida", _new_journey, "quiet"))
+	body.add_child(_button("Ajustes", func(): _show("settings"), "quiet"))
+	body = outer
 
 func _continue_adventure() -> void:
 	if not App.profile.journey.started: return
@@ -206,7 +262,7 @@ func _prologue() -> void:
 		if not intro_replay:
 			intro_dismissed = true
 			saved = App.finish_r1_intro(status)
-		_show("settings" if intro_replay else "map")
+		_show("settings" if intro_replay else "map", false)
 		if not saved: toast.text = App.notice + " La introducción no se marcó como vista.")
 
 func _new_journey() -> void :
@@ -217,42 +273,48 @@ func _new_journey() -> void :
 
 func _start() -> void :
 	if App.start_journey():
+		navigation.reset()
 		intro_dismissed = false
 		intro_replay = false
-		_show("prologue")
+		_show("prologue", false)
 	else:
 		toast.text = App.notice
 
 func _map() -> void:
 	_heading("Shisai · Regiones")
-	_copy("Elige una región. La stamina se gasta al entrar en una localización.")
+	_copy("Elige una región para continuar.")
+	var regions := JadeUI.row(body)
 	for region_id in ["jade", "veil"]:
 		var id: String = region_id
 		var region := ProgressRules.region(id)
 		var panel := PanelContainer.new()
-		body.add_child(panel)
+		panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		regions.add_child(panel)
 		var card := VBoxContainer.new()
+		card.add_theme_constant_override("separation", 5)
 		panel.add_child(card)
-		var art := TextureRect.new()
-		art.texture = Stage.texture("jade_point_1" if id == "jade" else "veil_bamboo")
-		art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-		art.custom_minimum_size.y = 160
-		card.add_child(art)
 		var complete: int = preload("res://scripts/jade_route.gd").completions(App.profile.campaign.route, id).size()
-		card.add_child(_label("%s · %d/6 completadas" % [region.name, complete]))
 		var reason := ProgressRules.region_reason(App.profile.skill_tree, id)
-		var state := _label("Disponible" if reason.is_empty() else reason)
-		state.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		card.add_child(state)
+		JadeUI.region_header(
+			card, "jade_point_1" if id == "jade" else "veil_bamboo",
+			"%s · %d/6 completadas" % [region.name, complete],
+			"Disponible" if reason.is_empty() else reason,
+			App.profile.settings.large_text
+		)
 		var needs_buy: bool = int(region.cost) > 0 and id not in App.profile.skill_tree.unlocks
-		var open := _button("Desbloquear · %d punto" % int(region.cost) if needs_buy else "Explorar región", func(): _open_region(id, needs_buy))
+		var open := _button("Desbloquear · %d punto" % int(region.cost) if needs_buy else "Explorar región", func(): _open_region(id, needs_buy), "primary")
+		open.custom_minimum_size.y = 56
 		open.disabled = App.load_failed or int(App.profile.skill_tree.level) < int(region.min_level) or _encounter_in_progress()
 		card.add_child(open)
-	if _encounter_in_progress(): body.add_child(_button("Retomar aventura", _continue_adventure))
+	if _encounter_in_progress(): body.add_child(_button("Retomar aventura", _continue_adventure, "primary"))
+	var nav := GridContainer.new()
+	nav.columns = 3
+	get_node("Page").get_child(0).add_child(nav)
 	for entry in [["Libro", "book"], ["Bestiario", "bestiary"], ["Ezel · Perfil", "trainers"], ["Equipo", "team"], ["Árbol de resonancias", "skill_tree"], ["Ajustes", "settings"]]:
 		var target: String = entry[1]
-		body.add_child(_button(entry[0], func(): _show(target)))
+		var nav_button := _button(entry[0], func(): _show(target))
+		nav_button.custom_minimum_size.y = 52
+		nav.add_child(nav_button)
 
 func _open_region(id: String, buy: bool) -> void:
 	if buy:
@@ -268,32 +330,52 @@ func _open_region(id: String, buy: bool) -> void:
 	elif App.select_region(id): _show("jade_play")
 	else: toast.text = App.notice
 
-func _book() -> void :
+func _book() -> void:
 	_heading("El Libro")
-	var tree:= _tree_model()
-	var current:= ProgressRules.current_book(tree.state)
-	_copy("Entrenador Nv. %d · %d puntos disponibles" % [tree.state.level, tree.points_available()])
-	_copy("Hasta tres intentos tras derrotar al rival. Las mejoras se aplican al siguiente encuentro.")
+	var tree := _tree_model()
+	var current := ProgressRules.current_book(tree.state)
+	var outer := body
+	var split := JadeUI.row(body)
+	JadeUI.art(split, "binding_book", 250)
+	body = JadeUI.panel(split)
+	_copy("Entrenador Nv. %d · %d puntos disponibles" % [tree.state.level,tree.points_available()])
 	for level in books.all_levels():
-		var policy:= books.policy_for(level.id)
-		var status:= " · EQUIPADO" if level.id == current else (" · Adquirido" if level.id == "book_initial" or level.id in tree.state.unlocks else (" · Disponible" if tree.unlock_reason(level.id).is_empty() else " · Bloqueado"))
-		_copy(level.name + status)
+		if level.id != current: continue
+		_copy(level.name + " · EQUIPADO")
+		var policy := books.policy_for(level.id)
+		for rarity in ["Común","Raro","Épico"]:
+			_copy(rarity + ": " + ("%d%%" % roundi(policy.chance_for(rarity)*100) if policy.permits(rarity) else "Bloqueado"))
+	_copy("Hasta tres intentos tras derrotar al rival.")
+	var toggle := _button("Ocultar mejoras" if book_expanded else "Ver mejoras",func():
+		book_expanded = not book_expanded
+		_show("book"))
+	toggle.theme_type_variation = "JadePrimary"
+	body.add_child(toggle)
+	body = outer
+	var upgrades := VBoxContainer.new()
+	upgrades.visible = book_expanded
+	body.add_child(upgrades)
+	for level in books.all_levels():
+		var requirement := ProgressRules.unlock(level.id)
+		if requirement.is_empty(): continue
+		body = JadeUI.panel(upgrades)
+		_copy(level.name)
+		var policy := books.policy_for(level.id)
 		var chances: Array[String] = []
-		for rarity in ["Común", "Raro", "Épico"]:
-			chances.append(rarity + ": " + ("%d%%" % roundi(policy.chance_for(rarity) * 100) if policy.permits(rarity) else "Bloqueado"))
+		for rarity in ["Común","Raro","Épico"]:
+			chances.append(rarity + ": " + ("%d%%" % roundi(policy.chance_for(rarity)*100) if policy.permits(rarity) else "Bloqueado"))
 		_copy(" · ".join(chances))
-		var requirement:= ProgressRules.unlock(level.id)
-		if not requirement.is_empty():
-			_copy("Requiere Nv. %d · Coste %d punto(s)" % [requirement.min_level, requirement.cost])
-			var reason:= tree.unlock_reason(level.id)
-			var id: String = level.id
-			var buy:= _button("Adquirir " + level.name, func(): _confirm_book_upgrade(id))
-			buy.disabled = not reason.is_empty() or _encounter_in_progress() or App.load_failed
-			body.add_child(buy)
-			if not reason.is_empty(): _copy(reason)
+		_copy("Requiere Nv. %d · Coste %d punto(s)" % [requirement.min_level,requirement.cost])
+		var reason := tree.unlock_reason(level.id)
+		var id: String = level.id
+		var buy := _button("Adquirir " + level.name,func(): _confirm_book_upgrade(id))
+		buy.disabled = not reason.is_empty() or _encounter_in_progress() or App.load_failed
+		body.add_child(buy)
+		if not reason.is_empty(): _copy(reason)
+	body = outer
 	if _encounter_in_progress(): _copy("Termina el encuentro para adquirir mejoras. El Libro usado en él se conserva.")
-	body.add_child(_button("Redistribuir resonancias", _confirm_redistribute))
-	_copy("Los puntos de libros permanecen gastados al redistribuir. Raros y épicos requieren encuentros de esas rarezas en futuras regiones.")
+	body.add_child(_button("Redistribuir resonancias",_confirm_redistribute))
+	_copy("Las mejoras se aplican al siguiente encuentro. Los puntos del Libro permanecen gastados al redistribuir.")
 
 func _confirm_book_upgrade(id: String) -> void :
 	var definition:= ProgressRules.unlock(id)
@@ -329,25 +411,34 @@ func _portrait(id: String, hidden_species: bool = false) -> Control:
 
 func _trainers() -> void:
 	_heading("Ezel · Tu perfil")
-	body.add_child(_portrait("ezel"))
+	var outer := body
+	var split := JadeUI.row(body)
+	JadeUI.art(split,"ezel",320)
+	body = JadeUI.panel(split)
 	var tree := _tree_model()
-	_copy("Nivel %d · XP %d/%d · %d puntos disponibles" % [tree.state.level, App.profile.campaign.progression.trainer_xp, Progress.requirement(int(tree.state.level)), tree.points_available()])
+	_copy("Nivel %d · XP %d/%d · %d puntos disponibles" % [tree.state.level,App.profile.campaign.progression.trainer_xp,Progress.requirement(int(tree.state.level)),tree.points_available()])
 	_copy("Resonancias equipadas")
 	if tree.state.equipped.is_empty(): _copy("No hay resonancias equipadas.")
 	for id in tree.state.equipped:
-		_copy("%s · Rango %d" % [TreeModel.node_definition(id).name, int(tree.state.ranks[id])])
+		_copy("%s · Rango %d" % [TreeModel.node_definition(id).name,int(tree.state.ranks[id])])
 	_copy("Tu equipo")
+	var team_row := JadeUI.row(body)
 	for member in App.profile.campaign.team.members:
-		var row := HBoxContainer.new()
-		body.add_child(row)
-		row.add_child(_portrait(member.species_id))
-		var text := _label("%s · %s\n%s" % [Roster.member_name(member), "Activo" if member.instance_id == App.profile.campaign.team.active_id else "Reserva", Progress.summary(App.profile.campaign, member.instance_id)])
-		text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		row.add_child(text)
-	for entry in [["Equipo", "team"], ["Árbol de resonancias", "skill_tree"], ["Libro", "book"]]:
+		var card := VBoxContainer.new()
+		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		team_row.add_child(card)
+		var portrait := _portrait(member.species_id)
+		portrait.custom_minimum_size = Vector2(70,70)
+		card.add_child(portrait)
+		var caption := _label("%s · %s\n%s" % [Roster.member_name(member),"Activo" if member.instance_id == App.profile.campaign.team.active_id else "Reserva",Progress.summary(App.profile.campaign,member.instance_id)],20)
+		caption.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		card.add_child(caption)
+	body.add_child(_button("Árbol de resonancias",func(): _show("skill_tree")))
+	var actions := JadeUI.row(body)
+	for entry in [["Equipo","team"],["Libro","book"]]:
 		var target: String = entry[1]
-		body.add_child(_button(entry[0], func(): _show(target)))
+		actions.add_child(_button(entry[0],func(): _show(target)))
+	body = outer
 
 func _tree_model() -> TrainerSkillTree:
 	var tree:= TreeModel.new()
@@ -414,23 +505,32 @@ func _tree_action(operation: String, node_id: String, return_page: String, expec
 	else:
 		toast.text = App.notice
 
-func _tree_lab() -> void :
-	_heading("Laboratorio del árbol")
-	var tree:= _tree_model()
-	_copy("Controles de prueba: simulan progreso del entrenador, sin añadir criaturas a una colección.")
-	_copy("Nivel %d/15 · %d especies simuladas · %d puntos disponibles" % [tree.state.level, tree.state.captured_species.size(), tree.points_available()])
-	_copy("Un punto por nivel. Bonificación de un punto a las 5, 10 y 15 especies distintas; repetir una especie no da puntos.")
-	body.add_child(_button("Simular subida de nivel", func(): _tree_action("level", "", "tree_lab")))
-	body.add_child(_button("Simular captura de otra especie", _simulate_tree_capture))
-	body.add_child(_button("Redistribuir puntos de prueba", func(): _tree_action("reset", "", "tree_lab")))
-	body.add_child(_button("Ir al árbol", func(): _show("skill_tree")))
+func _tree_lab() -> void:
+	if not App.qa_active or not App.qa_available():
+		_copy("El laboratorio requiere una sesión QA aislada en una build preview.")
+		return
+	_heading("Laboratorio QA")
+	var lab := preload("res://scripts/qa_lab.gd").new()
+	body.add_child(lab)
+	lab.launch.connect(func(point_id: String):
+		if App.start_route(point_id): _show("exploration")
+		else: lab.message.text = App.notice)
+	lab.leave.connect(_exit_qa)
 
-func _simulate_tree_capture() -> void :
-	for entry in catalog.all_entries():
-		if not App.profile.skill_tree.captured_species.has(entry.id):
-			_tree_action("capture", entry.id, "tree_lab")
-			return
-	toast.text = "Ya simulaste las 15 especies del catálogo."
+func _enter_qa() -> void:
+	var confirm := ConfirmationDialog.new()
+	confirm.dialog_text = "Entrar al laboratorio crea una sesión sintética separada. No afecta tu partida."
+	add_child(confirm)
+	confirm.confirmed.connect(func():
+		if App.enter_qa(): _show("tree_lab", false)
+		else: toast.text = App.notice
+		confirm.queue_free())
+	confirm.canceled.connect(confirm.queue_free)
+	confirm.popup_centered(Vector2i(620,260))
+
+func _exit_qa() -> void:
+	if App.exit_qa(): _show("map", false)
+	else: toast.text = App.notice
 
 func _bestiary() -> void :
 	_heading("Bestiario de Shisai")
@@ -443,19 +543,23 @@ func _bestiary() -> void :
 		var caption: String = "Todas" if rarity.is_empty() else rarity
 		if rarity == catalog_rarity:
 			caption = "● " + caption
-		filters.add_child(_button(caption, func():
+		var filter_button := _button(caption, func():
 			catalog_rarity = chosen
-			_show("bestiary")))
+			_show("bestiary"))
+		AdventureTheme.apply_role(filter_button, "selected" if chosen == catalog_rarity else "quiet")
+		filters.add_child(filter_button)
 	if not catalog.last_error.is_empty():
 		_copy(catalog.last_error)
 		return
 	var entries:= catalog.all_entries(catalog_rarity)
 	_copy("%d especies" % entries.size())
+	var gallery := GridContainer.new()
+	gallery.columns = 3 if size.x >= 1000 else 2
+	body.add_child(gallery)
 	for entry in entries:
 		var species_id: String = entry.id
 		var known := _species_owned(species_id)
-		var row := HBoxContainer.new()
-		body.add_child(row)
+		var row := JadeUI.panel(gallery)
 		row.add_child(_portrait(species_id, not known))
 		var button := _button(entry.name + " · " + entry.rarity + ("" if known else " · Sin vincular"), func():
 			selected_species = species_id
@@ -476,48 +580,61 @@ func _species() -> void:
 		return
 	_heading(entry.name)
 	var known := _species_owned(selected_species)
-	body.add_child(_portrait(selected_species, not known))
+	var split := JadeUI.row(body)
+	var hero := _portrait(selected_species, not known)
+	hero.custom_minimum_size = Vector2(250, 320)
+	hero.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	split.add_child(hero)
+	var outer := body
+	body = JadeUI.panel(split)
 	_copy(entry.rarity)
 	if not known:
 		_copy("Vincula esta especie con el Libro para descubrir su ficha.")
+		body = outer
 		return
 	_copy(entry.biome)
 	_copy(entry.physiology.split(". ")[0] + ". " + entry.behavior.split(". ")[0])
 	var stats := CombatCatalog.stats_at_level(selected_species, 1)
 	if stats.is_empty(): _copy("Datos de combate aún no disponibles")
 	else: _copy("Base Nv. 1 · Vida %d · Ataque %d · Defensa %d · Velocidad %d" % [stats.life, stats.attack, stats.defense, stats.speed])
+	body = outer
 
-func _settings() -> void :
+func _settings() -> void:
 	_heading("Ajustes")
-	body.add_child(_button("Ver introducción", func():
-		intro_replay = true
-		_show("prologue")))
-	body.add_child(_button("Diagnóstico", func(): _show("diagnostics")))
-	for key in ["large_text", "haptics", "sound", "reduced_motion"]:
+	var columns := JadeUI.row(body)
+	var sound := JadeUI.panel(columns)
+	var access := JadeUI.panel(columns)
+	sound.add_child(_label("Sonido y respuesta", 28, JADE))
+	access.add_child(_label("Accesibilidad", 28, JADE))
+	for key in ["sound", "haptics", "large_text", "reduced_motion"]:
 		var current_key: String = key
 		var title: String = {"large_text": "Texto grande", "haptics": "Vibración al tocar", "sound": "Efectos de sonido", "reduced_motion": "Movimiento reducido"}[key]
 		var enabled: bool = App.profile.settings[key]
-		var button:= _button(title + (" · Activado" if enabled else " · Desactivado"), func(): _toggle(current_key))
+		var button := _button(title + (" · Activado" if enabled else " · Desactivado"), func(): _toggle(current_key))
+		button.theme_type_variation = "JadeSelected" if enabled else "Button"
 		button.disabled = App.load_failed
-		body.add_child(button)
-	_copy("Movimiento reducido mantiene quietos a los personajes y simplifica el vínculo. Conserva sonidos y resultados.")
-	var volume:= HSlider.new()
+		(access if key in ["large_text", "reduced_motion"] else sound).add_child(button)
+	var volume := HSlider.new()
 	volume.name = "EffectsVolume"
-	volume.min_value = 0
-	volume.max_value = 100
-	volume.step = 5
+	volume.min_value = 0; volume.max_value = 100; volume.step = 5
 	volume.value = App.profile.settings.get("effects_volume", 0.65) * 100
 	volume.custom_minimum_size = Vector2(0, 58)
 	volume.editable = not App.load_failed
-	var caption:= _label("Volumen de efectos: %d%%" % volume.value, theme.default_font_size)
-	body.add_child(caption)
-	body.add_child(volume)
-	volume.value_changed.connect( func(value: float):
-		caption.text = "Volumen de efectos: %d%%" % value)
-	volume.drag_ended.connect( func(changed: bool):
+	var caption := _label("Volumen de efectos: %d%%" % volume.value, theme.default_font_size)
+	sound.add_child(caption); sound.add_child(volume)
+	volume.value_changed.connect(func(value: float): caption.text = "Volumen de efectos: %d%%" % value)
+	volume.drag_ended.connect(func(changed: bool):
 		if changed: _save_volume(volume))
-	volume.gui_input.connect( func(event: InputEvent):
+	volume.gui_input.connect(func(event: InputEvent):
 		if event is InputEventKey and event.pressed: _save_volume.call_deferred(volume))
+	var hint := _label("Movimiento reducido mantiene quietos a los personajes y simplifica el vínculo. Conserva sonidos y resultados.", 20)
+	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	access.add_child(hint)
+	var actions := JadeUI.row(body)
+	actions.add_child(_button("Ver introducción", func():
+		intro_replay = true
+		_show("prologue")))
+	actions.add_child(_button("Diagnóstico", func(): _show("diagnostics")))
 	_copy("Los ajustes se guardan al cambiarlos.")
 
 func _save_volume(slider: HSlider) -> void :
@@ -537,7 +654,10 @@ func _diagnostics() -> void :
 	_heading("Diagnóstico")
 	_copy(App.diagnostic_report())
 	body.add_child(_button("Exportar informe", _export_report))
-	body.add_child(_button("Laboratorio del árbol", func(): _show("tree_lab")))
+	if App.qa_available():
+		body.add_child(_button("Laboratorio QA", func():
+			if App.qa_active: _show("tree_lab")
+			else: _enter_qa()))
 	body.add_child(_button("Copiar informe", func():
 		DisplayServer.clipboard_set(App.diagnostic_report())
 		toast.text = "Informe copiado."))
@@ -547,6 +667,9 @@ func _export_report() -> void :
 	export_dialog.popup_centered_ratio(0.8)
 
 func _write_report(path: String) -> void :
+	if App.qa_active:
+		toast.text = "La exportación está desactivada en QA."
+		return
 	var handle:= FileAccess.open(path, FileAccess.WRITE)
 	if handle == null:
 		toast.text = "No se pudo exportar. Puedes copiar el informe."
@@ -556,6 +679,10 @@ func _write_report(path: String) -> void :
 	toast.text = "Informe exportado." if handle.get_error() == OK else "No se pudo completar la exportación."
 
 func _back() -> void :
+	if _close_modal(self): return
+	# Consultas de combate: Atrás cierra el panel, no cambia de ruta ni turno.
+	for panel in get_tree().get_nodes_in_group("combat_context_panel"):
+		if panel.is_visible_in_tree() and panel.handle_back(): return
 	if page == "prologue" and is_instance_valid(prologue):
 		prologue.back()
 		return
@@ -577,29 +704,33 @@ func _back() -> void :
 		if summary.visible:
 			summary._finish()
 			return
-	if export_dialog.visible:
-		export_dialog.hide()
-	elif dialog.visible:
-		dialog.hide()
-	elif page in ["battle", "intro", "collection", "team", "exploration"]:
-		_show("jade_play")
-	elif page == "jade_play":
-		_show("map")
-	elif page == "loadout":
-		_show("skill_tree")
-	elif page == "tree_lab":
-		_show("diagnostics")
-	elif page == "skill_tree":
-		_show("map")
-	elif page == "species":
-		_show("bestiary")
-	elif page == "bestiary" or page == "trainers":
-		_show("map")
-	elif page != "home":
-		_show("home")
-	else:
+	# Combat Back opens the same reversible menu as the HUD, instead of leaving
+	# the scene without showing the player's navigation choices.
+	if page == "battle" and App.profile.campaign.encounter.get("phase") in ["battle", "replacement"]:
+		var combat_ui := get_node_or_null("Page")
+		if combat_ui != null:
+			var battle_view := combat_ui.find_child("PlayerBattleUI", true, false)
+			if battle_view != null:
+				battle_view._options_menu()
+				return
+	if page == "home" and navigation.entries.is_empty():
 		App.log_event("Salida solicitada.")
 		get_tree().quit()
+		return
+	var fallback := "jade_play" if page in ["battle", "exploration", "intro", "team", "collection"] else "map"
+	_show(navigation.previous(page, fallback), false)
+
+func _close_modal(node: Node) -> bool:
+	# Reverse traversal closes the topmost popup, without confirming its action.
+	var children := node.get_children()
+	children.reverse()
+	for child in children:
+		if child is Window and child.visible:
+			child.hide()
+			if child != dialog and child != export_dialog: child.queue_free()
+			return true
+		if _close_modal(child): return true
+	return false
 
 func _notification(what: int) -> void :
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST or what == NOTIFICATION_WM_CLOSE_REQUEST:
@@ -627,22 +758,24 @@ func _playable() -> void :
 	parent.remove_child(scroll)
 	scroll.queue_free()
 	var trial:= TrialUI.new()
+	trial.name = "PlayerBattleUI" if page == "battle" else "PlayerRouteUI"
 	trial.mode = "intro" if page == "intro" else ("map" if page == "jade_play" else ("exploration" if page == "exploration" else "battle"))
 	trial.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	trial.custom_minimum_size = Vector2(0, 500)
 	parent.add_child(trial)
 	trial.navigate.connect(_show)
+	trial.back_requested.connect(_back)
 
 func _collection() -> void :
 	_heading("Colección")
 	_copy("Zephyr está vinculado a Ezel desde su nacimiento; no es una captura del Libro.")
-	var stage:= Stage.new()
-	stage.mode = "collection"
-	if not App.profile.campaign.collection.is_empty(): stage.collection_species = App.profile.campaign.collection.back().species
-	stage.custom_minimum_size = Vector2(0, 260)
-	body.add_child(stage)
 	var in_progress:= _encounter_in_progress()
+	var outer := body
+	var gallery := GridContainer.new()
+	gallery.columns = 3 if size.x >= 1000 else 2
+	body.add_child(gallery)
 	for member in Roster.owned(App.profile.campaign):
+		body = JadeUI.panel(gallery)
 		var chosen_id: String = member.instance_id
 		var portrait:= TextureRect.new()
 		portrait.texture = Stage.texture(member.species_id)
@@ -658,9 +791,10 @@ func _collection() -> void :
 		var equipped:= false
 		for current in App.profile.campaign.team.members:
 			if current.instance_id == chosen_id: equipped = true
-		var add:= _button("Ya está en el equipo" if equipped else "Añadir al equipo", func(): _team_action("add", chosen_id, "collection"))
+		var add:= _button("Ya está en el equipo" if equipped else "Añadir al equipo", func(): _team_action("add", chosen_id, "collection"), "primary")
 		add.disabled = equipped or in_progress or App.profile.campaign.team.members.size() >= 3 or App.load_failed
 		body.add_child(add)
+	body = outer
 	body.add_child(_button("Preparar equipo", func(): _show("team")))
 	_copy("Capturas guardadas: %d. Los duplicados son individuos diferentes y no repiten la bonificación del árbol." % App.profile.campaign.collection.size())
 	body.add_child(_button("Volver al valle", func(): _show("jade_play")))
@@ -675,50 +809,61 @@ func _team_action(operation: String, member_id: String, return_page: String = "t
 	else:
 		toast.text = App.notice
 
-func _team() -> void :
+func _team() -> void:
 	var team: Dictionary = App.profile.campaign.team
 	_heading("Equipo · %d / 3" % team.members.size())
-	_copy("Elige el Karmany activo antes del encuentro. Cada individuo capturado puede ocupar un espacio.")
-	var locked:= _encounter_in_progress()
-	if locked:
-		_copy("El encuentro está en curso. Termínalo o abandónalo para cambiar el equipo.")
+	var locked := _encounter_in_progress()
+	if locked: _copy("El encuentro está en curso. Termínalo o abandónalo para cambiar el equipo.")
+	var current: Dictionary = {}
 	for member in team.members:
-		var chosen: String = member.instance_id
-		var row:= HBoxContainer.new()
-		row.add_theme_constant_override("separation", 18)
-		body.add_child(row)
-		var portrait:= TextureRect.new()
-		portrait.texture = Stage.texture(member.species_id)
-		portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		portrait.custom_minimum_size = Vector2(120, 120)
-		row.add_child(portrait)
-		var text:= VBoxContainer.new()
-		text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		row.add_child(text)
-		text.add_child(_label(Roster.member_name(member) + (" · ACTIVO" if chosen == team.active_id else " · RESERVA")))
-		var progress:= Progress.record_for(App.profile.campaign, chosen)
-		var stats:= CombatCatalog.stats_at_level(member.species_id, int(progress.level))
-		text.add_child(_label(Progress.summary(App.profile.campaign, chosen), 22))
-		text.add_child(_label("Vida %d · Ataque %d · Defensa %d" % [stats.life, stats.attack, stats.defense], 22))
-		var xp_bar:= ProgressBar.new()
-		xp_bar.max_value = Progress.requirement(int(progress.level))
-		xp_bar.value = progress.xp
-		xp_bar.show_percentage = false
-		xp_bar.custom_minimum_size.y = 14
-		text.add_child(xp_bar)
-		var buttons:= HBoxContainer.new()
-		text.add_child(buttons)
-		var active:= _button("Elegir activo", func(): _team_action("active", chosen))
+		if member.instance_id == selected_member: current = member
+	if current.is_empty() and not team.members.is_empty(): current = team.members[0]
+	if not current.is_empty():
+		selected_member = current.instance_id
+		var chosen: String = current.instance_id
+		var split := JadeUI.row(body)
+		JadeUI.art(split, current.species_id, 240)
+		var info := JadeUI.panel(split)
+		info.add_theme_constant_override("separation", 10)
+		info.add_child(_label(Roster.member_name(current) + (" · ACTIVO" if chosen == team.active_id else " · RESERVA"), 28))
+		var progress := Progress.record_for(App.profile.campaign, chosen)
+		var stats := CombatCatalog.stats_at_level(current.species_id, int(progress.level))
+		var summary := _label(Progress.summary(App.profile.campaign, chosen), 22)
+		summary.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		info.add_child(summary)
+		var stat_grid := GridContainer.new()
+		stat_grid.columns = 2
+		info.add_child(stat_grid)
+		for stat in [["Vida",stats.life],["Ataque",stats.attack],["Defensa",stats.defense],["Velocidad",stats.speed]]:
+			stat_grid.add_child(_label("%s  ·  %d" % [stat[0],stat[1]], 22))
+		var active := _button("Elegir activo", func(): _team_action("active", chosen))
 		active.disabled = chosen == team.active_id or locked or App.load_failed
-		buttons.add_child(active)
-		var remove:= _button("Retirar del equipo", func(): _team_action("remove", chosen))
+		active.theme_type_variation = "JadePrimary"
+		var controls := JadeUI.row(info)
+		controls.add_child(active)
+		var remove := _button("Retirar", func(): _team_action("remove", chosen))
 		remove.disabled = locked or team.members.size() == 1 or App.load_failed
-		buttons.add_child(remove)
-	_copy("Solo este equipo gana XP al vencer en localizaciones. Valle Jade deja de dar XP a cada individuo desde Nv. 10. Retirar conserva nivel y experiencia.")
-	body.add_child(_button("Añadir desde la colección", func(): _show("collection")))
-	body.add_child(_button("Volver al valle", func(): _show("jade_play")))
+		controls.add_child(remove)
+	var dock := VBoxContainer.new()
+	get_node("Page").get_child(0).add_child(dock)
+	var portraits := JadeUI.row(dock)
+	for member in team.members:
+		var id: String = member.instance_id
+		var button := _button(Roster.member_name(member), func():
+			selected_member = id
+			_show("team"))
+		button.icon = Stage.texture(member.species_id)
+		button.expand_icon = true
+		button.add_theme_constant_override("icon_max_width", 64)
+		button.theme_type_variation = "JadeSelected" if id == selected_member else "Button"
+		portraits.add_child(button)
+	var actions := JadeUI.row(dock)
+	actions.add_child(_button("Añadir desde la colección", func(): _show("collection")))
+	actions.add_child(_button("Volver al valle", func(): _show("jade_play")))
+
+func refresh_current() -> void:
+	_show(page, false)
 
 func _refresh_combat() -> void :
 	if page in ["battle", "jade_play", "team", "exploration"]:
-		_show(page)
+		refresh_current()

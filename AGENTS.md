@@ -1,5 +1,59 @@
 # Instrucciones de desarrollo de Karmany Monsta
 
+## 15/11/2026 · Aprobación de Preview104 para baseline dev
+
+**Aprobación del creador:** «ok integra esta version , valido esta opcion por el momento». Se aplica a la versión **Android Preview104** en su conjunto, no a recursos visuales ajenos ni a resultados de prueba física detallados no declarados.
+
+**Código aprobado:** `4a96bf3e18ce58cd5b6b8786b23fd598ded00f6e` de `feature/ui-integral-jade-exploracion-combate`, PR30; APK [Preview104](https://github.com/axenoban/karmany-monsta-android/releases/tag/android-preview-104); CI [43661494124](https://github.com/axenoban/karmany-monsta-android/actions/runs/43661494124) completada correctamente. Código Godot, escenas, datos canónicos y tests en el árbol aprobado se preservan al conciliar el historial.
+
+**Resolución de historia:** dev contenía el commit documental `a0e108c1` (PR29, cinco skills) mientras la candidata se bifurcó antes y copió sus archivos. La integración requiere un commit con ambos padres, sin force push ni reescritura, y conservar las instrucciones de skills introducidas en dev. La rama `feature/integration-preview104-into-dev` prepara esa conciliación para CI y revisión; el avance de dev debe verificarse en GitHub antes de declarar integración definitiva.
+
+**Dependencias:** Preview104 incluye por ascendencia R1.1/PR21, documento maestro/PR22, dirección Jade/PR23, prototipo Jade/PR25 y UX/PR27-28; esta autorización valida la **versión final combinada**, sin afirmar pruebas físicas individuales de todas las candidatas antiguas. **PR24 y sus 401 SVG de kit pendiente NO se integran ni se consideran aprobados.** No se crean reglas, mecánicas, estadísticas ni contenido nuevo. `main` sigue reservado para entregas publicables.
+
+**Validaciones:** la CI de Preview104 fue satisfactoria; la CI de reconciliación debe volver a confirmar el árbol resultante (tests y exportación Android). Mantener guardados QA aislados y prohibición E6/R2–R4 sin nueva autorización. El protocolo de desarrollo y los pendientes de diseño final permanecen.
+
+**Siguiente paso:** comprobar el SHA de la integración y sus tests, actualizar `dev/karmany-core` solo por fast-forward no forzado y cerrar/corregir los PR históricos mediante una auditoría de ancestros, sin marcarlos automáticamente como aprobados de manera individual.
+
+**RESPONSABLE:** CHAT para conciliación/validación de Git; WORK para siguiente bloque de arte final solamente tras alcance aprobado.
+**INSTRUCCIÓN PARA CONTINUAR:** En `axenoban/karmany-monsta-android`, comprobar `dev/karmany-core`, `main`, PR30, commit Preview104 y merge de reconciliación; verificar CI, conservar cinco skills y evitar el PR24. No iniciar funcionalidades ni tocar canon. Preparar únicamente revisión por familias del arte UI definitivo.
+
+
+## Jade nocturno · revisión artística y archivo de diseños · 14/11/2026
+
+El creador considera insuficiente la fidelidad visual de Preview46 respecto al concepto elegido y solicita registrar el inventario/manual antes de generar los diseños. Preview46 sigue siendo una primera adaptación técnica, sin aprobación artística final. No integrar por esta petición documental.
+
+Manual y catálogo: docs/diseno/jade-nocturno/README.md y catalogo.csv. Archivo de imágenes: docs/diseno/jade-nocturno/imagenes/, con referencia original, cuatro bloques y carpetas propuestas/aprobados. No hay nuevos diseños finales aprobados. Esta entrega modifica solo documentación y archivo de referencia; no modifica APK, reglas ni guardados. PR23 permanece abierto en feature/jade-nocturno.
+
+SIGUIENTE PASO: diseñar la lámina del kit maestro y presentarla para revisión.
+RESPONSABLE: WORK.
+INSTRUCCIÓN PARA CONTINUAR: En feature/jade-nocturno lee docs/diseno/jade-nocturno/README.md; diseña la lámina del kit maestro siguiendo la referencia y registra sus propuestas sin marcarlas aprobadas ni modificar el juego.
+
+
+## Jade nocturno · implementación autorizada · 14/11/2026
+
+**Entrega verificable:** [Preview46 / v0.25.0-jade](https://github.com/axenoban/karmany-monsta-android/releases/tag/android-preview-46), [PR23](https://github.com/axenoban/karmany-monsta-android/pull/23), código `ca3fd8d95d913998415618d11d27b706a669fbfd`, [CI43597428376 correcta](https://github.com/axenoban/karmany-monsta-android/actions/runs/43597428376). APK83.431.938 bytes, SHA256 `40fdf39d1012bbb5440eb1218adb7eb2edf0dd5a7ef4a508dcda84667b481e33`. Descarga completa comprobada; firma con el mismo certificado anterior;11 JSON de juego idénticos. 5.972 comprobaciones/32 suites Godot y3 Python correctas. Capturas en ui-review.zip de la release. Prueba física pendiente, sin integración. Evidencia: docs/JADE_NOCTURNO_VERIFICACION.json. Los commits documentales posteriores no alteran esta APK.
+
+El creador eligió Jade nocturno y aprobó su extensión e implementación. Rama de trabajo: `feature/jade-nocturno`, v0.25.0-jade, basada en `docs/documento-maestro-android@3a468de`; conserva R1.1 y el documento maestro. PR21/22 siguen siendo dependencias pendientes de conciliación; no se han integrado. Dev continúa en29be7ba y main en9ef7af7. Esta autorización habilita el bloque visual; no habilita E6 ni cambios de reglas, balance, canon o guardado.
+
+Implementación y protocolo: [JADE_NOCTURNO_IMPLEMENTACION.md](docs/JADE_NOCTURNO_IMPLEMENTACION.md). Tema, marcos/iconos propios y composiciones de inicio, regiones, equipo/colección, Libro, Bestiario, perfil y ajustes; HUD de combate con detalles al tocar. Arte canónico existente conservado. Comprobaciones locales Godot4.7.2 y Python satisfactorias; prueba física Android pendiente. Consultar PR/CI de la rama para la evidencia publicada; no confundir con Preview45.
+
+SIGUIENTE PASO: acompañar validación física de Preview46; integrar solo tras aprobación identificable y revisión de la cadena de PR.
+RESPONSABLE: WORK.
+INSTRUCCIÓN PARA CONTINUAR: En axenoban/karmany-monsta-android verifica HEAD/PR/CI reales de feature/jade-nocturno, lee JADE_NOCTURNO_IMPLEMENTACION.md y contrasta la APK con el SHA publicado. Acompaña la prueba física; corrige fallos visuales reproducibles sin alterar reglas ni guardados. No integres dev/main antes de aprobación de esta candidata.
+
+
+## Consolidación documental · 12/11/2026
+
+Punto de entrada portable: `docs/DOCUMENTO_MAESTRO_ANDROID.md` (rama docs/documento-maestro-android). Reúne bases, estado real, contratos, datos exactos y guía de recuperación/compilación. Sin cambios funcionales ni integración de PR21: dev29be7ba, candidata6365654. CI histórica38955362578 correcta; no se ejecutaron nuevas pruebas de juego en esta consolidación. La recuperación de otros chats registra pruebas físicas satisfactorias, pero GitHub mantiene PR21 abierto; conciliar autorización y cierre antes de integrar.
+
+SIGUIENTE PASO: revisar el documento y la evidencia de cierre R1.1. RESPONSABLE: CHAT. INSTRUCCIÓN PARA CONTINUAR: Revisa DOCUMENTO_MAESTRO_ANDROID.md y PR21/Preview45 en axenoban/karmany-monsta-android; concilia aprobación física y estado de GitHub sin modificar código ni iniciar E6/R2–R4.
+
+
+## Entrega vigente · R1.1 candidata pendiente de prueba física · 17/10/2026
+
+Preview45/v0.24.0-r1.1, código636565422baa63dd4cc0f5026e55361ccd8f4fe1, PR21 abierto/borrador, CI38955362578 correcta. SHA256701108382045758c013bb5ed5cceaddeae4e5f5970822770fb704b3c5242ef08. Implementados NAV-01 y QA-01;5.857 checks Godot/31 suites y3 Python, firma compatible. Consultar ROADMAP_ESTADO y R1_1_IMPLEMENTACION para evidencia y seis pruebas físicas. **CHAT revisa en lectura; creador prueba. No integrar dev/main hasta «prueba correcta, Preview45».** Dev29be7ba y main9ef7af7 permanecen intactos. No E6/R2–R4. Las entradas inferiores son históricas y no anulan esta entrega. Mantener el traspaso obligatorio.
+
+
 ## Estado vigente · R1.1 autorizada (16/10/2026)
 
 El creador aprobó expresamente implementar **R1.1 — NAV-01/Atrás contextual y QA-01/laboratorio aislado**. Contrato obligatorio: `docs/R1_1_NAVEGACION_LABORATORIO_QA.md`. **Work es único escritor de código** y debe iniciar rama `feature/r1-1-navegacion-qa` desde HEAD vigente de dev tras verificar Git/PR/CI. El laboratorio jamás toca `user://profile.json` ni sus respaldos: niveles1–15, equipos1–3, 12 puntos, perfil QA separado. **Solo contrato/documentos creados por Chat hasta ahora; ninguna APK/CI/PR funcional de R1.1 confirmada.** Baseline aprobado R1/Preview42 código `293ac5e`, CI38889069848, PR20 integrado; dev anterior `672684b`. Sin E6, R2, R3, R4, reglas, balance ni cambios en main/dev antes de validación física. Tras este encabezado, los apartados de R1 «no iniciar nuevas funcionalidades» son históricos y no invalidan la autorización explícita de R1.1. Más detalles de responsable/instrucción en docs/ROADMAP_ESTADO.md.

@@ -21,13 +21,7 @@ func _ready() -> void :
 		if not row.has("before") or not row.has("after"): continue
 		var panel:= PanelContainer.new()
 		panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		var style:= StyleBoxFlat.new()
-		style.bg_color = Color("123337")
-		style.border_color = Color("467b70")
-		style.set_border_width_all(1)
-		style.set_corner_radius_all(14)
-		style.set_content_margin_all(14)
-		panel.add_theme_stylebox_override("panel", style)
+		panel.theme_type_variation = "JadeCard"
 		add_child(panel)
 		var box:= VBoxContainer.new()
 		box.add_theme_constant_override("separation", 8)

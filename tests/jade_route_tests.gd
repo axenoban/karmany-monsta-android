@@ -209,7 +209,7 @@ func _run() -> void:
 	await process_frame
 	var snapshot: Dictionary = app.profile.duplicate(true)
 	var continue_button := find_button(main.get_node("Page"), "Continuar recorrido sin vínculo")
-	check(continue_button.get_global_rect().end.y < 690, "optional capture continuation stays visible")
+	check(continue_button.get_global_rect().end.y < 690, "optional capture continuation stays visible (bottom=%.1f)" % continue_button.get_global_rect().end.y)
 	continue_button.pressed.emit()
 	await process_frame
 	check(app.profile == snapshot, "opening continuation confirmation spends no attempts")

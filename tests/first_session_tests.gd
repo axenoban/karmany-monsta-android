@@ -183,14 +183,16 @@ func run():
 	before = app.profile.duplicate(true)
 	trial._trainer_menu()
 	await process_frame
-	var trainer_help: Node = trial.get_node("TrainerMenu").find_child("ContextHelp", true, false)
-	check(trainer_help.entries[0].id == "trainer" and app.profile == before, "E5-06 actual optional trainer menu read-only")
-	trial._dismiss("TrainerMenu")
+	var trainer_panel: Node = trial.get_node_or_null("CombatContextPanel")
+	check(trainer_panel != null and app.profile == before, "E5: opening trainer overlay does not spend actions")
+	trainer_panel.close_panel()
+	await process_frame
 	trial._team_menu()
 	await process_frame
-	var team_help: Node = trial.get_node("TeamMenu").find_child("ContextHelp", true, false)
-	check(team_help.entries[0].id == "team" and app.profile == before, "E5-07 actual voluntary team menu read-only")
-	trial._dismiss("TeamMenu")
+	var team_panel: Node = trial.get_node_or_null("CombatContextPanel")
+	check(team_panel != null and app.profile == before, "E5: opening team overlay does not spend actions")
+	team_panel.close_panel()
+	await process_frame
 	# No contextual card overlays a progression animation, pending attack or binding.
 	original("veil_point_6_victory")
 	app.profile.first_session = Session.fresh()

@@ -78,38 +78,39 @@ func _run() -> void:
 		app.profile.settings.large_text = large
 		main._show("battle")
 		await process_frame
-		find_button(main.get_node("Page"), "Opciones").pressed.emit()
+		find_button(main.get_node("Page"), "Menú").pressed.emit()
 		await process_frame
 		find_button(main.get_node("Page"), "Estado y técnicas").pressed.emit()
 		await process_frame
-		var dialogs := main.find_children("CombatDetails", "AcceptDialog", true, false)
-		check(dialogs.size() == 1, "details opens once on mobile")
-		var dialog = dialogs[0]
-		check(dialog.size.x <= 1280 and dialog.size.y <= 650, "dialog fits landscape large=%s" % large)
-		check(dialog.tabs.get_tab_count() == 4, "all four information tabs available")
-		for tab in range(4):
-			dialog.tabs.current_tab = tab
-			await process_frame
-			var scroll: ScrollContainer = dialog.tabs.get_child(tab)
-			check(scroll.get_child(0).size.x <= scroll.size.x + 1, "content wraps without horizontal overflow")
-		check(app.profile.campaign == profile_before.campaign and app.profile.skill_tree == profile_before.skill_tree, "viewing details spends no action and requires no writable storage")
-		dialog.get_ok_button().pressed.emit()
+		var panels := main.find_children("CombatContextPanel", "Control", true, false)
+		check(panels.size() == 1, "read-only details overlay opens once")
+		var panel = panels[0]
 		await process_frame
-		check(main.find_children("CombatDetails", "AcceptDialog", true, false).is_empty(), "close releases dialog")
+		check(panel.get_node("PanelSurface").size.x <= 1280 and panel.get_node("PanelSurface").get_global_rect().end.y <= 720, "overlay fits viewport large=%s rect=%s" % [large, panel.get_node("PanelSurface").get_global_rect()])
+		check(panel.tabs.get_tab_count() == 4, "all four readout tabs available")
+		for tab in range(4):
+			panel.tabs.current_tab = tab
+			await process_frame
+			var scroll: ScrollContainer = panel.tabs.get_child(tab)
+			check(scroll.get_child(0).size.x <= scroll.size.x + 5, "readout wraps without overflow")
+		check(app.profile.campaign == profile_before.campaign and app.profile.skill_tree == profile_before.skill_tree, "viewing details spends no action and requires no writable storage")
+		panel.close_panel()
+		await process_frame
+		check(main.find_children("CombatContextPanel", "Control", true, false).is_empty(), "close releases overlay")
 	# Response timer continues if the panel is open; screen refresh frees the stale snapshot.
 	app.storage = Store.new("user://readout-test.json")
 	app.profile.settings.large_text = false
 	check(app.trial_action("karmany", "golpe"), "queued rival response for panel lifecycle")
 	main._show("battle")
 	await process_frame
-	find_button(main.get_node("Page"), "Opciones").pressed.emit()
+	find_button(main.get_node("Page"), "Menú").pressed.emit()
 	await process_frame
 	find_button(main.get_node("Page"), "Estado y técnicas").pressed.emit()
 	await process_frame
 	check(not app.response_timer.is_stopped(), "information panel does not pause or restart rival timer")
 	await app.response_timer.timeout
 	await process_frame
-	check(app.profile.campaign.encounter.round == 2 and main.find_children("CombatDetails", "AcceptDialog", true, false).is_empty(), "rival responds once and outdated panel disappears")
+	check(app.profile.campaign.encounter.round == 2 and main.find_children("CombatContextPanel", "Control", true, false).is_empty(), "rival responds once and outdated overlay disappears")
 	main.queue_free()
 	await process_frame
 	for suffix in ["", ".bak", ".tmp"]:

@@ -1,6 +1,7 @@
 extends VBoxContainer
 # Inline, no modal window, no focus grab, no animations and no gameplay actions.
 const Session = preload("res://scripts/first_session.gd")
+const AdventureTheme = preload("res://scripts/adventure_theme.gd")
 var entries: Array = []
 var app: Node
 var host: Node
@@ -28,13 +29,8 @@ func setup(owner_node: Node, context: String, point_id: String = "") -> void:
 	save_warning.hide()
 	add_child(save_warning)
 	card = PanelContainer.new()
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color("163d3c")
-	style.border_color = Color("8ed6b5")
-	style.set_border_width_all(1)
-	style.set_corner_radius_all(10)
-	style.set_content_margin_all(8)
-	card.add_theme_stylebox_override("panel", style)
+	card.theme_type_variation = "JadeStatusPanel"
+	card.add_theme_stylebox_override("panel", AdventureTheme.box(AdventureTheme.PANEL, AdventureTheme.JADE, 8))
 	add_child(card)
 	var row := HBoxContainer.new()
 	card.add_child(row)
@@ -59,6 +55,7 @@ func button(text: String, callback: Callable) -> Button:
 	node.text = text
 	node.custom_minimum_size.y = 48
 	node.add_theme_font_size_override("font_size", 20 if app.profile.settings.large_text else 18)
+	AdventureTheme.apply_role(node, "quiet")
 	node.pressed.connect(callback)
 	return node
 func busy() -> bool:

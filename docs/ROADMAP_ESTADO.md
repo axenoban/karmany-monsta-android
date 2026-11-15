@@ -1,11 +1,101 @@
 # ESTADO VIVO · Roadmap de Karmany Monsta (Chat + Work)
 
-## 14/11/2026 · Skills de apoyo (feature separada, sin código de juego)
+## 15/11/2026 · Conciliación de la candidata visual aprobada (Preview104)
+
+- **Aprobación explícita del usuario:** «ok integra esta version , valido esta opcion por el momento» de la APK Preview104 y la interfaz actual como **versión candidata combinada**. No se atribuyen pruebas físicas concretas no especificadas.
+- **PR30 / código aprobado:** `4a96bf3e18ce58cd5b6b8786b23fd598ded00f6e`; **CI** [43661494124](https://github.com/axenoban/karmany-monsta-android/actions/runs/43661494124) success; APK y capturas en [Release Preview104](https://github.com/axenoban/karmany-monsta-android/releases/tag/android-preview-104).
+- **Integración segura:** `dev/karmany-core` contenía PR29 skills en `a0e108c1`, candidata derivada de `29be7ba3`. La rama `feature/integration-preview104-into-dev` concilia ambas historias mediante commit de dos padres y preserva las cinco skills. Validar CI de reconciliación y comprobar HEAD de dev antes de declarar la integración terminada.
+- **Contenido incluido:** versión funcional existente con R1.1, navegación, Jade nocturno y UX integrada. **Excluido:** PR24 con kit vectorial masivo no aprobado; sin E6, R2–R4 ni cambios a `main`.
+- **Responsable:** CHAT para integración segura; WORK para siguiente revisión de arte, no nuevas reglas.
+- **Siguiente paso:** verificar PR/CI de conciliación, avanzar dev sin force y registrar cierre; después validar un bloque visual nuevo como candidata separada.
+
+## 14/11/2026 · Skills de apoyo (integradas en dev mediante PR29)
 
 - Se preparan cinco skills locales para Codex y lectura explícita desde Work/Chat: `godot-ui-ux`, `game-visual-system`, `godot-ui-implementation`, `android-game-qa`, `godot-gameplay`, guía en `docs/SKILLS_DESARROLLO.md` y validador `ci/validate_skills.py`.
 - **Rama de esta entrega:** `feature/skills-godot-ui-ux-android` desde `dev/karmany-core` `29be7ba3d30ea72e860f62ec4f0c8aa766e6d1b4`. Únicamente documentación e infraestructura de instrucciones, sin scripts jugables, assets finales, escenas ni APK.
 - **Ramas visuales pendientes:** PR23, PR24 y PR28 abiertos (candidatos); PR24 no está aprobado como kit completo. Estas skills no los fusionan ni alteran la autorización R1.1 existente.
 - **Siguiente paso:** revisión de frontmatter/guía, después seleccionar pantalla real y ejecutar piloto visual en rama propia. **Responsable:** CHAT para revisión de esta entrega; WORK para implementar piloto únicamente con nuevo alcance autorizado. **No integrar a dev sin validación.**
+
+
+
+
+## Prototipo A · Exploración táctil Jade Lugar 1 · 14/11/2026
+
+**Aprobación explícita:** el creador aprobó la opción A de exploración por interacción y autorizó implementar un prototipo. Contrato: `docs/PROTOTIPO_EXPLORACION_INTERACTIVA_JADE_01.md`. Se modifica únicamente `jade_point_1`: Entorno y Camino leen descripciones existentes; Buscar llama al mismo `App.discover_location`. El resto de las 12 etapas, reglas, datos canónicos, stamina, guardados, combate y navegación aprobada permanecen intactos.
+
+**Rama:** `feature/jade-interactive-location-prototype`, iniciada desde `feature/jade-nocturno@2591d053` (PR23), con [PR25](https://github.com/axenoban/karmany-monsta-android/pull/25) borrador contra PR23. PR21→PR22→PR23 siguen pendientes; PR24 de arte es hermano y no entra en esta rama. `dev/karmany-core@29be7ba` y `main@9ef7af7` sin tocar.
+
+**Evidencia:** CI inicial [43627903615](https://github.com/axenoban/karmany-monsta-android/actions/runs/43627903615) detectó un error en un test nuevo por usar la clave `stamina` inexistente en uno de los dos snapshots, mientras el modelo utiliza `value`. Corregida la aserción en commit `141251be` sin cambiar lógica de juego. **CI final y APK todavía por verificar** después de esa corrección; no atribuir éxito, guardado compatible o prueba física hasta evidencia completa.
+
+**Cierre técnico del prototipo (Preview53, 14/11/2026):** [CI43629104749](https://github.com/axenoban/karmany-monsta-android/actions/runs/43629104749) completada en **success** sobre el código `473209b8f8e36e0587a068b15d87a6ebe3714ab2`, con todas las etapas históricas y la nueva prueba (36 comprobaciones, 0 fallos). APK Android exportada/firmada: [Preview53](https://github.com/axenoban/karmany-monsta-android/releases/download/android-preview-53/karmany-monsta-preview.apk), 83.436.203 bytes, SHA-256 `135462203262133e49f024015eeb1c97d57d009c512144dec9fa3ec20551457c`. Se corrigieron el test de `exploration.value`, el teardown de audio en pruebas y el nombre histórico `LocationBackdrop`, sin cambiar reglas de juego. **Falta prueba física y aprobación del creador; PR25 sigue abierto/borrador y no integrado.**
+
+**SIGUIENTE PASO:** prueba física de Preview53 con guardados reales, validación táctil y comparación de stamina/encuentro; solo tras `prueba correcta` conciliar PR21–25 y planificar integración segura. No tocar dev/main todavía.
+
+**RESPONSABLE:** CHAT (implementación, documentación y seguimiento del PR); creador para validación Android.
+**INSTRUCCIÓN PARA CONTINUAR:** En `axenoban/karmany-monsta-android` revisa HEAD y PR25, CI posterior a `141251be`, contrato del prototipo y PR21–24. Verifica importación Godot4.7.2, tests `location_hotspots_tests.gd`, regresiones completas y APK. Mantén aislamiento de guardados y reglas intactas; no integres sin validación física del creador.
+
+
+## Jade nocturno · revisión artística y archivo de diseños · 14/11/2026
+
+El creador considera insuficiente la fidelidad visual de Preview46 respecto al concepto elegido y solicita registrar el inventario/manual antes de generar los diseños. Preview46 sigue siendo una primera adaptación técnica, sin aprobación artística final. No integrar por esta petición documental.
+
+Manual y catálogo: docs/diseno/jade-nocturno/README.md y catalogo.csv. Archivo de imágenes: docs/diseno/jade-nocturno/imagenes/, con referencia original, cuatro bloques y carpetas propuestas/aprobados. No hay nuevos diseños finales aprobados. Esta entrega modifica solo documentación y archivo de referencia; no modifica APK, reglas ni guardados. PR23 permanece abierto en feature/jade-nocturno.
+
+SIGUIENTE PASO: diseñar la lámina del kit maestro y presentarla para revisión.
+RESPONSABLE: WORK.
+INSTRUCCIÓN PARA CONTINUAR: En feature/jade-nocturno lee docs/diseno/jade-nocturno/README.md; diseña la lámina del kit maestro siguiendo la referencia y registra sus propuestas sin marcarlas aprobadas ni modificar el juego.
+
+
+## Jade nocturno · implementación autorizada · 14/11/2026
+
+**Entrega verificable:** [Preview46 / v0.25.0-jade](https://github.com/axenoban/karmany-monsta-android/releases/tag/android-preview-46), [PR23](https://github.com/axenoban/karmany-monsta-android/pull/23), código `ca3fd8d95d913998415618d11d27b706a669fbfd`, [CI43597428376 correcta](https://github.com/axenoban/karmany-monsta-android/actions/runs/43597428376). APK83.431.938 bytes, SHA256 `40fdf39d1012bbb5440eb1218adb7eb2edf0dd5a7ef4a508dcda84667b481e33`. Descarga completa comprobada; firma con el mismo certificado anterior;11 JSON de juego idénticos. 5.972 comprobaciones/32 suites Godot y3 Python correctas. Capturas en ui-review.zip de la release. Prueba física pendiente, sin integración. Evidencia: docs/JADE_NOCTURNO_VERIFICACION.json. Los commits documentales posteriores no alteran esta APK.
+
+El creador eligió Jade nocturno y aprobó su extensión e implementación. Rama de trabajo: `feature/jade-nocturno`, v0.25.0-jade, basada en `docs/documento-maestro-android@3a468de`; conserva R1.1 y el documento maestro. PR21/22 siguen siendo dependencias pendientes de conciliación; no se han integrado. Dev continúa en29be7ba y main en9ef7af7. Esta autorización habilita el bloque visual; no habilita E6 ni cambios de reglas, balance, canon o guardado.
+
+Implementación y protocolo: [JADE_NOCTURNO_IMPLEMENTACION.md](JADE_NOCTURNO_IMPLEMENTACION.md). Tema, marcos/iconos propios y composiciones de inicio, regiones, equipo/colección, Libro, Bestiario, perfil y ajustes; HUD de combate con detalles al tocar. Arte canónico existente conservado. Comprobaciones locales Godot4.7.2 y Python satisfactorias; prueba física Android pendiente. Consultar PR/CI de la rama para la evidencia publicada; no confundir con Preview45.
+
+SIGUIENTE PASO: acompañar validación física de Preview46; integrar solo tras aprobación identificable y revisión de la cadena de PR.
+RESPONSABLE: WORK.
+INSTRUCCIÓN PARA CONTINUAR: En axenoban/karmany-monsta-android verifica HEAD/PR/CI reales de feature/jade-nocturno, lee JADE_NOCTURNO_IMPLEMENTACION.md y contrasta la APK con el SHA publicado. Acompaña la prueba física; corrige fallos visuales reproducibles sin alterar reglas ni guardados. No integres dev/main antes de aprobación de esta candidata.
+
+
+## Consolidación documental · 12/11/2026
+
+Punto de entrada portable: `docs/DOCUMENTO_MAESTRO_ANDROID.md` (rama docs/documento-maestro-android). Reúne bases, estado real, contratos, datos exactos y guía de recuperación/compilación. Sin cambios funcionales ni integración de PR21: dev29be7ba, candidata6365654. CI histórica38955362578 correcta; no se ejecutaron nuevas pruebas de juego en esta consolidación. La recuperación de otros chats registra pruebas físicas satisfactorias, pero GitHub mantiene PR21 abierto; conciliar autorización y cierre antes de integrar.
+
+SIGUIENTE PASO: revisar el documento y la evidencia de cierre R1.1. RESPONSABLE: CHAT. INSTRUCCIÓN PARA CONTINUAR: Revisa DOCUMENTO_MAESTRO_ANDROID.md y PR21/Preview45 en axenoban/karmany-monsta-android; concilia aprobación física y estado de GitHub sin modificar código ni iniciar E6/R2–R4.
+
+
+## R1.1 · Preview45 candidata entregable · 17/10/2026
+
+**Implementación y validación técnica terminadas. Pendientes revisión Chat y prueba física del creador. NO integrada.**
+
+- Rama `feature/r1-1-navegacion-qa`, [PR21](https://github.com/axenoban/karmany-monsta-android/pull/21) abierto/borrador, código funcional **`636565422baa63dd4cc0f5026e55361ccd8f4fe1`**. El commit documental de esta entrega no modifica código ni APK.
+- **Preview45 / v0.24.0-r1.1**, [descargar APK](https://github.com/axenoban/karmany-monsta-android/releases/download/android-preview-45/karmany-monsta-preview.apk),83.404.111 bytes, paquete `com.axenoban.karmanymonsta.preview`, versionCode1045.
+- **SHA-256:** `701108382045758c013bb5ed5cceaddeae4e5f5970822770fb704b3c5242ef08`. Descarga completa contrastada con `apk.sha256`; metadatos internos confirman código6365654/build45.
+- [CI38955362578](https://github.com/axenoban/karmany-monsta-android/actions/runs/38955362578) correcta: **5.857 comprobaciones en31 suites Godot**, sin duplicar renders de suites repetidas;3 tests Python. R1.1:233 comprobaciones funcionales/aislamiento y32 de interfaz;8 renders nuevos. Export y firma v2/v3 correctos. Certificado SHA256 `756c8c1a8136ae2e80987c540d805641d7bfd2d5b657d1f04584f0074ac61bf8`, igual aPreview42.
+- APK comparada conPreview42:11 JSON de juego idénticos y122 entradas de recursos gráficos/audio/importación idénticas. Solo3 scripts existentes cambian (App/Main/TrialUI) y4 scripts nuevos implementan navegación/QA. Sin pruebas/documentos/CI empaquetados. Evidencia: `docs/R1_1_CANDIDATA_VERIFICACION.json`.
+- NAV-01 y QA-01 implementados; guardado QA fijo y protegido, presets1–15/equipo1–3/12 etapas, reinicio y callbacks aislados. Se corrigieron durante validación la conservación del preset, preferencias visuales y espacio de botones. Preview43/44 quedan como iteraciones superadas, no candidatas finales.
+- **Dev sigue en29be7ba3d30ea72e860f62ec4f0c8aa766e6d1b4; main en9ef7af778ee59a47f62bdfbfd5eb0786ce787213.** No E6/R2–R4, reglas, balance, canon ni PS persistentes modificados. No se atribuye ninguna prueba física dePreview45.
+- Instalar sobrePreview42 sin desinstalar y ejecutar las seis comprobaciones de `docs/R1_1_IMPLEMENTACION.md`: regreso contextual, botón/gesto, encuentro conservado, QA Velo6/equipo3, salida sin contaminación y reapertura normal/letras grandes. Solo **«prueba correcta, Preview45»** autoriza preparar integración segura.
+
+**SIGUIENTE PASO:** Chat revisa PR21/contrato/evidencias en lectura y acompaña la prueba física dePreview45.
+**RESPONSABLE:** CHAT.
+**INSTRUCCIÓN PARA CONTINUAR:** En axenoban/karmany-monsta-android revisa en lectura R1.1/PR21, código636565422baa63dd4cc0f5026e55361ccd8f4fe1, CI38955362578 y Preview45/SHA701108382045758c013bb5ed5cceaddeae4e5f5970822770fb704b3c5242ef08. Contrasta docs/R1_1_NAVEGACION_LABORATORIO_QA.md, R1_1_IMPLEMENTACION.md y R1_1_CANDIDATA_VERIFICACION.json; acompaña las seis pruebas físicas. No modifiques código ni integres dev/main antes de confirmación explícita «prueba correcta, Preview45». No E6/R2–R4.
+
+
+## R1.1 · implementación Work en validación · 16/10/2026
+
+- Rama `feature/r1-1-navegacion-qa`, base `29be7ba3d30ea72e860f62ec4f0c8aa766e6d1b4`; Work único escritor. Baseline Preview42/293ac5e conservado. Dev y main sin modificar; sin integración autorizada.
+- NAV-01: historial limitado de nombres de ruta, redibujos sin duplicados, Atrás compartido Android/botón y prioridad de modales. Opciones disponibles desde exploración y regreso contextual; nueva partida/cambio de perfil invalidan historial.
+- QA-01: perfil sintético validado, almacén fijo `user://qa/profile.json`, barreras de ruta/escritura, temporizadores por generación, acceso explícito solo preview/editor configurado. Niveles1–15, equipo1–3, 13 especies, 12 etapas, stamina y reinicio. Las puertas regionales se omiten exclusivamente en QA; validadores y costes normales intactos. Antiguos simuladores de nivel/captura bloqueados fuera de QA; redistribución normal conservada.
+- Pruebas locales: 30 suites Godot correctas en la pasada completa;3 pruebas Python correctas. Suite R1.1 final:233 comprobaciones correctas (aislamiento binario, fallos, victoria/derrota, captura, callbacks y navegación); revisión visual:32 comprobaciones y8 imágenes, letras normales/grandes, sin errores de motor. Siete fixtures Preview42 generadas por checkout exacto293ac5e. No atribuir pruebas físicas.
+- Incidencia de regresión resuelta: el test antiguo construía páginas sucesivas y esperaba destinos fijos; ahora construye explícitamente Home→Mapa→Perfil/Bestiario antes de comprobar el regreso. Se conservan las aserciones de destino; el contrato nuevo se comprueba en suite independiente.
+- PR21 publicado; primera ejecución Preview43/cef00c5 sustituida por corrección del preset al regresar al laboratorio (repetición exacta del escenario y conservación de letras grandes al aplicar presets). Falta: CI/export final, firma/SHA APK y validación física. No hay todavía APK R1.1 entregable ni aprobación humana.
+
+**SIGUIENTE PASO:** terminar validación y publicar candidata R1.1 identificable.
+**RESPONSABLE:** WORK.
+**INSTRUCCIÓN PARA CONTINUAR:** En axenoban/karmany-monsta-android, continúa exclusivamente R1.1 en feature/r1-1-navegacion-qa desde baseline29be7ba. Verifica cambios y pruebas, completa PR/CI/APK/firma/SHA y entrega las seis comprobaciones físicas del contrato. No integrar dev/main hasta «prueba correcta» explícita; no E6/R2–R4.
 
 
 ## R1.1 AUTORIZADA · contrato implementable registrado · 16/10/2026
