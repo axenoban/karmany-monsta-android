@@ -1,5 +1,18 @@
 # Continuidad de Karmany Monsta
 
+## 14/11/2026 (Bolivia) · Candidata de controles desde Preview104
+
+- Responsable escritor: WORK. Rama `feature/jade-visual-controls-review`, base real `b885e6ce7f3d09a99cdbabef4c39465164d81b8a`.
+- Autorización vigente: revisión profesional, implementación visual en otra rama y APK para prueba física; aprobación visual obligatoria antes de integrar.
+- Una familia: superficies de botones normal/hover/pulsado/deshabilitado/foco, principal y seleccionado. 11 texturas comparten geometría; no son 11 ilustraciones diferentes. Fuente reproducible `ci/generate_jade_controls.py`.
+- Hallazgo: Preview104 hereda estados genéricos en principal/seleccionado y usa foco redondeado sobre contorno biselado. Candidata conserva identidad y esquinas nine-patch; facetas en márgenes, zona de lectura despejada. Paleta y tamaño del baseline conservados.
+- Originales preservados; candidatos en `assets/ui/jade/controls_v2/`. No se copia ni integra PR24. Sin reglas, canon, guardados, nueva fase ni cambios a main/dev.
+- Pruebas preliminares Godot local 4.6.3: importación limpia, tema 47 checks, UI 119 checks; Python 3 pruebas y 5 skills correctas. Validación exacta 4.7.2/CI y APK en curso, no acreditadas por estas pruebas preliminares.
+- Evidencia prevista: captura Godot `controls-family-v2.png` y capturas menú/mapa/combate/equipo/Libro en `ui-review.zip` de la release candidata. Estado artístico: PROPUESTO; prueba física pendiente.
+- Siguiente paso / WORK: verificar CI y APK del SHA candidato, presentar evidencia; esperar aprobación visual/física identificable antes de integrar.
+- Instrucción: En axenoban/karmany-monsta-android, verificar HEAD de feature/jade-visual-controls-review, comparar contra dev b885e6c/Preview104, revisar CI y capturas, probar actualización y botones normal/pulsado/deshabilitado, texto grande, Atrás y reanudación. No integrar ni ampliar familias sin aprobación del creador.
+
+
 ## 15/11/2026 · CIERRE CONFIRMADO · Preview104 incorporada a dev
 
 **ESTADO REAL:** `dev/karmany-core` avanzado de `a0e108c1ca8e908942492f18caa2ac2eab3fbb88` a `3a5f53384c9dd958ca786e27ed89adf7c7b993f2` mediante fast-forward no forzado. Commit de dos padres: dev previo + código Preview104 `4a96bf3e18ce58cd5b6b8786b23fd598ded00f6e`. [PR31](https://github.com/axenoban/karmany-monsta-android/pull/31) cerrado/merged=true. [CI de integración 43662842572](https://github.com/axenoban/karmany-monsta-android/actions/runs/43662842572) **completed/success** (regresiones y exportación Android). `main` permanece en `9ef7af778ee59a47f62bdfbfd5eb0786ce787213`.
