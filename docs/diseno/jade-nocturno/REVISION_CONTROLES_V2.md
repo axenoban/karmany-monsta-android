@@ -1,5 +1,14 @@
 # Revisión profesional · controles candidatos
 
+## Verificación local y bloqueo de entrega
+
+Godot **4.7.2** instalado y verificado con SHA-512 oficial. Importación sin errores. Siete suites locales: tema 47, UI 119, foundation 40, R1.1 233, combat-readout 37, unificación 1849, primera sesión 609; **2934 checks, cero fallos**, logs revisados con ci/check_log.py. Tres pruebas Python y validación de cinco skills correctas.
+
+No hay CI nueva ni APK nueva. El auto-review rechazó publicar el payload en el repositorio público incluso después de verificar GitHub (repo ID 1418670401, permisos push/admin). Se requiere autorización explícita del creador para publicar esta candidata en axenoban/karmany-monsta-android. No se intenta otro canal para evitar ese rechazo. Los commits están locales; dev/main intactos.
+
+Capturas reales pendientes: entorno local sin display conectado; intento de render falló al inicializar X11/Wayland. No atribuir aprobación visual a los tests headless. La captura de familia queda implementada en tests/jade_ui_tests.gd para CI. Próximo responsable WORK: tras autorización explícita, push de feature/jade-visual-controls-review, PR borrador, CI completa, inspección de capturas y entrega de APK. No merge antes de aprobación visual/física.
+
+
 ## 14/11/2026 (Bolivia) · Candidata de controles desde Preview104
 
 - Responsable escritor: WORK. Rama `feature/jade-visual-controls-review`, base real `b885e6ce7f3d09a99cdbabef4c39465164d81b8a`.
