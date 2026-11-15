@@ -23,6 +23,15 @@ func run() -> void:
 		for state in ["normal", "focus", "disabled"]:
 			check(button.get_theme_stylebox(state) != null, variation + " tiene " + state)
 		button.free()
+	for role in ["JadePrimary", "JadeSelected"]:
+		for state in ["normal", "hover", "pressed"]:
+			var style := theme.get_stylebox(state, role) as StyleBoxTexture
+			check(style != null, role + " conserva nine-patch: " + state)
+			if style != null:
+				check(style.texture.resource_path.contains("primary" if role == "JadePrimary" else "selected"), role + " conserva identidad: " + state)
+				check(style.get_texture_margin(SIDE_LEFT) == 14, "esquinas sin estirar")
+	var focus := theme.get_stylebox("focus", "Button") as StyleBoxTexture
+	check(focus != null and focus.texture.resource_path.ends_with("focus.svg"), "foco biselado transparente")
 	for role in ["primary", "quiet", "navigation", "danger", "selected"]:
 		var control := Button.new()
 		Kit.apply_role(control, role)

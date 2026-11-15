@@ -56,28 +56,19 @@ static func create() -> Theme:
 	result.set_constant("h_separation", "GridContainer", 14)
 	result.set_constant("v_separation", "GridContainer", 14)
 	for state in ["normal", "hover", "pressed", "disabled", "focus"]:
-		var style := box(PANEL, EDGE, 12)
-		if state == "hover":
-			style.bg_color = Color("195446")
-			style.border_color = JADE
-		elif state == "pressed":
-			style.bg_color = Color("27624c")
-			style.border_color = GOLD
-		elif state == "disabled":
-			style.bg_color = Color("20352f")
-			style.border_color = Color("52665b")
-		elif state == "focus":
-			style.bg_color = Color.TRANSPARENT
-			style.border_color = GOLD
-			style.set_border_width_all(2)
-		result.set_stylebox(state, "Button", style if state == "focus" else cut_panel(state))
+		result.set_stylebox(state, "Button", cut_panel("controls_v2/" + state))
 	for item in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color"]:
 		result.set_color(item, "Button", PAPER)
 	result.set_color("font_disabled_color", "Button", MIST.darkened(0.18))
 	result.set_type_variation("JadePrimary", "Button")
-	result.set_stylebox("normal", "JadePrimary", cut_panel("primary"))
+	result.set_stylebox("normal", "JadePrimary", cut_panel("controls_v2/primary"))
 	result.set_type_variation("JadeSelected", "Button")
-	result.set_stylebox("normal", "JadeSelected", cut_panel("selected"))
+	result.set_stylebox("normal", "JadeSelected", cut_panel("controls_v2/selected"))
+	# Keep role identity while interacting; disabled remains neutral.
+	for role in ["primary", "selected"]:
+		var kind := "JadePrimary" if role == "primary" else "JadeSelected"
+		for state in ["hover", "pressed"]:
+			result.set_stylebox(state, kind, cut_panel("controls_v2/" + role + "_" + state))
 	_variation(result, "JadeQuiet", Color("11372f"), EDGE.darkened(0.20), MIST)
 	_variation(result, "JadeNav", Color("123d36"), EDGE, PAPER)
 	_variation(result, "JadeDanger", Color("40382d"), GOLD.darkened(0.18), GOLD)
