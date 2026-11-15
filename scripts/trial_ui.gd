@@ -177,7 +177,9 @@ func _world() -> void :
 			else: _notice()))
 	else:
 		var xp: int = int(Progress.normalized(App.profile.campaign).trainer_xp)
-		JadeUI.status(column, "Entrenador Nv. %d · XP %d/%d · Límite regional Nv. %d" % [App.profile.skill_tree.level, xp, Progress.requirement(int(App.profile.skill_tree.level)), int(ProgressRules.region(App.profile.campaign.get("route", {}).get("selected", "jade")).xp_cap)])
+		var trainer_summary := _label("Entrenador Nv. %d · XP %d/%d · Límite regional Nv. %d" % [App.profile.skill_tree.level, xp, Progress.requirement(int(App.profile.skill_tree.level)), int(ProgressRules.region(App.profile.campaign.get("route", {}).get("selected", "jade")).xp_cap)], 20)
+		trainer_summary.theme_type_variation = "JadeMuted"
+		column.add_child(trainer_summary)
 		var energy_row:= HBoxContainer.new()
 		column.add_child(energy_row)
 		stamina_label = _label("", 21)
