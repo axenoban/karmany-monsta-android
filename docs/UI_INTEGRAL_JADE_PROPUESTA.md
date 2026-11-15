@@ -43,3 +43,14 @@ El rediseño usa composición y recursos de la candidata Jade Nocturno (direcci�
 7. Prueba física antes de aprobar: los 12 lugares, combate táctico, Libro, selección de equipo, navegación contextual, texto grande y actualización APK.
 
 **Criterio de integración:** primero validar rama madre PR28 y dependencias visuales pertinentes. Este PR debe permanecer como propuesta apilada hasta aprobación explícita; ni un CI verde ni una captura aislada son aprobación artística.
+
+## Iteración 2 · revisión de capturas de Preview101
+
+La revisión directa de `jade-review/map-960-true.png`, `jade-review/battle.png` y otras capturas de CI identificó dos defectos de calidad (no de reglas):
+
+1. La región apenas mostraba su arte (franja de 64 px) debido a la suma vertical de ilustración, estado y progreso; los botones del dock debían seguir visibles.
+2. El texto de última acción del combate se dibujaba directamente sobre el fondo decorado, con contraste dependiente de cada escenario.
+
+**Correcciones propuestas y aplicadas en esta rama:** un encabezado `RegionArt` de 116 px con nombre/progreso/estado superpuestos sobre una franja oscurecida del arte canónico; botón de acceso permanece por separado y en la misma posición semántica. `JadeUI.readout` añade una lámina de lectura semitransparente al mensaje existente del combate. Ambas superficies usan tokens de Jade, texto Godot, sin iconografía ni datos nuevos, sin interceptar input. La prueba de región verifica ahora ambos encabezados, que el oscurecimiento no capture toque y que las acciones sigan sobre el dock también a 960 px.
+
+**Regresión requerida:** comparar mapas normales y texto grande (1280×720/960×540) y HUD de combate, además de suite `jade_ui_tests`, `r11_ui_tests`, `first_session_tests`, `unification_ui_tests` y exportación de APK. Conservar PR30 como borrador hasta revisión física.

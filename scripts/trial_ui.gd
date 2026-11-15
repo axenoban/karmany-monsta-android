@@ -265,9 +265,7 @@ func _battle() -> void :
 		column.add_child(binding)
 	else:
 		_stage("battle", state.player_hp == 0, state.enemy_hp == 0)
-	var action_label:= _label(encounter.last_action_text(), 22)
-	action_label.name = "LastAction"
-	column.add_child(action_label)
+	JadeUI.readout(column, encounter.last_action_text(), "LastAction", 22)
 	if state.phase == "battle":
 		var actions:= HBoxContainer.new()
 		column.add_child(actions)

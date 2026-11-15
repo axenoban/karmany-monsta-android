@@ -293,18 +293,14 @@ func _map() -> void:
 		var card := VBoxContainer.new()
 		card.add_theme_constant_override("separation", 5)
 		panel.add_child(card)
-		var art := TextureRect.new()
-		art.texture = Stage.texture("jade_point_1" if id == "jade" else "veil_bamboo")
-		art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-		art.custom_minimum_size.y = 64
-		card.add_child(art)
 		var complete: int = preload("res://scripts/jade_route.gd").completions(App.profile.campaign.route, id).size()
-		card.add_child(_label("%s · %d/6 completadas" % [region.name, complete]))
 		var reason := ProgressRules.region_reason(App.profile.skill_tree, id)
-		var state := _label("Disponible" if reason.is_empty() else reason)
-		state.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		card.add_child(state)
+		JadeUI.region_header(
+			card, "jade_point_1" if id == "jade" else "veil_bamboo",
+			"%s · %d/6 completadas" % [region.name, complete],
+			"Disponible" if reason.is_empty() else reason,
+			App.profile.settings.large_text
+		)
 		var needs_buy: bool = int(region.cost) > 0 and id not in App.profile.skill_tree.unlocks
 		var open := _button("Desbloquear · %d punto" % int(region.cost) if needs_buy else "Explorar región", func(): _open_region(id, needs_buy), "primary")
 		open.custom_minimum_size.y = 56

@@ -46,7 +46,13 @@ func run():
 				if page == "map":
 					var book := button(main,"Libro")
 					check(book != null and book.get_global_rect().end.y <= main.size.y, "region navigation stays on screen")
-					if dimensions.x == 1280:
+					var art_frames := main.find_children("RegionArt", "Control", true, false)
+					check(art_frames.size() == 2, "both region cards have scenic art")
+					for region_art in art_frames:
+						check(region_art.custom_minimum_size.y >= 110, "region image remains visible at %s large=%s" % [dimensions, large])
+						var shade := region_art.get_node_or_null("RegionCaptionShade")
+						check(shade != null and shade.mouse_filter == Control.MOUSE_FILTER_IGNORE, "region caption shade is noninteractive")
+					if dimensions.x in [1280, 960]:
 						var region_action := button(main, "Explorar región")
 						var nav_top := INF
 						for candidate in main.find_children("*", "GridContainer", true, false):
