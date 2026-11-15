@@ -52,7 +52,7 @@ static func create() -> Theme:
 	result.default_font_size = 24
 	result.set_color("font_color", "Label", PAPER)
 	for kind in ["HBoxContainer", "VBoxContainer", "GridContainer"]:
-		result.set_constant("separation", kind, 10)
+		result.set_constant("separation", kind, 8)
 	result.set_constant("h_separation", "GridContainer", 14)
 	result.set_constant("v_separation", "GridContainer", 14)
 	for state in ["normal", "hover", "pressed", "disabled", "focus"]:

@@ -30,6 +30,7 @@ func setup(owner_node: Node, context: String, point_id: String = "") -> void:
 	add_child(save_warning)
 	card = PanelContainer.new()
 	card.theme_type_variation = "JadeStatusPanel"
+	card.add_theme_stylebox_override("panel", AdventureTheme.box(AdventureTheme.PANEL, AdventureTheme.JADE, 8))
 	add_child(card)
 	var row := HBoxContainer.new()
 	card.add_child(row)
@@ -54,7 +55,6 @@ func button(text: String, callback: Callable) -> Button:
 	node.text = text
 	node.custom_minimum_size.y = 48
 	node.add_theme_font_size_override("font_size", 20 if app.profile.settings.large_text else 18)
-	node.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	AdventureTheme.apply_role(node, "quiet")
 	node.pressed.connect(callback)
 	return node
