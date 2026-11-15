@@ -5,6 +5,7 @@ const Catalog = preload("res://scripts/combat_catalog.gd")
 const Locations = preload("res://scripts/location_visuals.gd")
 const ExperiencePanel = preload("res://scripts/experience_panel.gd")
 const Binding = preload("res://scripts/binding_stage.gd")
+const AdventureTheme = preload("res://scripts/adventure_theme.gd")
 const VICTORY_DURATION:= 1.25
 var app: Node
 var host: Control
@@ -35,11 +36,9 @@ func action(text: String, callback: Callable, secondary: bool = false) -> Button
 	node.custom_minimum_size = Vector2(290, 58)
 	node.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	node.add_theme_font_size_override("font_size", 23 if not app.profile.settings.large_text else 26)
-	if secondary:
-		var style:= StyleBoxFlat.new()
-		style.bg_color = Color.TRANSPARENT
-		node.add_theme_stylebox_override("normal", style)
-		node.add_theme_color_override("font_color", Color("b8cec7"))
+	node.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	AdventureTheme.decorate(node)
+	AdventureTheme.apply_role(node, "quiet" if secondary else "primary")
 	node.pressed.connect(callback)
 	node.disabled = app.load_failed
 	return node

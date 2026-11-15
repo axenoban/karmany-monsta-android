@@ -1,4 +1,5 @@
 extends Control
+const AdventureTheme = preload("res://scripts/adventure_theme.gd")
 ## Vista transitoria de consultas de combate. No posee estado de partida ni altera turnos.
 signal dismissed
 
@@ -55,6 +56,7 @@ func setup(caption: String, large_text: bool = false) -> void:
 	close_button.name = "ClosePanel"
 	close_button.text = "Cerrar"
 	close_button.custom_minimum_size = Vector2(98, 54)
+	AdventureTheme.apply_role(close_button, "quiet")
 	close_button.pressed.connect(close_panel)
 	heading.add_child(close_button)
 	var line := HSeparator.new()
@@ -118,6 +120,7 @@ func add_action(caption: String, callback: Callable, disabled: bool = false) -> 
 	button.custom_minimum_size.y = 56
 	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	button.add_theme_font_size_override("font_size", 22 if _large else 19)
+	AdventureTheme.apply_role(button, "navigation")
 	button.pressed.connect(callback)
 	content.add_child(button)
 	return button

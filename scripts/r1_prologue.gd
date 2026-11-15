@@ -1,6 +1,7 @@
 extends VBoxContainer
 signal finished(status: String)
 const Portrait = preload("res://scripts/r1_portrait.gd")
+const AdventureTheme = preload("res://scripts/adventure_theme.gd")
 const LINES := [
 	"Axe: «Ezel, antes de emprender el viaje hay algo que debes recordar.»",
 	"Axe: «Los Karmany no son solo fuerza. Observa a tu compañero y aprende de él.»",
@@ -57,6 +58,7 @@ func _ready() -> void:
 		button.text = label
 		button.custom_minimum_size.y = 64
 		button.size_flags_horizontal = SIZE_EXPAND_FILL
+		AdventureTheme.apply_role(button, "primary" if label == "Siguiente" else "quiet")
 		actions.add_child(button)
 		match label:
 			"Atrás": button.pressed.connect(back)
