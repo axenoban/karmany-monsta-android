@@ -296,7 +296,7 @@ func _map() -> void:
 		art.texture = Stage.texture("jade_point_1" if id == "jade" else "veil_bamboo")
 		art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-		art.custom_minimum_size.y = 96
+		art.custom_minimum_size.y = 80
 		card.add_child(art)
 		var complete: int = preload("res://scripts/jade_route.gd").completions(App.profile.campaign.route, id).size()
 		card.add_child(_label("%s · %d/6 completadas" % [region.name, complete]))
@@ -306,6 +306,7 @@ func _map() -> void:
 		card.add_child(state)
 		var needs_buy: bool = int(region.cost) > 0 and id not in App.profile.skill_tree.unlocks
 		var open := _button("Desbloquear · %d punto" % int(region.cost) if needs_buy else "Explorar región", func(): _open_region(id, needs_buy), "primary")
+		open.custom_minimum_size.y = 56
 		open.disabled = App.load_failed or int(App.profile.skill_tree.level) < int(region.min_level) or _encounter_in_progress()
 		card.add_child(open)
 	if _encounter_in_progress(): body.add_child(_button("Retomar aventura", _continue_adventure, "primary"))
@@ -314,7 +315,9 @@ func _map() -> void:
 	get_node("Page").get_child(0).add_child(nav)
 	for entry in [["Libro", "book"], ["Bestiario", "bestiary"], ["Ezel · Perfil", "trainers"], ["Equipo", "team"], ["Árbol de resonancias", "skill_tree"], ["Ajustes", "settings"]]:
 		var target: String = entry[1]
-		nav.add_child(_button(entry[0], func(): _show(target)))
+		var nav_button := _button(entry[0], func(): _show(target))
+		nav_button.custom_minimum_size.y = 52
+		nav.add_child(nav_button)
 
 func _open_region(id: String, buy: bool) -> void:
 	if buy:

@@ -46,6 +46,14 @@ func run():
 				if page == "map":
 					var book := button(main,"Libro")
 					check(book != null and book.get_global_rect().end.y <= main.size.y, "region navigation stays on screen")
+					if dimensions.x == 1280:
+						var region_action := button(main, "Explorar región")
+						var nav_top := INF
+						for candidate in main.find_children("*", "GridContainer", true, false):
+							if candidate.columns == 3 and candidate.get_child_count() == 6:
+								nav_top = minf(nav_top, candidate.global_position.y)
+						check(nav_top < INF, "region navigation dock found")
+						check(region_action != null and region_action.get_global_rect().end.y <= nav_top, "region main action stays visible above navigation dock")
 				await shot("%s-%s-%s" % [page,dimensions.x,large])
 	# Details and UI selection never consume combat turns or mutate progression.
 	root.size = Vector2i(1280,720)
