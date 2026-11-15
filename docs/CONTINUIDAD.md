@@ -1,5 +1,12 @@
 # Continuidad de Karmany Monsta
 
+## 15/11/2026 · Kit de combate: candidata para prueba física
+
+Autorización vigente: «Ok implementa el kit para una prueba física». Rama `feature/combat-visual-kit-physical`, basada en dev `b885e6ce7f3d09a99cdbabef4c39465164d81b8a` (Preview104). Aplicar el kit entregado a controles de combate existentes; no integrar a dev/main hasta validación física. PR24 y PR32/Preview108 permanecen independientes. No autoriza multijugador, reglas, balance, E6 ni R2–R4.
+
+Implementación y protocolo: `docs/COMBAT_VISUAL_KIT_CANDIDATA.md`. Godot 4.7.2: 159 verificaciones del kit y 675 de regresión local sin fallos. Pendiente CI completa/exportación y prueba en teléfono. Continuar publicando candidata, comprobar APK y esperar validación; no declarar prueba física realizada.
+
+
 ## 15/11/2026 · CIERRE CONFIRMADO · Preview104 incorporada a dev
 
 **ESTADO REAL:** `dev/karmany-core` avanzado de `a0e108c1ca8e908942492f18caa2ac2eab3fbb88` a `3a5f53384c9dd958ca786e27ed89adf7c7b993f2` mediante fast-forward no forzado. Commit de dos padres: dev previo + código Preview104 `4a96bf3e18ce58cd5b6b8786b23fd598ded00f6e`. [PR31](https://github.com/axenoban/karmany-monsta-android/pull/31) cerrado/merged=true. [CI de integración 43662842572](https://github.com/axenoban/karmany-monsta-android/actions/runs/43662842572) **completed/success** (regresiones y exportación Android). `main` permanece en `9ef7af778ee59a47f62bdfbfd5eb0786ce787213`.

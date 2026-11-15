@@ -1,5 +1,6 @@
 extends Control
 const AdventureTheme = preload("res://scripts/adventure_theme.gd")
+const CombatKit = preload("res://scripts/combat_kit_theme.gd")
 ## Vista transitoria de consultas de combate. No posee estado de partida ni altera turnos.
 signal dismissed
 
@@ -28,13 +29,7 @@ func setup(caption: String, large_text: bool = false) -> void:
 	_shell = Panel.new()
 	_shell.name = "PanelSurface"
 	_shell.mouse_filter = Control.MOUSE_FILTER_STOP
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color("112d30")
-	style.border_color = Color("85c9ae")
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(16)
-	style.set_content_margin_all(14)
-	_shell.add_theme_stylebox_override("panel", style)
+	_shell.add_theme_stylebox_override("panel", CombatKit.surface("detail_panel", 24, 14))
 	add_child(_shell)
 
 	var vertical := VBoxContainer.new()
@@ -57,6 +52,7 @@ func setup(caption: String, large_text: bool = false) -> void:
 	close_button.text = "Cerrar"
 	close_button.custom_minimum_size = Vector2(98, 54)
 	AdventureTheme.apply_role(close_button, "quiet")
+	CombatKit.decorate(close_button)
 	close_button.pressed.connect(close_panel)
 	heading.add_child(close_button)
 	var line := HSeparator.new()
@@ -121,6 +117,7 @@ func add_action(caption: String, callback: Callable, disabled: bool = false) -> 
 	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	button.add_theme_font_size_override("font_size", 22 if _large else 19)
 	AdventureTheme.apply_role(button, "navigation")
+	CombatKit.decorate(button)
 	button.pressed.connect(callback)
 	content.add_child(button)
 	return button
