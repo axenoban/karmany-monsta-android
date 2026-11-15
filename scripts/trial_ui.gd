@@ -119,9 +119,10 @@ func _build() -> void :
 		first.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	last.autowrap_mode = TextServer.AUTOWRAP_OFF
 	last.size_flags_horizontal = Control.SIZE_SHRINK_END
-	var header_rule := HSeparator.new()
-	header_rule.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	column.add_child(header_rule)
+	if mode != "battle":
+		var header_rule := HSeparator.new()
+		header_rule.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		column.add_child(header_rule)
 	if mode != "intro": _help_in(column, mode)
 	if mode in ["intro", "map", "exploration"]:
 		_world()
@@ -143,7 +144,7 @@ func _stage(stage_mode: String, dead_player: bool = false, dead_enemy: bool = fa
 		stage.background_id = Locations.background_for(App.profile.campaign)
 		stage.ally_species = App.profile.campaign.encounter.get("ally_species", "zephyr")
 		stage.enemy_species = App.profile.campaign.encounter.get("enemy_species", "tanugami")
-	stage.custom_minimum_size = Vector2(0, 130 if stage_mode == "battle" and App.profile.campaign.encounter.get("phase") in ["capture", "captured", "escaped", "defeat", "retreated"] else 140)
+	stage.custom_minimum_size = Vector2(0, 110 if stage_mode == "battle" and App.profile.campaign.encounter.get("phase") in ["capture", "captured", "escaped", "defeat", "retreated"] else (118 if stage_mode == "battle" else 140))
 	stage.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	column.add_child(stage)
 	if stage_mode == "battle" and App.pending_transition.is_empty() and App.consume_animation(App.profile.campaign.encounter):
@@ -264,7 +265,6 @@ func _battle() -> void :
 	action_label.name = "LastAction"
 	column.add_child(action_label)
 	if state.phase == "battle":
-		JadeUI.section(column, "Acciones de combate")
 		var actions:= HBoxContainer.new()
 		column.add_child(actions)
 		# Two central combat choices; Guardia remains available from Táctica.
@@ -278,7 +278,6 @@ func _battle() -> void :
 				else: _act("karmany", chosen, revision), not reason.is_empty()))
 			var technique_button:= actions.get_child(actions.get_child_count() - 1) as Button
 			technique_button.theme_type_variation = "JadePrimary" if id == "golpe" else "JadeNav"
-			technique_button.custom_minimum_size.y = 66
 			if tactical: actions.get_child(actions.get_child_count() - 1).tooltip_text = Catalog.action(state.ally_species, id).description + (" " + reason if not reason.is_empty() else "")
 		var secondary:= HBoxContainer.new()
 		column.add_child(secondary)
