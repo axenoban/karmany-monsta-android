@@ -296,7 +296,7 @@ func _map() -> void:
 		art.texture = Stage.texture("jade_point_1" if id == "jade" else "veil_bamboo")
 		art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-		art.custom_minimum_size.y = 120
+		art.custom_minimum_size.y = 96
 		card.add_child(art)
 		var complete: int = preload("res://scripts/jade_route.gd").completions(App.profile.campaign.route, id).size()
 		card.add_child(_label("%s · %d/6 completadas" % [region.name, complete]))

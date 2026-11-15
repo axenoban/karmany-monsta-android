@@ -37,6 +37,8 @@ func run():
 		check(main.page == "exploration", "UI launches Velo6")
 		check(app.profile.settings.large_text == large, "applying QA configuration preserves accessibility preferences")
 		await shot("exploration-" + str(large))
+		var explore_column = main.get_node("Page").get_child(0)
+		check_buttons(main, explore_column.get_child(explore_column.get_child_count()-1).global_position.y)
 		app.discover_location(app.profile.campaign.encounter.id)
 		main._show("battle")
 		await shot("battle-" + str(large))

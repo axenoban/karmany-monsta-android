@@ -49,6 +49,8 @@ func _label(text: String, font_size: int = 24) -> Label:
 	var label:= Label.new()
 	label.text = text
 	label.add_theme_font_size_override("font_size", font_size)
+	label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.65))
+	label.add_theme_constant_override("shadow_offset_y", 1)
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	return label
 
@@ -95,7 +97,7 @@ func _build() -> void :
 		margin.add_theme_constant_override("margin_" + side, 12)
 	add_child(margin)
 	column = VBoxContainer.new()
-	column.add_theme_constant_override("separation", 8)
+	column.add_theme_constant_override("separation", 5 if mode in ["battle", "exploration"] else 8)
 	margin.add_child(column)
 	var header:= HBoxContainer.new()
 	header.add_theme_constant_override("separation", 12)
@@ -527,7 +529,7 @@ func _exploration_scene() -> void :
 		view.texture = Stage.texture(Locations.background_for(App.profile.campaign))
 		view.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		view.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-		view.custom_minimum_size.y = 220
+		view.custom_minimum_size.y = 172
 		view.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		column.add_child(view)
 		column.add_child(_label("%s · %s" % [info.get("title", "Localización"), info.get("environment", "Valle Jade")], 24))
