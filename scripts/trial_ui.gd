@@ -23,6 +23,7 @@ const CombatTransitionScreen = preload("res://scripts/combat_transition_screen.g
 const Stage = preload("res://scripts/trial_stage.gd")
 const Locations = preload("res://scripts/location_visuals.gd")
 const JadeUI = preload("res://scripts/jade_ui.gd")
+const CombatKit = preload("res://scripts/combat_kit_theme.gd")
 const LocationHotspots = preload("res://scripts/location_hotspots.gd")
 var mode:= "battle"
 var column: VBoxContainer
@@ -41,6 +42,7 @@ func _help_in(parent: Node, context: String, point_id: String = "") -> Control:
 	return help
 
 func _ready() -> void :
+	if mode == "battle": theme = CombatKit.create()
 	_build()
 	if mode == "battle": _present_transition()
 	if mode == "battle" and not App.profile.campaign.encounter.has("regional"): _show_experience.call_deferred()
@@ -63,6 +65,7 @@ func _button(text: String, action: Callable, disabled: bool = false, role: Strin
 	button.custom_minimum_size.y = 58
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.disabled = disabled or App.load_failed
+	if mode == "battle": CombatKit.decorate(button)
 	var epoch: int = App.ui_epoch
 	button.pressed.connect( func():
 		if epoch != App.ui_epoch: return
@@ -252,8 +255,8 @@ func _battle() -> void :
 	var health:= HBoxContainer.new()
 	health.add_theme_constant_override("separation", 24)
 	column.add_child(health)
-	_health_bar(health, "AllyHP", encounter.ally_name() + (" · Nv. %d" % int(encounter.active().get("level", 1)) if tactical else ""), int(state.player_hp), player_max)
-	_health_bar(health, "EnemyHP", enemy_name + (" · Nv. %d" % int(state.enemy.get("level", 1)) if tactical else "") + (" · %d/%d" % [int(state.enemy_index) + 1, state.enemy_team.size()] if state.has("enemy_team") and state.phase == "battle" else ""), int(state.enemy_hp), enemy_max)
+	_health_bar(health, "AllyHP", encounter.ally_name() + (" · Nv. %d" % int(encounter.active().get("level", 1)) if tactical else ""), int(state.player_hp), player_max, str(state.ally_species))
+	_health_bar(health, "EnemyHP", enemy_name + (" · Nv. %d" % int(state.enemy.get("level", 1)) if tactical else "") + (" · %d/%d" % [int(state.enemy_index) + 1, state.enemy_team.size()] if state.has("enemy_team") and state.phase == "battle" else ""), int(state.enemy_hp), enemy_max, enemy_species)
 	if state.phase in ["capture", "captured", "escaped"]:
 		health.hide()
 		var binding:= BindingStage.new()
@@ -265,7 +268,8 @@ func _battle() -> void :
 		column.add_child(binding)
 	else:
 		_stage("battle", state.player_hp == 0, state.enemy_hp == 0)
-	JadeUI.readout(column, encounter.last_action_text(), "LastAction", 22)
+	var last_action := JadeUI.readout(column, encounter.last_action_text(), "LastAction", 22)
+	last_action.get_node("ReadoutSurface").add_theme_stylebox_override("panel", CombatKit.surface("toast", 14, 0))
 	if state.phase == "battle":
 		var actions:= HBoxContainer.new()
 		column.add_child(actions)
@@ -279,7 +283,8 @@ func _battle() -> void :
 				if tactical and chosen == "insignia" and (Catalog.action(state.ally_species, "insignia").has("grant_boost") or Catalog.action(state.ally_species, "insignia").has("relay_boost")): _support(state, revision)
 				else: _act("karmany", chosen, revision), not reason.is_empty()))
 			var technique_button:= actions.get_child(actions.get_child_count() - 1) as Button
-			technique_button.theme_type_variation = "JadePrimary" if id == "golpe" else "JadeNav"
+			technique_button.theme_type_variation = "JadePrimary"
+			CombatKit.decorate(technique_button, id)
 			if tactical: actions.get_child(actions.get_child_count() - 1).tooltip_text = Catalog.action(state.ally_species, id).description + (" " + reason if not reason.is_empty() else "")
 		var secondary:= HBoxContainer.new()
 		column.add_child(secondary)
@@ -413,16 +418,47 @@ func _continue_route(encounter_id: String, revision: int) -> void :
 	if App.continue_route(encounter_id, revision): navigate.emit("jade_play")
 	else: _notice()
 
-func _health_bar(parent: HBoxContainer, id: String, caption: String, hp: int, maximum: int) -> void :
-	var box := JadeUI.panel(parent)
-	box.get_parent().add_theme_stylebox_override("panel", preload("res://scripts/adventure_theme.gd").box(Color("103c34"), Color("638b76"), 8))
-	box.add_child(_label("%s · %d/%d PS" % [caption, hp, maximum], 20))
-	var bar:= ProgressBar.new()
+func _health_bar(parent: HBoxContainer, id: String, caption: String, hp: int, maximum: int, species_id: String) -> void :
+	var shell := PanelContainer.new()
+	shell.name = "Kit" + id + "Card"
+	shell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	shell.size_flags_stretch_ratio = 1.0
+	shell.add_theme_stylebox_override("panel", CombatKit.surface("hud_ally" if id == "AllyHP" else "hud_rival", 16, 10))
+	parent.add_child(shell)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 12)
+	shell.add_child(row)
+	var frame := PanelContainer.new()
+	frame.name = "KitPortraitFrame"
+	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	frame.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	frame.add_theme_stylebox_override("panel", CombatKit.surface("portrait", 12, 6))
+	row.add_child(frame)
+	var portrait := TextureRect.new()
+	portrait.name = "KitPortrait"
+	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	portrait.custom_minimum_size = Vector2(54, 54)
+	portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	portrait.texture = Stage.texture(species_id)
+	frame.add_child(portrait)
+	var box := VBoxContainer.new()
+	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	box.add_theme_constant_override("separation", 3)
+	row.add_child(box)
+	var title := _label(caption, 22 if App.profile.settings.large_text else 20)
+	title.name = "KitUnitName"
+	box.add_child(title)
+	var health_text := _label("%d/%d PS" % [hp, maximum], 18)
+	health_text.name = "KitHealthValue"
+	box.add_child(health_text)
+	var bar := ProgressBar.new()
 	bar.name = id
 	bar.max_value = maximum
 	bar.value = hp
 	bar.show_percentage = false
-	bar.custom_minimum_size.y = 22
+	bar.custom_minimum_size.y = 18
+	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	box.add_child(bar)
 
 func _popup(id: String, caption: String) -> VBoxContainer:
