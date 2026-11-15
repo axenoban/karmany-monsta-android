@@ -304,6 +304,11 @@ func _battle() -> void :
 		var book_name: String = {"book_initial": "Libro inicial", "book_upgrade_1": "Mejora 1", "book_upgrade_2": "Mejora 2"}.get(book_id, book_id)
 		column.add_child(_label("%s · %d%% por intento · quedan %d de 3" % [book_name, roundi(chance * 100), 3 - used], 25))
 		_reward_notice(state.id)
+		# Ambas decisiones pertenecen a la misma fase y comparten una fila
+		# para que la alternativa no caiga por debajo del viewport.
+		var capture_actions := HBoxContainer.new()
+		capture_actions.add_theme_constant_override("separation", 12)
+		column.add_child(capture_actions)
 		if state.has("enemy_team") and state.capture_choice.is_empty():
 			column.add_child(_label("Elige un rival derrotado para el único vínculo de esta victoria.", 20))
 			var choices:= HBoxContainer.new()
@@ -312,10 +317,10 @@ func _battle() -> void :
 				var selected_id: String = rival.instance_id
 				choices.add_child(_button("Vincular: %s · Nv. %d" % [Catalog.species_name(rival.species_id), int(rival.get("level", 1))], func(): _act("choose_capture", selected_id, revision)))
 		else:
-			column.add_child(_button("Intentar vínculo con el Libro", func(): _act("capture", "", revision)))
+			capture_actions.add_child(_button("Intentar vínculo con el Libro", func(): _act("capture", "", revision), false, "primary"))
 		if App.profile.campaign.get("route", Route.defaults()).current.get("encounter_id") == state.id:
-			column.add_child(_button("Continuar recorrido sin vínculo", func():
-				_confirm("La victoria ya cuenta para el recorrido. Continuar renuncia a los intentos restantes de este encuentro; podrás repetirlo después para intentar el vínculo.", func(): _continue_route(state.id, revision), "Continuar sin vínculo")))
+			capture_actions.add_child(_button("Continuar recorrido sin vínculo", func():
+				_confirm("La victoria ya cuenta para el recorrido. Continuar renuncia a los intentos restantes de este encuentro; podrás repetirlo después para intentar el vínculo.", func(): _continue_route(state.id, revision), "Continuar sin vínculo"), false, "quiet"))
 	else:
 		var text: String = enemy_name + " capturado y añadido a la colección." if state.phase == "captured" else (enemy_name + " escapó; puedes iniciar otro encuentro." if state.phase == "escaped" else (encounter.ally_name() + " quedó fuera de combate. La próxima prueba comienza recuperado." if state.phase == "defeat" else "Regresaste al valle."))
 		_drop_notice(state.id)
