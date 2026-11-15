@@ -127,7 +127,8 @@ static func readout(parent: Node, content: String, id: String = "JadeReadout", f
 	var surface := Panel.new()
 	surface.name = "ReadoutSurface"
 	surface.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	surface.z_index = -1
+	# Detrás del Label, pero en el mismo nivel que el HUD (no tras el escenario).
+	surface.show_behind_parent = true
 	var tint := Design.INK
 	tint.a = 0.80
 	surface.add_theme_stylebox_override("panel", Design.box(tint, Design.EDGE, 0))

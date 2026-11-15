@@ -41,7 +41,9 @@ func run() -> void:
 	check(card.get_parent().theme_type_variation == "JadeCard", "tarjeta")
 	var last_action := UI.readout(parent, "Última acción", "LastAction")
 	check(last_action == parent.get_node_or_null("LastAction"), "LastAction conserva ruta directa del HUD")
-	check(last_action.get_node_or_null("ReadoutSurface") != null, "fondo de lectura disponible")
+	var surface := last_action.get_node_or_null("ReadoutSurface") as Panel
+	check(surface != null, "fondo de lectura disponible")
+	check(surface != null and surface.show_behind_parent, "fondo detrás del texto, no del escenario")
 	check(parent.get_child_count() == 5, "composición sin duplicados")
 	parent.queue_free()
 	for i in range(3): await process_frame
