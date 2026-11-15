@@ -52,10 +52,11 @@ func _label(text: String, font_size: int = 24) -> Label:
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	return label
 
-func _button(text: String, action: Callable, disabled: bool = false) -> Button:
+func _button(text: String, action: Callable, disabled: bool = false, role: String = "") -> Button:
 	var button:= Button.new()
 	button.text = text
 	preload("res://scripts/adventure_theme.gd").decorate(button)
+	preload("res://scripts/adventure_theme.gd").apply_role(button, role)
 	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	button.custom_minimum_size.y = 58
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -91,24 +92,26 @@ func _build() -> void :
 	var margin:= MarginContainer.new()
 	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	for side in ["left", "right"]:
-		margin.add_theme_constant_override("margin_" + side, 8)
+		margin.add_theme_constant_override("margin_" + side, 12)
 	add_child(margin)
 	column = VBoxContainer.new()
 	column.add_theme_constant_override("separation", 8)
 	margin.add_child(column)
 	var header:= HBoxContainer.new()
+	header.add_theme_constant_override("separation", 12)
 	column.add_child(header)
 	var title:= _label("COMBATE · Turno %d" % int(App.profile.campaign.encounter.get("round", 1)) if mode == "battle" else ProgressRules.region(App.profile.campaign.get("route", {}).get("selected", "jade")).name.to_upper() + " · Exploración", 26)
 	if mode == "battle" and App.profile.campaign.encounter.has("regional") and App.profile.campaign.encounter.get("phase") in ["capture", "captured", "escaped"]: title.text = "VÍNCULO · EL LIBRO"
+	title.theme_type_variation = "JadeSectionTitle"
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	# Combat: single contextual menu replaces redundant Volver/Opciones buttons.
 	# Other routes keep their existing, approved navigation.
-	if mode != "battle": header.add_child(_button("Volver", func(): back_requested.emit()))
+	if mode != "battle": header.add_child(_button("Volver", func(): back_requested.emit(), false, "navigation"))
 	header.add_child(title)
 	if mode == "battle":
-		header.add_child(_button("Menú", _options_menu))
-	elif mode in ["map", "exploration"]: header.add_child(_button("Opciones", _map_options))
-	else: header.add_child(_button("Mapa", func(): navigate.emit("jade_play")))
+		header.add_child(_button("Menú", _options_menu, false, "navigation"))
+	elif mode in ["map", "exploration"]: header.add_child(_button("Opciones", _map_options, false, "navigation"))
+	else: header.add_child(_button("Mapa", func(): navigate.emit("jade_play"), false, "navigation"))
 	var first: Button = header.get_child(0) as Button if mode != "battle" else null
 	var last: Button = header.get_child(header.get_child_count() - 1) as Button
 	if first != null:
@@ -116,6 +119,9 @@ func _build() -> void :
 		first.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	last.autowrap_mode = TextServer.AUTOWRAP_OFF
 	last.size_flags_horizontal = Control.SIZE_SHRINK_END
+	var header_rule := HSeparator.new()
+	header_rule.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(header_rule)
 	if mode != "intro": _help_in(column, mode)
 	if mode in ["intro", "map", "exploration"]:
 		_world()
@@ -168,7 +174,7 @@ func _world() -> void :
 			else: _notice()))
 	else:
 		var xp: int = int(Progress.normalized(App.profile.campaign).trainer_xp)
-		column.add_child(_label("Entrenador Nv. %d · XP %d/%d · Límite regional Nv. %d" % [App.profile.skill_tree.level, xp, Progress.requirement(int(App.profile.skill_tree.level)), int(ProgressRules.region(App.profile.campaign.get("route", {}).get("selected", "jade")).xp_cap)], 20))
+		JadeUI.status(column, "Entrenador Nv. %d · XP %d/%d · Límite regional Nv. %d" % [App.profile.skill_tree.level, xp, Progress.requirement(int(App.profile.skill_tree.level)), int(ProgressRules.region(App.profile.campaign.get("route", {}).get("selected", "jade")).xp_cap)])
 		var energy_row:= HBoxContainer.new()
 		column.add_child(energy_row)
 		stamina_label = _label("", 21)
@@ -258,6 +264,7 @@ func _battle() -> void :
 	action_label.name = "LastAction"
 	column.add_child(action_label)
 	if state.phase == "battle":
+		JadeUI.section(column, "Acciones de combate")
 		var actions:= HBoxContainer.new()
 		column.add_child(actions)
 		# Two central combat choices; Guardia remains available from Táctica.
@@ -270,13 +277,14 @@ func _battle() -> void :
 				if tactical and chosen == "insignia" and (Catalog.action(state.ally_species, "insignia").has("grant_boost") or Catalog.action(state.ally_species, "insignia").has("relay_boost")): _support(state, revision)
 				else: _act("karmany", chosen, revision), not reason.is_empty()))
 			var technique_button:= actions.get_child(actions.get_child_count() - 1) as Button
-			technique_button.theme_type_variation = "JadePrimary" if id == "golpe" else "Button"
+			technique_button.theme_type_variation = "JadePrimary" if id == "golpe" else "JadeNav"
+			technique_button.custom_minimum_size.y = 66
 			if tactical: actions.get_child(actions.get_child_count() - 1).tooltip_text = Catalog.action(state.ally_species, id).description + (" " + reason if not reason.is_empty() else "")
 		var secondary:= HBoxContainer.new()
 		column.add_child(secondary)
-		secondary.add_child(_button("Entrenador", _trainer_menu))
-		if tactical: secondary.add_child(_button("Equipo", _team_menu))
-		secondary.add_child(_button("Táctica", func(): _guard_menu(state, revision)))
+		secondary.add_child(_button("Entrenador", _trainer_menu, false, "quiet"))
+		if tactical: secondary.add_child(_button("Equipo", _team_menu, false, "quiet"))
+		secondary.add_child(_button("Táctica", func(): _guard_menu(state, revision), false, "quiet"))
 		if state.enemy_pending and not App.response_error.is_empty():
 			secondary.add_child(_button("Reintentar respuesta", App.retry_enemy_response))
 	elif state.phase == "replacement":
@@ -526,11 +534,11 @@ func _exploration_scene() -> void :
 		column.add_child(_label("%s · %s" % [info.get("title", "Localización"), info.get("environment", "Valle Jade")], 24))
 	column.add_child(_label("Entrada pagada: %d stamina. Buscar y retomar no tienen coste adicional." % Route.entry_cost(point_id), 20))
 	if point_id != "jade_point_1":
-		column.add_child(_button("Buscar encuentro", func(): _discover_from_scene(encounter_id)))
+		column.add_child(_button("Buscar encuentro", func(): _discover_from_scene(encounter_id), false, "primary"))
 	column.add_child(_button("Salir de la localización", func():
 		_confirm("Salir termina esta exploración. La stamina de entrada no se devuelve.", func():
 			if App.trial_action("retreat"): navigate.emit("jade_play")
-			else: _notice(), "Salir")))
+			else: _notice(), "Salir"), false, "danger"))
 
 func _discover_from_scene(encounter_id: String) -> void:
 	if App.discover_location(encounter_id):
@@ -580,6 +588,7 @@ func _location_details(point_id: String) -> void :
 			_update_location_entry()
 			_notice())
 	location_enter_button.name = "LocationEnter"
+	preload("res://scripts/adventure_theme.gd").apply_role(location_enter_button, "primary")
 	content.add_child(location_enter_button)
 	_update_location_entry()
 

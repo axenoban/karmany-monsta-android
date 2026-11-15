@@ -144,9 +144,10 @@ func _show(next_page: String, record_history: bool = true) -> void :
 			lab_button.add_theme_font_size_override("font_size", 22)
 			bar.add_child(lab_button)
 	var brand:= _label("KARMANY MONSTA", 22, JADE)
+	brand.theme_type_variation = "JadeEyebrow"
 	brand.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	if page != "home":
-		var back := _button("Volver", _back)
+		var back := _button("Volver", _back, "navigation")
 		back.autowrap_mode = TextServer.AUTOWRAP_OFF
 		back.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 		header.add_child(back)
@@ -203,12 +204,13 @@ func _copy(text: String) -> void :
 	body.add_child(label)
 
 func _heading(text: String) -> void :
-	body.add_child(_label(text, 36, PAPER))
+	JadeUI.heading(body, text)
 
-func _button(text: String, action: Callable) -> Button:
+func _button(text: String, action: Callable, role: String = "") -> Button:
 	var button:= Button.new()
 	button.text = text
 	AdventureTheme.decorate(button)
+	AdventureTheme.apply_role(button, role)
 	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.custom_minimum_size = Vector2(0, 64)
@@ -223,7 +225,7 @@ func _home() -> void:
 	_heading("Karmany Monsta")
 	var outer := body
 	var columns := JadeUI.row(body)
-	JadeUI.art(columns, "zephyr", 360)
+	JadeUI.art(columns, "zephyr", 300)
 	body = JadeUI.panel(columns)
 	_copy("El viaje de Ezel")
 	_copy("Zephyr, tu compañero · Axe, tu mentor")
@@ -231,8 +233,8 @@ func _home() -> void:
 	resume.theme_type_variation = "JadePrimary"
 	resume.disabled = not App.profile.journey.started or App.load_failed
 	body.add_child(resume)
-	body.add_child(_button("Nueva partida", _new_journey))
-	body.add_child(_button("Ajustes", func(): _show("settings")))
+	body.add_child(_button("Nueva partida", _new_journey, "quiet"))
+	body.add_child(_button("Ajustes", func(): _show("settings"), "quiet"))
 	body = outer
 
 func _continue_adventure() -> void:
@@ -303,10 +305,10 @@ func _map() -> void:
 		state.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		card.add_child(state)
 		var needs_buy: bool = int(region.cost) > 0 and id not in App.profile.skill_tree.unlocks
-		var open := _button("Desbloquear · %d punto" % int(region.cost) if needs_buy else "Explorar región", func(): _open_region(id, needs_buy))
+		var open := _button("Desbloquear · %d punto" % int(region.cost) if needs_buy else "Explorar región", func(): _open_region(id, needs_buy), "primary")
 		open.disabled = App.load_failed or int(App.profile.skill_tree.level) < int(region.min_level) or _encounter_in_progress()
 		card.add_child(open)
-	if _encounter_in_progress(): body.add_child(_button("Retomar aventura", _continue_adventure))
+	if _encounter_in_progress(): body.add_child(_button("Retomar aventura", _continue_adventure, "primary"))
 	var nav := GridContainer.new()
 	nav.columns = 3
 	get_node("Page").get_child(0).add_child(nav)
@@ -541,9 +543,11 @@ func _bestiary() -> void :
 		var caption: String = "Todas" if rarity.is_empty() else rarity
 		if rarity == catalog_rarity:
 			caption = "● " + caption
-		filters.add_child(_button(caption, func():
+		var filter_button := _button(caption, func():
 			catalog_rarity = chosen
-			_show("bestiary")))
+			_show("bestiary"))
+		AdventureTheme.apply_role(filter_button, "selected" if chosen == catalog_rarity else "quiet")
+		filters.add_child(filter_button)
 	if not catalog.last_error.is_empty():
 		_copy(catalog.last_error)
 		return
@@ -787,7 +791,7 @@ func _collection() -> void :
 		var equipped:= false
 		for current in App.profile.campaign.team.members:
 			if current.instance_id == chosen_id: equipped = true
-		var add:= _button("Ya está en el equipo" if equipped else "Añadir al equipo", func(): _team_action("add", chosen_id, "collection"))
+		var add:= _button("Ya está en el equipo" if equipped else "Añadir al equipo", func(): _team_action("add", chosen_id, "collection"), "primary")
 		add.disabled = equipped or in_progress or App.profile.campaign.team.members.size() >= 3 or App.load_failed
 		body.add_child(add)
 	body = outer
