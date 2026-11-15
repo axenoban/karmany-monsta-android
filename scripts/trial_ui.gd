@@ -258,7 +258,7 @@ func _battle() -> void :
 		binding.species = enemy_species
 		binding.outcome = state.phase
 		binding.background_id = Locations.background_for(App.profile.campaign)
-		binding.custom_minimum_size = Vector2(0, 210)
+		binding.custom_minimum_size = Vector2(0, 166)
 		binding.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		column.add_child(binding)
 	else:
