@@ -1,5 +1,20 @@
 # Revisión profesional · controles candidatos
 
+## 14/11/2026 (Bolivia) · Entrega Preview108 / PR32 · pendiente de aprobación
+
+El creador autoriza publicar la candidata y exige una nueva aprobación para integrar a la rama principal. Esta autorización no aprueba el diseño. `main` y `dev/karmany-core` permanecen sin cambios.
+
+- Rama: `feature/jade-visual-controls-review`; [PR32 borrador](https://github.com/axenoban/karmany-monsta-android/pull/32), sin automerge.
+- Código compilado: `f3383b9017c6586926ecf0d14e17574ee48aff99`; base validada `b885e6c` / Preview104.
+- [CI43664595190](https://github.com/axenoban/karmany-monsta-android/actions/runs/43664595190): completed/success, regresiones, render Godot4.7.2, exportación Android, verificación de firma y auditoría APK.
+- [APK Preview108](https://github.com/axenoban/karmany-monsta-android/releases/download/android-preview-108/karmany-monsta-preview.apk): 83.467.480 bytes; SHA256 `ad027dfa97b7e054b2774df72b3535771d6451c71b690cb0cd4a8566cc449c48`.
+- [Capturas completas](https://github.com/axenoban/karmany-monsta-android/releases/download/android-preview-108/ui-review.zip). Primer bloque: botones genéricos/principales/seleccionados y estados, 11 SVG reproducibles. Los originales, Quiet/Nav/Danger, iconos, reglas, escenas y datos canónicos se conservan.
+- Preview107 fue técnicamente correcta pero su lámina comparativa resolvía el tema antes de entrar al árbol. Preview108 corrige únicamente ese instrumento de revisión; misma implementación jugable. Usar Preview108 para la validación.
+- El bloqueo previo de publicación quedó resuelto con autorización explícita y el conector GitHub. Árbol publicado verificado contra el árbol local; commits remotos tienen nueva autoría/fecha. No se reescribió historia; archivo local conservado.
+- Prueba física y aprobación artística: PENDIENTES. No atribuir dispositivos ni casos físicos no declarados.
+- Responsable siguiente: WORK. Instrucción: verificar PR32/Preview108 en axenoban/karmany-monsta-android, atender observaciones visuales reproducibles en esta rama; no integrar a dev/main ni ampliar familias hasta nueva aprobación identificable del creador. Tras aprobación, verificar HEAD/CI y realizar cierre seguro.
+
+
 ## Verificación local y bloqueo de entrega
 
 Godot **4.7.2** instalado y verificado con SHA-512 oficial. Importación sin errores. Siete suites locales: tema 47, UI 119, foundation 40, R1.1 233, combat-readout 37, unificación 1849, primera sesión 609; **2934 checks, cero fallos**, logs revisados con ci/check_log.py. Tres pruebas Python y validación de cinco skills correctas.
