@@ -2,7 +2,7 @@ name: Android Preview
 
 on:
   pull_request:
-    branches: [main, dev/karmany-core, docs/documento-maestro-android, feature/jade-nocturno]
+    branches: [main, dev/karmany-core, docs/documento-maestro-android, feature/jade-nocturno, feature/ux-jugador-combate-compacto-preview]
   workflow_dispatch:
     inputs:
       ui_review:
